@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class NetworkManagerCustom : NetworkManager {
 
+	string ipAddress = "localhost";
 	public void StartupHost()
 	{
 		SetPort();
@@ -25,7 +26,7 @@ public class NetworkManagerCustom : NetworkManager {
 	
 	void SetIPAddress()
 	{
-		NetworkManager.singleton.networkAddress = "localhost";
+		NetworkManager.singleton.networkAddress = "128.2.236.211";
 	}
 	
 	void OnLevelWasLoaded (int level)
