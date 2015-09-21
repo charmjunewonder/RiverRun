@@ -16,13 +16,22 @@ public class PlayerController : NetworkBehaviour {
 	void Update () {		
 		if(!isLocalPlayer) return;
 		cam.enabled = true;
+#if UNITY_IOS
+		foreach (Touch touch in Input.touches) {
+			if (touch.phase == TouchPhase.Began) {
+#endif
+#if UNITY_STANDALONE_WIN
 		if (Input.GetMouseButtonDown(0)) {
+#endif
 			// Check if the GameObject is clicked by casting a
 			// Ray from the main camera to the touched position.
 			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 			CmdDoFire(10, ray);
-			
+#if UNITY_IOS
+			}
+#endif
 		}
+		
 	}
 	
 	[Command]
