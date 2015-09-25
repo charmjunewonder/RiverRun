@@ -27,7 +27,7 @@ public class NetworkManagerCustom : NetworkManager {
 	void SetIPAddress()
 	{
 		//NetworkManager.singleton.networkAddress = "128.2.236.211";
-		NetworkManager.singleton.networkAddress = "localhost";
+		NetworkManager.singleton.networkAddress = ipAddress;
 	}
 	
 	void OnLevelWasLoaded (int level)

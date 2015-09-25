@@ -7,9 +7,7 @@ public class SyncShipPos : NetworkBehaviour {
 	private Vector3 syncPos;
 	
 	private Transform myTransform;
-	
-	//private Vector3 lastPos;
-	private float threshold = 0.5f;
+
 	private float lerpRate = 15;
 	
 	// Use this for initialization
