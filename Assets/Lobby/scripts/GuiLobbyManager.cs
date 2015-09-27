@@ -59,6 +59,7 @@ public class GuiLobbyManager : NetworkLobbyManager
 
 	public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer)
 	{
+        gamePlayer.GetComponent<PlayerController>().slot = lobbyPlayer.GetComponent<PlayerLobby>().slot;
 		//This hook allows you to apply state data from the lobby-player to the game-player
 		//var cc = lobbyPlayer.GetComponent<ColorControl>();
 		//var playerX = gamePlayer.GetComponent<Player>();

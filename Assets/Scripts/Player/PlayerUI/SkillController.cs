@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UIController : MonoBehaviour {
+public class SkillController : MonoBehaviour {
 
 	public Image coolDownImage;
 	public Text coolDownText;
@@ -16,7 +16,13 @@ public class UIController : MonoBehaviour {
 	public PlayerController playerController;
 
 	public void selectSkill(int index){
-		playerController.CmdSetSkillIndex (index);
+		if (coolDownStarted) return;
+        if(index <= 1)
+		    playerController.CmdSetSkillIndex (index);
+        else if (index == 2) { 
+            
+        }
+        
 	}
 
 	public void StartCoolDown(){
@@ -24,11 +30,12 @@ public class UIController : MonoBehaviour {
 		coolDownTimer = coolDownTime;
 		coolDownText.text = (int)coolDownTimer + 1 + "";
 		coolDownImage.fillAmount = 1;
-		coolDownStarted = true;
+		coolDownStarted = coolDownTime == 0 ? false : true;
 	}
 
 	private void coolingDown(){
 		coolDownTimer -= Time.deltaTime;
+        Debug.Log (coolDownTimer);
 		if(coolDownTimer <= 0.0f){
 			coolDownStarted = false;
 			coolDownImage.fillAmount = 0;
@@ -41,7 +48,7 @@ public class UIController : MonoBehaviour {
 
 
 
-	void update(){
+	void Update(){
 		if (coolDownStarted) {
 			coolingDown();
 		}
@@ -49,4 +56,5 @@ public class UIController : MonoBehaviour {
 
 	public void setSkill(Skill s){ skill = s; }
 	public void setPlayerController(PlayerController p){ playerController = p; }
+	public bool getCoolDownStatus(){ return coolDownStarted; }
 }
