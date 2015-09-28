@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
+using System.Collections;
 
 public class GuiLobbyManager : NetworkLobbyManager
 {
@@ -20,6 +21,8 @@ public class GuiLobbyManager : NetworkLobbyManager
 	static public GuiLobbyManager s_Singleton;
 	
 	public Roles ownRole;
+
+    public ArrayList gameplayerControllers = null;
 
 	void Start()
 	{
@@ -59,6 +62,17 @@ public class GuiLobbyManager : NetworkLobbyManager
 
 	public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer)
 	{
+        if (gameplayerControllers == null){
+            
+            gameplayerControllers = new ArrayList(lobbySlots.Length);
+
+            for (int i = 0; i < lobbySlots.Length; i++)
+                gameplayerControllers.Add(null);
+
+                Debug.Log("Lobby Manager   : " + gameplayerControllers.Count + " " + lobbyPlayer.GetComponent<PlayerLobby>().slot);
+        }
+        Debug.Log("Lobby Manager: " + gameplayerControllers.Count + " " + lobbyPlayer.GetComponent<PlayerLobby>().slot);
+        gameplayerControllers[lobbyPlayer.GetComponent<PlayerLobby>().slot] = gamePlayer.GetComponent<PlayerController>();
         gamePlayer.GetComponent<PlayerController>().slot = lobbyPlayer.GetComponent<PlayerLobby>().slot;
 		//This hook allows you to apply state data from the lobby-player to the game-player
 		//var cc = lobbyPlayer.GetComponent<ColorControl>();

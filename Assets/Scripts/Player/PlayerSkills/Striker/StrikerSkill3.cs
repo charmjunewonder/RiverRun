@@ -8,10 +8,7 @@ public class StrikerSkill3 : Skill {
 		int level = gameObject.GetComponent<PlayerInfo>().getLevel();
 		damage = Mathf.Pow (2, level) * 10 + 200;
 		heal = 0;
-		coolDown = 1;
+		coolDown = 75;
 	}
 
-	void Update () {
-	
-	}
 }

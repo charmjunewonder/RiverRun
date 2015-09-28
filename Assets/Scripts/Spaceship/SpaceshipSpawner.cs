@@ -4,7 +4,8 @@ using UnityEngine.Networking;
 
 public class SpaceshipSpawner : NetworkBehaviour {
 	public GameObject spaceshipPrefab;
-	
+    public GameObject ultiController;
+
 	// Use this for initialization
 	void Start () {
 		Spawn();
@@ -19,6 +20,7 @@ public class SpaceshipSpawner : NetworkBehaviour {
 		if(isServer){
 			GameObject ss = Instantiate(spaceshipPrefab);
 			NetworkServer.Spawn(ss);
+            Instantiate(ultiController);
 		}
 	}
 	

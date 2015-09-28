@@ -4,18 +4,24 @@ using UnityEngine.UI;
 
 public class CrystalController : MonoBehaviour {
 
-    public Image[] ultiCrystals;
-    public Sprite[] crystalSprites;
+    private PlayerController playerController;
 
-    public void generateCrystal(int[] crystals) {
-        for (int i = 0; i < ultiCrystals.Length; i++) {
-            ultiCrystals[i].sprite = i >= crystals.Length ? null : crystalSprites[crystals[i]];
-        }
+    public Image image;
+
+    public int crystalIndex;
+
+    void Start() {
+    
     }
 
-    public void voidCrystal() { 
-        foreach(Image image in ultiCrystals){
-            image.sprite = null;
+
+    public void setPlayerController(PlayerController plc) { playerController = plc; }
+
+    public void Clicked() {
+        if (crystalIndex >= 0) {
+            playerController.CmdSupport(crystalIndex);
+            crystalIndex = -1;
+            image.enabled = false;
         }
     }
 

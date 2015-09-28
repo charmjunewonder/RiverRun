@@ -19,8 +19,9 @@ public class SkillController : MonoBehaviour {
 		if (coolDownStarted) return;
         if(index <= 1)
 		    playerController.CmdSetSkillIndex (index);
-        else if (index == 2) { 
-            
+        else if (index == 2) {
+            Debug.Log("Skill Controller: Ulti Selected");
+            playerController.RequestUlti();
         }
         
 	}
@@ -35,7 +36,6 @@ public class SkillController : MonoBehaviour {
 
 	private void coolingDown(){
 		coolDownTimer -= Time.deltaTime;
-        Debug.Log (coolDownTimer);
 		if(coolDownTimer <= 0.0f){
 			coolDownStarted = false;
 			coolDownImage.fillAmount = 0;
