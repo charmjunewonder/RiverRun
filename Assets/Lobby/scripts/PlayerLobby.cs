@@ -53,6 +53,10 @@ public class PlayerLobby : NetworkLobbyPlayer
 			levelHooks.ShowInfo();
 		}
 	}
+	
+	void Update(){
+		//Debug.Log(playerCanvas.GetComponent<PlayerCanvasHooks>().panelPos.rect.width);
+	}
 
 	public override void OnClientExitLobby()
 	{
@@ -71,17 +75,25 @@ public class PlayerLobby : NetworkLobbyPlayer
 	float GetPlayerPos(int slot)
 	{
 		var lobby = NetworkManager.singleton as GuiLobbyManager;
+		
 		if (lobby == null)
 		{
 			// no lobby?
 			return slot * 200;
 		}
-
 		// this spreads the player canvas panels out across the screen
-		var screenWidth = playerCanvas.pixelRect.width;
-		screenWidth -= 200; // border padding
-		var playerWidth = screenWidth / (lobby.maxPlayers-1);
-		return -(screenWidth / 2) + slot * playerWidth;
+//		var screenWidth = playerCanvas.pixelRect.width;
+//		var panelWidth = playerCanvas.GetComponent<PlayerCanvasHooks>().panelPos.rect.width;
+//		float ratio = Screen.width / 800.0f;
+//		float padding = (screenWidth - 4*panelWidth)/5;
+//		Debug.Log(slot + " " + panelWidth);
+//		Debug.Log(-(screenWidth / 2) + padding * (slot+1) + panelWidth * ratio * (2*slot+1));
+		
+//			
+//		screenWidth -= 300*ratio; // border padding
+//		var playerWidth = screenWidth / (lobby.maxPlayers-1);
+		//return -(screenWidth / 2) + slot * playerWidth;
+		return -(800 / 2) + 800/5 * (slot+1);
 	}
 
 	public override void OnStartLocalPlayer()
@@ -260,6 +272,7 @@ public class PlayerLobby : NetworkLobbyPlayer
 		// setup button hooks
 		var hooks = playerCanvas.GetComponent<PlayerCanvasHooks>();
 		hooks.panelPos.localPosition = new Vector3(GetPlayerPos(lobbyPlayer.slot), 0, 0);
+		//hooks.panelPos.position = new Vector3(GetPlayerPos(lobbyPlayer.slot), 0, 0);
 		hooks.SetColor(cc.myColor);
 	}
 }
