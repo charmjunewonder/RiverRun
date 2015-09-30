@@ -27,8 +27,23 @@ public class GuiLobbyManager : NetworkLobbyManager
 	void Start()
 	{
 		s_Singleton = this;
+		
+		Debug.Log("Lobby Manager: start");
+		
 		offlineCanvas.Show();
+		//StartCoroutine(show1());
+		//DontDestroyOnLoad(gameObject);
 	}
+	
+	void Update(){
+		//Debug.Log("Lobby Manager: start1");
+		
+		//offlineCanvas.Show();
+		
+	}
+
+	
+
 
 	void OnLevelWasLoaded()
 	{
@@ -51,15 +66,31 @@ public class GuiLobbyManager : NetworkLobbyManager
 
 		lobbyCanvas.SetFocusToAddPlayerButton();
 	}
-
+	public override void OnLobbyStartHost(){
+		Debug.Log("connect2");
+		
+	}
+	
 	// ----------------- Server callbacks ------------------
 
 	public override void OnLobbyStopHost()
 	{
 		lobbyCanvas.Hide();
-		offlineCanvas.Show();
+		Debug.Log("disconnect2");
+		StartCoroutine(show1());
+		
+		//offlineCanvas.Show();
 	}
-
+	IEnumerator show1(){
+		yield return new WaitForSeconds(0.2f);
+		//while(true){
+		offlineCanvas.Show();
+		Debug.Log("show123");
+		
+		//yield return new WaitForSeconds(0.2f);
+		
+		//}	
+	}
 	public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer)
 	{
         if (gameplayerControllers == null){
@@ -90,6 +121,7 @@ public class GuiLobbyManager : NetworkLobbyManager
 
 	public override void OnClientError(NetworkConnection conn, int errorCode)
 	{
+		
 		connectingCanvas.Hide();
 		StopHost();
 
@@ -99,6 +131,7 @@ public class GuiLobbyManager : NetworkLobbyManager
 	public override void OnLobbyClientDisconnect(NetworkConnection conn)
 	{
 		lobbyCanvas.Hide();
+		Debug.Log("disconnect");
 		offlineCanvas.Show();
 	}
 

@@ -17,12 +17,16 @@ public class CanvasControl
 
 	public virtual void Show()
 	{
+		//Debug.Log("sssssss1");
+		
 		if (prefab == null)
 			return;
-
+		//Debug.Log("sssssss2");
+		
 		if (m_Canvas != null)
 			return;
-
+		//Debug.Log("sssssss3");
+		
 		m_Canvas =  (Canvas)GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
 		GameObject.DontDestroyOnLoad(m_Canvas.gameObject);
 	}
@@ -79,7 +83,7 @@ public class OnlineCanvasControl : CanvasControl
 	public void Show(string status)
 	{
 		base.Show();
-			
+		Debug.Log("hide");
 		GuiLobbyManager.s_Singleton.offlineCanvas.Hide();
 
 		var hooks = canvas.GetComponent<OnlineControlHooks>();
@@ -101,6 +105,10 @@ public class OnlineCanvasControl : CanvasControl
 	{
 		GuiLobbyManager.s_Singleton.popupCanvas.Hide();
 		GuiLobbyManager.s_Singleton.StopHost();
+		Debug.Log("Lobby Manager: stop");
+		//GuiLobbyManager.s_Singleton.offlineCanvas.Show();
+		
+		//Application.LoadLevel("Lobby");
 	}
 }
 
@@ -111,7 +119,8 @@ public class OfflineCanvasControl : CanvasControl
 	{
 		base.Show();
 		GuiLobbyManager.s_Singleton.onlineCanvas.Hide();
-
+		Debug.Log("show");
+		
 		var hooks = canvas.GetComponent<OfflineControlHooks>();
 		if (hooks == null)
 			return;
@@ -123,6 +132,12 @@ public class OfflineCanvasControl : CanvasControl
 
 		EventSystem.current.firstSelectedGameObject = hooks.firstButton.gameObject;
 		EventSystem.current.SetSelectedGameObject(hooks.firstButton.gameObject);
+		
+		string address = PlayerPrefs.GetString("gameaddress");
+		if(address != null && address.Length != 0){
+			hooks.inputField.GetComponent<InputField>().text = address;
+			hooks.addressInput.text = address;
+		}
 	}
 
 	public override void OnLevelWasLoaded()
@@ -157,6 +172,9 @@ public class OfflineCanvasControl : CanvasControl
 			return;
 
 		GuiLobbyManager.s_Singleton.networkAddress = hooks.GetAddress();
+		PlayerPrefs.SetString("gameaddress", hooks.GetAddress());
+		Debug.Log("sfdfd" + hooks.GetAddress());
+		
 		GuiLobbyManager.s_Singleton.StartClient();
 		GuiLobbyManager.s_Singleton.onlineCanvas.Show("Client");
 	}
@@ -192,6 +210,8 @@ public class ConnectingCanvasControl : CanvasControl
 	{
 		Hide();
 		GuiLobbyManager.s_Singleton.StopHost();
+		Debug.Log("Lobby Manager: stop");
+		
 	}
 }
 

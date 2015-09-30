@@ -9,7 +9,7 @@ public class OfflineControlHooks : MonoBehaviour
 	public CanvasHook OnStartServerHook;
 	public CanvasHook OnStartClientHook;
 	public CanvasHook OnStartMMHook;
-
+	public InputField inputField;
 	public Text addressInput;
 	public Button firstButton;
 
