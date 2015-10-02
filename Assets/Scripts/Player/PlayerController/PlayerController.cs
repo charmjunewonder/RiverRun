@@ -30,7 +30,7 @@ public class PlayerController : NetworkBehaviour {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
 		if (isLocalPlayer) {
 			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity);
-            
+            GameObject.DontDestroyOnLoad(ui);
             setControllers(ui);
 			
 			cam.enabled = true;
@@ -203,7 +203,7 @@ public class PlayerController : NetworkBehaviour {
     public void CmdSupport(int crystalIndex){
         Debug.Log("Player Controller Server: Support Submission Success");
         if (UltiController.checkUltiEnchanting()) {
-            PlayerController plc = (PlayerController)NetworkManagerCustom.s_singleton.gameplayerControllers[UltiController.getUltiPlayerNumber()];
+            PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.lobbyPlayerArray[UltiController.getUltiPlayerNumber()];
             plc.RpcSupportGivenBack(crystalIndex);
         }
     }

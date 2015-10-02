@@ -2,86 +2,290 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityStandardAssets.Network;
+
+public enum NetworkMode { Lobby, Game };
 
 public class NetworkManagerCustom : NetworkManager {
-    public ArrayList gameplayerControllers;
+    public GameObject LobbyPlayerPrefab;
+    public GameObject StrikerPrefab;
 
-    static public NetworkManagerCustom s_singleton;
+    public ArrayList gameplayerControllers { get; set; }
+    public ArrayList lobbyPlayerArray { get; set; }
+    public NetworkMode currentMode { get; set; }
+
+    static public NetworkManagerCustom SingletonNM { get; set;}
+
+    #region Lobby Variable
+
+    public int maxPlayers = 4;
+    public int minPlayers = 1;
+
+    public LobbyTopPanel topPanel;
+
+    public RectTransform mainMenuPanel;
+    public RectTransform lobbyPanel;
+
+    public LobbyInfoPanel infoPanel;
+
+    protected RectTransform currentPanel;
+
+    public Button backButton;
+
+    public Text statusInfo;
+    public Text hostInfo;
+
+    #endregion
+
+    private string selectedLevel = "Level1";
+
     void Start()
     {
-        s_singleton = this;
-        gameplayerControllers = new ArrayList(4);
-        for (int i = 0; i < 4; i++)
+        SingletonNM = this;
+        currentMode = NetworkMode.Lobby;
+        lobbyPlayerArray = new ArrayList(maxPlayers);
+        gameplayerControllers = new ArrayList(maxPlayers);
+        for (int i = 0; i < maxPlayers; i++)
         {
+            lobbyPlayerArray.Add(null);
             gameplayerControllers.Add(null);
         }
-    }
-/*	string ipAddress = "localhost";
-	public void StartupHost()
-	{
-		SetPort();
-		NetworkManager.singleton.StartServer();
-	}
-	
-	public void StartupClient()
-	{
-		SetIPAddress();
-		SetPort();
-		NetworkManager.singleton.StartClient();
-	}
-	
-	void SetPort()
-	{
-		NetworkManager.singleton.networkPort = 7777;
-	}
-	
-	void SetIPAddress()
-	{
-		//NetworkManager.singleton.networkAddress = "128.2.236.211";
-		NetworkManager.singleton.networkAddress = ipAddress;
-	}
-	
-	void OnLevelWasLoaded (int level)
-	{
-		if(level == 0)
-		{
-			SetupMenuSceneButtons();
-		}
-		
-		else
-		{
-			//SetupOtherSceneButtons();
-			
 
-		}
-	}
-	
-	void SetupMenuSceneButtons()
-	{
-		GameObject.Find("HostButton").GetComponent<Button>().onClick.RemoveAllListeners();
-		GameObject.Find("HostButton").GetComponent<Button>().onClick.AddListener(StartupHost);
+        lobbySystemStartSetting();
+
+
+    }
+
+    #region Lobby
+    private void lobbySystemStartSetting()
+    {
+        backButton.gameObject.SetActive(false);
+        SetServerInfo("Offline", "None");
+        currentPanel = mainMenuPanel;
+    }
+
+
+    public void ChangeTo(RectTransform newPanel)
+    {
+        if (currentPanel != null)
+        {
+            currentPanel.gameObject.SetActive(false);
+        }
+
+        if (newPanel != null)
+        {
+            newPanel.gameObject.SetActive(true);
+        }
+
+        currentPanel = newPanel;
+
+        if (currentPanel != mainMenuPanel)
+        {
+            backButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            backButton.gameObject.SetActive(false);
+            SetServerInfo("Offline", "None");
+        }
+    }
+
+    public void DisplayIsConnecting()
+    {
+        var _this = this;
+        infoPanel.Display("Connecting...", "Cancel", () => { _this.backDelegate(); });
+    }
+
+    public void SetServerInfo(string status, string host)
+    {
+        statusInfo.text = status;
+        hostInfo.text = host;
+    }
+
+    #region Disconnect Button
+    public delegate void BackButtonDelegate();
+    public BackButtonDelegate backDelegate;
+    public void GoBackButton()
+    {
+        backDelegate();
+    }
+
+    public void SimpleBackClbk()
+    {
+        ChangeTo(mainMenuPanel);
+    }
+
+    public void StopHostClbk()
+    {
+
+        StopHost();
+        ChangeTo(mainMenuPanel);
+    }
+
+    public void StopClientClbk()
+    {
+        StopClient();
+        ChangeTo(mainMenuPanel);
+    }
+
+    public void StopServerClbk()
+    {
+        StopServer();
+        ChangeTo(mainMenuPanel);
+    }
+
+    public void StopGameClbk()
+    {
+        //SendReturnToLobby();
+        ChangeTo(lobbyPanel);
+    }
+    #endregion
+
+    IEnumerator CheckLobbyReady()
+    {
+        while (true)
+        {
+            Debug.Log("CheckLobbyReady");
+            int count = 0;
+            bool isAllReady = true;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                if (lobbyPlayerArray[i] != null)
+                {
+                    count++;
+                    LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
+                    isAllReady &= lp.isReady;
+                }
+            }
+            if (count >= minPlayers && isAllReady)
+            {
+                ChangeLobbyToGameScene();
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    private void ChangeLobbyToGameScene()
+    {
+        StopCoroutine("CheckLobbyReady");
+        DisableLobbyUI();
+        //RpcSetupGameScene();
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            if (lobbyPlayerArray[i] != null)
+            {
+                LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
+                NetworkConnection conn = lp.connectionToClient;
+                GameObject newPlayer = Instantiate<GameObject>(StrikerPrefab);
+                newPlayer.GetComponent<PlayerController>().slot = lp.slot;
+                GameObject.DontDestroyOnLoad(newPlayer);
+                gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
+                Destroy(lp.gameObject);
+                NetworkServer.ReplacePlayerForConnection(conn, newPlayer, 0);
+            }
+        }
+        ServerChangeScene(selectedLevel);
+        //var conn = oldPlayer.connectionToClient;
+        //var newPlayer = Instantiate<GameObject>(playerPrefab);
+        //Destroy(oldPlayer.gameObject);
+
+        //NetworkServer.ReplacePlayerForConnection(conn, newPlayer, 0);
+    }
+
+    private void SetupGameScene()
+    {
+        DisableLobbyUI();
+    }
+
+    private void DisableLobbyUI()
+    {
+        topPanel.gameObject.SetActive(false);
+        mainMenuPanel.gameObject.SetActive(false);
+        lobbyPanel.gameObject.SetActive(false);
+        infoPanel.gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region ServerOverride
+    //This hook is invoked when a server is started - including when a host is started.
+    public override void OnStartServer()
+    {
+        Debug.Log("OnStartServer");
+        StartCoroutine("CheckLobbyReady");
+    }
+
+    //Called on the server when a new client connects.
+    public override void OnServerConnect(NetworkConnection conn){
 		
-		GameObject.Find("ClientButton").GetComponent<Button>().onClick.RemoveAllListeners();
-		GameObject.Find("ClientButton").GetComponent<Button>().onClick.AddListener(StartupClient);
+		int i = 0;
+		for(; i < maxPlayers; i++){
+			if(lobbyPlayerArray[i] == null){
+				break;
+			}
+		}
+		if(i >= maxPlayers) {
+			conn.Disconnect();
+		}
+		//		slotArray[i] = conn.playerControllers[0].gameObject;
+		//		conn.playerControllers[0].gameObject.GetComponent<Player_ID>().SetSlot(i);
 	}
-	
-	void SetupOtherSceneButtons()
-	{
-		GameObject.Find("ButtonDisconnect").GetComponent<Button>().onClick.RemoveAllListeners();
-		GameObject.Find("ButtonDisconnect").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopHost);
-	}
-    */
+
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
+        Debug.Log("Lobby add" );
+
         int i = 0;
-        for (; i < 4; i++)
-        {
-            if (gameplayerControllers[i] == null) break;
-        }
-        if (i == 4) return;
-        var player = (GameObject)GameObject.Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        player.GetComponent<PlayerController>().SetSlot(i);
-        gameplayerControllers[i] = player.GetComponent<PlayerController>();
+        for (; i < maxPlayers; i++)
+            if (lobbyPlayerArray[i] == null) break;
+        if (i == maxPlayers) return;
+        var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
+        player.GetComponent<LobbyPlayer>().slot = i;
+        lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-    }	 
+    }
+    #endregion
+
+    #region ClientOverride
+    public override void OnClientDisconnect(NetworkConnection conn)
+    {
+        base.OnClientDisconnect(conn);
+        ChangeTo(mainMenuPanel);
+    }
+
+    public override void OnClientError(NetworkConnection conn, int errorCode)
+    {
+        ChangeTo(mainMenuPanel);
+        infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
+    }
+
+    public override void OnClientConnect(NetworkConnection conn)
+    {
+        base.OnClientConnect(conn);
+
+        infoPanel.gameObject.SetActive(false);
+
+        if (!NetworkServer.active)
+        {//only to do on pure client (not self hosting client)
+            ChangeTo(lobbyPanel);
+            backDelegate = StopClientClbk;
+            SetServerInfo("Client", networkAddress);
+        }
+    }
+
+    public override void OnClientSceneChanged(NetworkConnection conn)
+    {
+        DisableLobbyUI();
+    }
+    #endregion
+
+    #region HostOverride
+    public override void OnStartHost()
+    {
+        base.OnStartHost();
+
+        ChangeTo(lobbyPanel);
+        backDelegate = StopHostClbk;
+        SetServerInfo("Hosting", networkAddress);
+    }
+    #endregion
 }
