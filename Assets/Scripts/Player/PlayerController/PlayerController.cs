@@ -52,8 +52,8 @@ public class PlayerController : NetworkBehaviour {
 	void Update () {		
 		if(!isLocalPlayer) return;
 		cam.enabled = true;
-        /*
-        
+
+#if UNITY_STANDALONE_WIN  
         if (Input.GetMouseButtonDown(0))
         {
             if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
@@ -63,18 +63,14 @@ public class PlayerController : NetworkBehaviour {
                 uiTarget.color = new Color(color.r, color.g, color.b, 1);
             }
         }
-        if (Input.GetTouch(i).phase == TouchPhase.Stationary && Input.GetTouch(i).phase == TouchPhase.Moved)
+        if (Input.GetMouseButton(0))
         {
             if (uiTarget.color.a != 0)
             {
                 uiTarget.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, uiTarget.transform.position.z);
             }
         }
-         * 
-         * */
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
-        {
-
+        if(Input.GetMouseButtonUp(0)){
             if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
             {
 
@@ -92,6 +88,28 @@ public class PlayerController : NetworkBehaviour {
                 reminderController.setReminder("Skill is Cooling Down", 1);
             }
         }
+#endif
+#if UNITY_IOS
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
+            {
+
+                uiControllers[skillIndex].StartCoolDown();
+
+                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+                CmdDoFire(skillIndex, ray);
+
+                Color color = uiTarget.color;
+                uiTarget.color = new Color(color.r, color.g, color.b, 0);
+            }
+            else if (!e.IsPointerOverGameObject() && uiControllers[skillIndex].getCoolDownStatus())
+            {
+                reminderController.setReminder("Skill is Cooling Down", 1);
+            }
+        }
+#endif
 	}
 
 
@@ -185,7 +203,7 @@ public class PlayerController : NetworkBehaviour {
     public void CmdSupport(int crystalIndex){
         Debug.Log("Player Controller Server: Support Submission Success");
         if (UltiController.checkUltiEnchanting()) {
-            PlayerController plc = (PlayerController)GuiLobbyManager.s_Singleton.gameplayerControllers[UltiController.getUltiPlayerNumber()];
+            PlayerController plc = (PlayerController)NetworkManagerCustom.s_singleton.gameplayerControllers[UltiController.getUltiPlayerNumber()];
             plc.RpcSupportGivenBack(crystalIndex);
         }
     }
@@ -217,5 +235,8 @@ public class PlayerController : NetworkBehaviour {
 
     #endregion
 
-
+    public void SetSlot(int s)
+    {
+        slot = s;
+    }
 }
