@@ -178,18 +178,12 @@ public class NetworkManagerCustom : NetworkManager {
                 NetworkConnection conn = lp.connectionToClient;
                 GameObject newPlayer = Instantiate<GameObject>(StrikerPrefab);
                 newPlayer.GetComponent<PlayerController>().slot = lp.slot;
-                GameObject.DontDestroyOnLoad(newPlayer);
                 gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
                 Destroy(lp.gameObject);
                 NetworkServer.ReplacePlayerForConnection(conn, newPlayer, 0);
             }
         }
         ServerChangeScene(selectedLevel);
-        //var conn = oldPlayer.connectionToClient;
-        //var newPlayer = Instantiate<GameObject>(playerPrefab);
-        //Destroy(oldPlayer.gameObject);
-
-        //NetworkServer.ReplacePlayerForConnection(conn, newPlayer, 0);
     }
 
     private void SetupGameScene()
