@@ -28,10 +28,11 @@ public class PlayerController : NetworkBehaviour {
 
 	void Start () {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
-		if (isLocalPlayer) {
+        GameObject.DontDestroyOnLoad(gameObject);
+
+        if (isLocalPlayer) {
 			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity);
             GameObject.DontDestroyOnLoad(ui);
-            GameObject.DontDestroyOnLoad(gameObject);
 
             setControllers(ui);
 			
