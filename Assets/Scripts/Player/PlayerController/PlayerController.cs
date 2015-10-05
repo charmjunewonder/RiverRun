@@ -144,6 +144,8 @@ public class PlayerController : NetworkBehaviour {
     [Command]
 	void CmdDoFire(int index, Ray ray)
 	{
+        Debug.Log("CmdDoFire " + index);
+
         GameObject bullet = (GameObject)Instantiate(playerInfo.getSkill(index).prefab, transform.position + ray.direction * 1, Quaternion.identity);
 		
 		NetworkServer.Spawn(bullet);

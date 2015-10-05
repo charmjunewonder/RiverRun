@@ -17,6 +17,7 @@ public class SkillController : MonoBehaviour {
 
 	public void selectSkill(int index){
 		if (coolDownStarted) return;
+
         if(index <= 1)
 		    playerController.CmdSetSkillIndex (index);
         else if (index == 2) {
