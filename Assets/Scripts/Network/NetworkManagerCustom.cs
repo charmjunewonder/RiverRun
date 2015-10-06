@@ -9,9 +9,11 @@ public enum NetworkMode { Lobby, Game };
 public class NetworkManagerCustom : NetworkManager {
     public GameObject LobbyPlayerPrefab;
     public GameObject StrikerPrefab;
+    public GameObject DisconnectedPlayerPrefab;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
+    public ArrayList disconnectedPlayerControllers { get; set; }
     public NetworkMode currentMode { get; set; }
 
     static public NetworkManagerCustom SingletonNM { get; set;}
@@ -45,10 +47,12 @@ public class NetworkManagerCustom : NetworkManager {
         currentMode = NetworkMode.Lobby;
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
+        disconnectedPlayerControllers = new ArrayList(maxPlayers);
         for (int i = 0; i < maxPlayers; i++)
         {
             lobbyPlayerArray.Add(null);
             gameplayerControllers.Add(null);
+            disconnectedPlayerControllers.Add(null);
         }
 
         lobbySystemStartSetting();
@@ -112,30 +116,34 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void SimpleBackClbk()
     {
+        Debug.Log("SimpleBackClbk");
         ChangeTo(mainMenuPanel);
     }
 
     public void StopHostClbk()
     {
-
+        Debug.Log("StopHostClbk");
         StopHost();
         ChangeTo(mainMenuPanel);
     }
 
     public void StopClientClbk()
     {
+        Debug.Log("StopClientClbk");
         StopClient();
         ChangeTo(mainMenuPanel);
     }
 
     public void StopServerClbk()
     {
+        Debug.Log("StopServerClbk");
         StopServer();
         ChangeTo(mainMenuPanel);
     }
 
     public void StopGameClbk()
     {
+        Debug.Log("StopGameClbk");
         //SendReturnToLobby();
         ChangeTo(lobbyPanel);
     }
@@ -143,9 +151,9 @@ public class NetworkManagerCustom : NetworkManager {
 
     IEnumerator CheckLobbyReady()
     {
+        Debug.Log("CheckLobbyReady");
         while (true)
         {
-            Debug.Log("CheckLobbyReady");
             int count = 0;
             bool isAllReady = true;
             for (int i = 0; i < maxPlayers; i++)
@@ -190,6 +198,8 @@ public class NetworkManagerCustom : NetworkManager {
 
             }
         }
+        currentMode = NetworkMode.Game;
+        ResetLobbyPlayerArray();
         ServerChangeScene(selectedLevel);
     }
 
@@ -212,13 +222,23 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnStartServer()
     {
         Debug.Log("OnStartServer");
+        currentMode = NetworkMode.Lobby;
         StartCoroutine("CheckLobbyReady");
+    }
+
+    //This hook is called when a server is stopped - including when a host is stopped.
+    public override void OnStopServer()
+    {
+        Debug.Log("OnStopServer");
+        currentMode = NetworkMode.Lobby;
+        StopCoroutine("CheckLobbyReady");
+        ResetLobbyPlayerArray();
     }
 
     //Called on the server when a new client connects.
     public override void OnServerConnect(NetworkConnection conn){
-		
-		int i = 0;
+        Debug.Log("OnServerConnect " + conn.connectionId);
+        int i = 0;
 		for(; i < maxPlayers; i++){
 			if(lobbyPlayerArray[i] == null){
 				break;
@@ -226,41 +246,133 @@ public class NetworkManagerCustom : NetworkManager {
 		}
 		if(i >= maxPlayers) {
 			conn.Disconnect();
-		}
-		//		slotArray[i] = conn.playerControllers[0].gameObject;
-		//		conn.playerControllers[0].gameObject.GetComponent<Player_ID>().SetSlot(i);
+            conn.Dispose();
+
+            //tell the client
+        }
+        //		slotArray[i] = conn.playerControllers[0].gameObject;
+        //		conn.playerControllers[0].gameObject.GetComponent<Player_ID>().SetSlot(i);
 	}
+
+    //Called on the server when a client disconnects.
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        Debug.Log("OnServerDisconnect " + conn.connectionId);
+        base.OnServerDisconnect(conn);
+
+        switch (currentMode)
+        {
+            case NetworkMode.Lobby:
+                Debug.Log("OnServerDisconnect Lobby ");
+
+                bool hasError = true;
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    if (lobbyPlayerArray[i] != null)
+                    {
+                        LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
+                        int lpconnid = lp.connectionToClient.connectionId;
+                        if(lpconnid == conn.connectionId)
+                        {
+                            hasError = false;
+                            Debug.Log(i + " remove " + lpconnid);
+                            lobbyPlayerArray[i] = null;
+                        }
+                    }
+                }
+                if (hasError) Debug.LogError("Error to remove the lobby when client disconnect.");
+                break;
+            case NetworkMode.Game:
+                Debug.Log("OnServerDisconnect Game ");
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    if (gameplayerControllers[i] != null)
+                    {
+                        PlayerController pc = (PlayerController)gameplayerControllers[i];
+                        int pcconnid = pc.connectionToClient.connectionId;
+                        if (pcconnid == conn.connectionId)
+                        {
+                            Debug.Log(i + " set disconnected player " + pcconnid);
+                            gameplayerControllers[i] = null;
+                            GameObject disconPlayer = (GameObject)Instantiate(DisconnectedPlayerPrefab, Vector3.zero, Quaternion.identity);
+                            disconnectedPlayerControllers[i] = disconPlayer.GetComponent<DisconnectedPlayerController>();
+                            disconPlayer.GetComponent<DisconnectedPlayerController>().slot = i;
+                            disconPlayer.GetComponent<DisconnectedPlayerController>().connId = conn.connectionId;
+                            NetworkServer.Destroy(pc.gameObject);
+                        }
+                    }
+                }
+                break;
+
+        }
+    }
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        Debug.Log("Lobby add" );
+        Debug.Log("OnServerAddPlayer " + conn.connectionId);
 
-        int i = 0;
-        for (; i < maxPlayers; i++)
-            if (lobbyPlayerArray[i] == null) break;
-        if (i == maxPlayers) return;
-        var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
-        player.GetComponent<LobbyPlayer>().slot = i;
-        lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
-        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+        switch (currentMode)
+        {
+            case NetworkMode.Lobby:
+                Debug.Log("OnServerAddPlayer Lobby ");
+                int i = 0;
+                for (; i < maxPlayers; i++)
+                    if (lobbyPlayerArray[i] == null) break;
+                if (i == maxPlayers) return;
+                var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
+                player.GetComponent<LobbyPlayer>().slot = i;
+                lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
+                NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+                break;
+            case NetworkMode.Game:
+                Debug.Log("OnServerAddPlayer Game ");
+                bool isExistingPlayer = false;
+                for (int k = 0; k < maxPlayers; k++)
+                {
+                    if (disconnectedPlayerControllers[k] != null)
+                    {
+                        DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[k];
+                        int dpcconnid = dpc.connId;
+                        if (dpcconnid == conn.connectionId)
+                        {
+                            isExistingPlayer = true;
+                            Debug.Log(k + " existing " + dpcconnid);
+                            disconnectedPlayerControllers[k] = null;
+                        }
+                    }
+                }
+                if (!isExistingPlayer)
+                {
+                    conn.Disconnect();
+                    conn.Dispose();
+                }
+                break;
+        }
+
     }
     #endregion
 
     #region ClientOverride
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+        Debug.Log("OnClientDisconnect " + conn.connectionId);
+
         base.OnClientDisconnect(conn);
         ChangeTo(mainMenuPanel);
     }
 
     public override void OnClientError(NetworkConnection conn, int errorCode)
     {
+        Debug.Log("OnClientError " + conn.connectionId);
+
         ChangeTo(mainMenuPanel);
         infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
     {
+        Debug.Log("OnClientConnect " + conn.connectionId);
+
         base.OnClientConnect(conn);
 
         infoPanel.gameObject.SetActive(false);
@@ -275,6 +387,8 @@ public class NetworkManagerCustom : NetworkManager {
 
     public override void OnClientSceneChanged(NetworkConnection conn)
     {
+        Debug.Log("OnClientSceneChanged " + conn.connectionId);
+
         DisableLobbyUI();
         //ClientScene.Ready(connetion);
     }
@@ -290,4 +404,13 @@ public class NetworkManagerCustom : NetworkManager {
         SetServerInfo("Hosting", networkAddress);
     }
     #endregion
+
+    private void ResetLobbyPlayerArray()
+    {
+        lobbyPlayerArray.Clear();
+        for(int i = 0; i < maxPlayers; i++)
+        {
+            lobbyPlayerArray.Add(null);
+        }
+    }
 }
