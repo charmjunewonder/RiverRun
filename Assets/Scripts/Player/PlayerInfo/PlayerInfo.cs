@@ -10,11 +10,9 @@ public class PlayerInfo : MonoBehaviour {
 
 	void Awake(){
 		role = "Striker";
-		skills = new Skill[4];
+		skills = new Skill[2];
 		skills[0] = gameObject.GetComponent<StrikerSkill1>();
 		skills[1] = gameObject.GetComponent<StrikerSkill2>();
-		skills[2] = gameObject.GetComponent<StrikerSkill3>();
-		skills[3] = gameObject.GetComponent<SupportSkill>();
 
   	}
 	public Skill[] getSkills(){ return skills; }

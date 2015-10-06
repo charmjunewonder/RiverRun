@@ -17,13 +17,16 @@ public class PlayerController : NetworkBehaviour {
     private int[] crystals;
 
 	private EventSystem e;
-	public SkillController[] uiControllers;
+	private SkillController[] uiControllers;
 	private PlayerInfo playerInfo;
 
 	private Skill[] skills;
     private SpriteRenderer uiTarget;
 
-    private UltiCrystalController ultiCrystalController;
+    public UltiCrystalController ultiCrystalController;
+    public GameObject ulticrystalObject;
+
+
     private ReminderController reminderController;
 
 	void Start () {
@@ -39,9 +42,9 @@ public class PlayerController : NetworkBehaviour {
 			cam.enabled = true;
 
 			uiControllers = new SkillController[3];
-			for(int i = 1; i <= 3; i++){
-				uiControllers[i-1] = GameObject.Find ("Skill" + i + "_Image").GetComponent<SkillController>();
-				uiControllers[i-1].setSkill(playerInfo.getSkill(i-1));
+			for(int i = 0; i <= 1; i++){
+				uiControllers[i] = GameObject.Find ("Skill" + i + "_Image").GetComponent<SkillController>();
+				uiControllers[i].setSkill(playerInfo.getSkill(i));
 			}
 
 			skillIndex = 0;
@@ -54,7 +57,12 @@ public class PlayerController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {		
 		if(!isLocalPlayer) return;
-		cam.enabled = true;
+
+        //if (e == null) {
+        //    e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+        //}
+        
+        cam.enabled = true;
 
 #if UNITY_STANDALONE_WIN  
         if (Input.GetMouseButtonDown(0))
@@ -80,6 +88,8 @@ public class PlayerController : NetworkBehaviour {
                 uiControllers[skillIndex].StartCoolDown();
 
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+                Debug.Log("fire " + skillIndex);
 
                 CmdDoFire(skillIndex, ray);
 
@@ -121,7 +131,6 @@ public class PlayerController : NetworkBehaviour {
         Transform skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
         skillPanel.GetChild(1).GetComponent<SkillController>().setPlayerController(this);
-        skillPanel.GetChild(2).GetComponent<SkillController>().setPlayerController(this);
 
         Transform supportCrystalPanel = ui.transform.GetChild(2);
         supportCrystalPanel.GetChild(0).GetComponent<CrystalController>().setPlayerController(this);
@@ -129,14 +138,18 @@ public class PlayerController : NetworkBehaviour {
         supportCrystalPanel.GetChild(2).GetComponent<CrystalController>().setPlayerController(this);
         supportCrystalPanel.GetChild(3).GetComponent<CrystalController>().setPlayerController(this);
 
-
-        ultiCrystalController = ui.transform.GetChild(3).GetComponent<UltiCrystalController>();
+        ulticrystalObject = ui.transform.GetChild(3).gameObject;
+        ultiCrystalController = ulticrystalObject.GetComponent<UltiCrystalController>();
         ultiCrystalController.setPlayerController(this);
+        ulticrystalObject.SetActive(false);
+
+
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
         uiTarget = transform.GetChild(2).GetComponent<SpriteRenderer>();
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+        GameObject.DontDestroyOnLoad(e);
     }
 
 
@@ -158,12 +171,13 @@ public class PlayerController : NetworkBehaviour {
 
     #region UltiActivation
 
-    [Command]
-	public void CmdSetSkillIndex(int index){ skillIndex = index; }
     public void SetSkillIndex(int index) { skillIndex = index; }
 
     public void RequestUlti(){
         Debug.Log("Player Controller: Ulti Request");
+        ulticrystalObject.SetActive(true);
+        ultiCrystalController.GenerateUltiCrystals();
+        uiControllers[1].StartCoolDown();
         CmdRequestUlti();
     }
 
@@ -174,6 +188,7 @@ public class PlayerController : NetworkBehaviour {
             Debug.Log("Player Controller Server: Ulti Request Success");
             UltiController.setUltiEnchanting(true);
             UltiController.setUltiPlayerNumber(slot);
+            
             RpcUltiActivationStatusUpdate(true);
         }
         else {
@@ -183,13 +198,13 @@ public class PlayerController : NetworkBehaviour {
 
     [ClientRpc]
     private void RpcUltiActivationStatusUpdate(bool status) {
+        Debug.Log("bufujiugan");
         if (isLocalPlayer){
             Debug.Log("Player Controller: Start Cooling Down");
             Debug.Log("skillIndex " + skillIndex);
-            if (status)
-            {
-                ultiCrystalController.GenerateUltiCrystals();
-                uiControllers[2].StartCoolDown();
+            if (status){
+                //ultiCrystalController.GenerateUltiCrystals();
+                //uiControllers[2].StartCoolDown();
             }
         }
     }

@@ -4,10 +4,10 @@ using System.Collections;
 public class StrikerSkill2 : Skill {
 
 	void Start () {
-		skillName = "stringhit";
-		int level = gameObject.GetComponent<PlayerInfo>().getLevel();
-		damage = level * level * 20;
-		heal = 0;
-		coolDown = 5;
+        skillName = "aoe";
+        int level = gameObject.GetComponent<PlayerInfo>().getLevel();
+        damage = Mathf.Pow(2, level) * 10 + 200;
+        heal = 0;
+        coolDown = 75;
 	}
 }

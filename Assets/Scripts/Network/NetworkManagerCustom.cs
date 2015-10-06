@@ -176,7 +176,7 @@ public class NetworkManagerCustom : NetworkManager {
             {
                 LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
                 NetworkConnection conn = lp.connectionToClient;
-                GameObject newPlayer = Instantiate<GameObject>(StrikerPrefab);
+                GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
                 newPlayer.GetComponent<PlayerController>().slot = lp.slot;
                 gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
                 

@@ -18,10 +18,11 @@ public class SkillController : MonoBehaviour {
 	public void selectSkill(int index){
 		if (coolDownStarted) return;
 
-        if(index <= 1)
-		    playerController.CmdSetSkillIndex (index);
-        else if (index == 2) {
-            Debug.Log("Skill Controller: Ulti Selected");
+        if(index < 1){
+            playerController.SetSkillIndex(index);
+        } else{
+            if(playerController != null)
+                Debug.Log("Skill Controller: Ulti Selected " + playerController);
             playerController.RequestUlti();
         }
         

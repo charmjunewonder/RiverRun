@@ -7,13 +7,17 @@ public class UltiCrystalController : MonoBehaviour {
     public Image[] crystalImages;
     public Sprite[] crystalSprites;
     public Sprite[] highlightedCrystalSprites;
+    public Sprite transparent;
 
     private int[] crystals;
     private PlayerController playerController;
 
-    public void setPlayerController(PlayerController plc) { playerController = plc; }
+    public GameObject arrows;
+    private bool startArrows, startBar, startCrystal;
 
-   
+    public void setPlayerController(PlayerController plc) { playerController = plc; }
+    
+
     public void AcceptCrystal(int index)
     {
         for (int i = 0; i < crystals.Length; i++) {
@@ -32,23 +36,26 @@ public class UltiCrystalController : MonoBehaviour {
 
     public void Clear() {
         for (int i = 0; i < crystals.Length; i++) {
-            crystalImages[i].sprite = null;
+            crystalImages[i].sprite = transparent;
+            crystalImages[i].color = new Color(0, 0, 0, 0);
         }
         crystals = null;
     }
 
-    public void GenerateUltiCrystals()
-    {
+    public void GenerateUltiCrystals(){
+        StartCoroutine("StartArrow");
+    }
+
+    private void GenerateUltiCrystalHelper() {
         int len = (int)Random.Range(3.0f, 5.99f);
         crystals = new int[len];
         for (int i = 0; i < len; i++)
         {
             crystals[i] = (int)Random.Range(0.0f, 3.99f);
             crystalImages[i].sprite = crystalSprites[crystals[i]];
+            crystalImages[i].color = new Color(1, 1, 1, 1);
         }
     }
-
-
 
 
     private bool CheckComplete() {
@@ -59,6 +66,24 @@ public class UltiCrystalController : MonoBehaviour {
         return true;
     }
 
+    IEnumerator StartArrow()
+    {
+        while (arrows.GetComponent<Image>().fillAmount < 1)
+        {
+            arrows.GetComponent<Image>().fillAmount += 0.04f;
+            yield return new WaitForSeconds(0.01f);
+        }
+        StartCoroutine("StartBar");
+    }
 
+    IEnumerator StartBar()
+    {
+        while (GetComponent<Image>().fillAmount < 1)
+        {
+            GetComponent<Image>().fillAmount += 0.02f;
+            yield return new WaitForSeconds(0.01f);
+        }
+        GenerateUltiCrystalHelper();
+    }
 
 }
