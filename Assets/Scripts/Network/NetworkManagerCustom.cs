@@ -179,10 +179,15 @@ public class NetworkManagerCustom : NetworkManager {
                 GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
                 newPlayer.GetComponent<PlayerController>().slot = lp.slot;
                 gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
-                
-                bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, lp.GetComponent<LobbyPlayer>().playerControllerId);
-                Debug.Log(success);
-                Destroy(lp.gameObject);
+                NetworkServer.Spawn(newPlayer);
+                short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
+                Debug.Log("playercontrollerid: " + id);
+                NetworkServer.Destroy(lp.gameObject);
+                //Destroy(lp.gameObject);
+
+                bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
+                Debug.Log("ReplacePlayerForConnection " + success);
+
             }
         }
         ServerChangeScene(selectedLevel);
@@ -271,6 +276,7 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnClientSceneChanged(NetworkConnection conn)
     {
         DisableLobbyUI();
+        //ClientScene.Ready(connetion);
     }
     #endregion
 

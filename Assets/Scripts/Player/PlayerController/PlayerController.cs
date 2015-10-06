@@ -57,11 +57,10 @@ public class PlayerController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {		
 		if(!isLocalPlayer) return;
-
         //if (e == null) {
         //    e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         //}
-        
+
         cam.enabled = true;
 
 #if UNITY_STANDALONE_WIN  
@@ -125,6 +124,17 @@ public class PlayerController : NetworkBehaviour {
 #endif
 	}
 
+    void OnLevelWasLoaded(int level)
+    {
+        if (isLocalPlayer)
+        {
+            ClientScene.Ready(connectionToServer);
+        }
+
+        if (level == 13)
+            print("Woohoo");
+
+    }
 
     private void setControllers(GameObject ui) {
 
@@ -259,4 +269,5 @@ public class PlayerController : NetworkBehaviour {
     {
         slot = s;
     }
+
 }
