@@ -25,7 +25,7 @@ public class LobbyPlayer : NetworkBehaviour {
     public Button reselectButton;
     public RectTransform panelPos;
 
-    private PlayerRole ownRole;
+    public PlayerRole ownRole;
 
     void Start()
     {

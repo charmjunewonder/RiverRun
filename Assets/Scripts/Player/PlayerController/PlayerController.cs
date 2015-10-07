@@ -8,7 +8,12 @@ public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
     public int slot;
-	[SerializeField] 
+
+    public PlayerRole role;
+    
+
+
+    [SerializeField] 
 	private Camera cam;
 
 	[SyncVar]
@@ -17,14 +22,13 @@ public class PlayerController : NetworkBehaviour {
     private int[] crystals;
 
 	private EventSystem e;
-	private SkillController[] uiControllers;
+	private SkillController[] skillControllers;
 	private PlayerInfo playerInfo;
 
 	private Skill[] skills;
     private SpriteRenderer uiTarget;
 
-    public UltiCrystalController ultiCrystalController;
-    public GameObject ulticrystalObject;
+    private UltiCrystalController ultiCrystalController;
 
 
     private ReminderController reminderController;
@@ -41,10 +45,10 @@ public class PlayerController : NetworkBehaviour {
 			
 			cam.enabled = true;
 
-			uiControllers = new SkillController[3];
+            skillControllers = new SkillController[3];
 			for(int i = 0; i <= 1; i++){
-				uiControllers[i] = GameObject.Find ("Skill" + i + "_Image").GetComponent<SkillController>();
-				uiControllers[i].setSkill(playerInfo.getSkill(i));
+                skillControllers[i] = GameObject.Find("Skill" + i + "_Image").GetComponent<SkillController>();
+                skillControllers[i].setSkill(playerInfo.getSkill(i));
 			}
 
 			skillIndex = 0;
@@ -66,7 +70,7 @@ public class PlayerController : NetworkBehaviour {
 #if UNITY_STANDALONE_WIN  
         if (Input.GetMouseButtonDown(0))
         {
-            if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
+            if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
                 Color color = uiTarget.color;
 
@@ -81,10 +85,10 @@ public class PlayerController : NetworkBehaviour {
             }
         }
         if(Input.GetMouseButtonUp(0)){
-            if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
+            if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
 
-                uiControllers[skillIndex].StartCoolDown();
+                skillControllers[skillIndex].StartCoolDown();
 
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
@@ -95,7 +99,7 @@ public class PlayerController : NetworkBehaviour {
                 Color color = uiTarget.color;
                 uiTarget.color = new Color(color.r, color.g, color.b, 0);
             }
-            else if (!e.IsPointerOverGameObject() && uiControllers[skillIndex].getCoolDownStatus())
+            else if (!e.IsPointerOverGameObject() && skillControllers[skillIndex].getCoolDownStatus())
             {
                 reminderController.setReminder("Skill is Cooling Down", 1);
             }
@@ -148,10 +152,10 @@ public class PlayerController : NetworkBehaviour {
         supportCrystalPanel.GetChild(2).GetComponent<CrystalController>().setPlayerController(this);
         supportCrystalPanel.GetChild(3).GetComponent<CrystalController>().setPlayerController(this);
 
-        ulticrystalObject = ui.transform.GetChild(3).gameObject;
+        GameObject ulticrystalObject = ui.transform.GetChild(3).gameObject;
         ultiCrystalController = ulticrystalObject.GetComponent<UltiCrystalController>();
         ultiCrystalController.setPlayerController(this);
-        ulticrystalObject.SetActive(false);
+        //ulticrystalObject.SetActive(false);
 
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
@@ -185,9 +189,6 @@ public class PlayerController : NetworkBehaviour {
 
     public void RequestUlti(){
         Debug.Log("Player Controller: Ulti Request");
-        ulticrystalObject.SetActive(true);
-        ultiCrystalController.GenerateUltiCrystals();
-        uiControllers[1].StartCoolDown();
         CmdRequestUlti();
     }
 
@@ -208,13 +209,12 @@ public class PlayerController : NetworkBehaviour {
 
     [ClientRpc]
     private void RpcUltiActivationStatusUpdate(bool status) {
-        Debug.Log("bufujiugan");
         if (isLocalPlayer){
             Debug.Log("Player Controller: Start Cooling Down");
             Debug.Log("skillIndex " + skillIndex);
             if (status){
-                //ultiCrystalController.GenerateUltiCrystals();
-                //uiControllers[2].StartCoolDown();
+                ultiCrystalController.GenerateUltiCrystals();
+                skillControllers[1].StartCoolDown();
             }
         }
     }
@@ -223,7 +223,11 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("Player Controller: Activate Ulti Success");
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         CmdDoFire(2, ray);
-        
+    }
+
+    public void RevokeUlti() {
+        Debug.Log("PlayerController RevokeUlti");
+        skillControllers[1].RevokeCoolDown();
     }
     #endregion
 

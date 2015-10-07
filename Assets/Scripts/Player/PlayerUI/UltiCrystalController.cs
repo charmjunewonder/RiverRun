@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class UltiCrystalController : MonoBehaviour {
 
     public Image[] crystalImages;
+    public GameObject cancelButton;
     public Sprite[] crystalSprites;
     public Sprite[] highlightedCrystalSprites;
     public Sprite transparent;
@@ -31,15 +32,21 @@ public class UltiCrystalController : MonoBehaviour {
             }
         }
         Clear();
-        playerController.CmdUltiFailureHandling();
     }
 
     public void Clear() {
+        playerController.CmdUltiFailureHandling();
         for (int i = 0; i < crystals.Length; i++) {
             crystalImages[i].sprite = transparent;
             crystalImages[i].color = new Color(0, 0, 0, 0);
         }
         crystals = null;
+        StartCoroutine("CloseBar");
+    }
+
+    public void Revoke() {
+        Clear();
+        playerController.RevokeUlti();
     }
 
     public void GenerateUltiCrystals(){
@@ -66,8 +73,7 @@ public class UltiCrystalController : MonoBehaviour {
         return true;
     }
 
-    IEnumerator StartArrow()
-    {
+    IEnumerator StartArrow(){
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
             arrows.GetComponent<Image>().fillAmount += 0.04f;
@@ -76,14 +82,29 @@ public class UltiCrystalController : MonoBehaviour {
         StartCoroutine("StartBar");
     }
 
-    IEnumerator StartBar()
-    {
+    IEnumerator StartBar(){
         while (GetComponent<Image>().fillAmount < 1)
         {
             GetComponent<Image>().fillAmount += 0.02f;
             yield return new WaitForSeconds(0.01f);
         }
         GenerateUltiCrystalHelper();
+        cancelButton.SetActive(true);
     }
 
+    IEnumerator CloseBar() {
+        cancelButton.SetActive(false);
+        while (GetComponent<Image>().fillAmount > 0) {
+            GetComponent<Image>().fillAmount -= 0.02f;
+            yield return new WaitForSeconds(0.01f);
+        }
+        StartCoroutine("CloseArrow");
+    }
+
+    IEnumerator CloseArrow() {
+        while (arrows.GetComponent<Image>().fillAmount > 0) {
+            arrows.GetComponent<Image>().fillAmount -= 0.04f;
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
 }

@@ -21,8 +21,6 @@ public class SkillController : MonoBehaviour {
         if(index < 1){
             playerController.SetSkillIndex(index);
         } else{
-            if(playerController != null)
-                Debug.Log("Skill Controller: Ulti Selected " + playerController);
             playerController.RequestUlti();
         }
         
@@ -35,6 +33,14 @@ public class SkillController : MonoBehaviour {
 		coolDownImage.fillAmount = 1;
 		coolDownStarted = coolDownTime == 0 ? false : true;
 	}
+
+    public void RevokeCoolDown() {
+        Debug.Log("SkillController RevokeCoolDown");
+        coolDownTime = 0;
+        coolDownStarted = false;
+        coolDownImage.fillAmount = 0;
+        coolDownText.text = "";
+    }
 
 	private void coolingDown(){
 		coolDownTimer -= Time.deltaTime;

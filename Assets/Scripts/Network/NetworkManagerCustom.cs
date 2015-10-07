@@ -190,7 +190,9 @@ public class NetworkManagerCustom : NetworkManager {
                 NetworkServer.Spawn(newPlayer);
                 short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
                 Debug.Log("playercontrollerid: " + id);
+                newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
                 NetworkServer.Destroy(lp.gameObject);
+                
                 //Destroy(lp.gameObject);
 
                 bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
