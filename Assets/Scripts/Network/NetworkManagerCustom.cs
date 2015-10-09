@@ -187,7 +187,7 @@ public class NetworkManagerCustom : NetworkManager {
                 GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
                 newPlayer.GetComponent<PlayerController>().slot = lp.slot;
                 gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
-                NetworkServer.Spawn(newPlayer);
+                //NetworkServer.Spawn(newPlayer);
                 short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
                 Debug.Log("playercontrollerid: " + id);
                 newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
@@ -290,6 +290,7 @@ public class NetworkManagerCustom : NetworkManager {
                 {
                     if (gameplayerControllers[i] != null)
                     {
+                        // Game player to Disconnected Player
                         PlayerController pc = (PlayerController)gameplayerControllers[i];
                         int pcconnid = pc.connectionToClient.connectionId;
                         if (pcconnid == conn.connectionId)
@@ -335,11 +336,19 @@ public class NetworkManagerCustom : NetworkManager {
                     {
                         DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[k];
                         int dpcconnid = dpc.connId;
+                        // Disconnected player to Game Player
                         if (dpcconnid == conn.connectionId)
                         {
                             isExistingPlayer = true;
                             Debug.Log(k + " existing " + dpcconnid);
                             disconnectedPlayerControllers[k] = null;
+
+                            GameObject gamePlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
+                            gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
+                            gamePlayer.GetComponent<PlayerController>().slot = k;
+                            bool success = NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, 0);
+
+                            Destroy(dpc.gameObject);
                         }
                     }
                 }
@@ -360,7 +369,10 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientDisconnect " + conn.connectionId);
 
         base.OnClientDisconnect(conn);
+        //return back to lobby
         ChangeTo(mainMenuPanel);
+        DisableGameUI();
+        currentMode = NetworkMode.Lobby;
     }
 
     public override void OnClientError(NetworkConnection conn, int errorCode)
@@ -369,6 +381,8 @@ public class NetworkManagerCustom : NetworkManager {
 
         ChangeTo(mainMenuPanel);
         infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
+        DisableGameUI();
+        currentMode = NetworkMode.Lobby;
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -413,6 +427,15 @@ public class NetworkManagerCustom : NetworkManager {
         for(int i = 0; i < maxPlayers; i++)
         {
             lobbyPlayerArray.Add(null);
+        }
+    }
+
+    private void DisableGameUI()
+    {
+        GameObject[] gameUIs = GameObject.FindGameObjectsWithTag("GameUI");
+        foreach (GameObject go in gameUIs)
+        {
+            Destroy(go);
         }
     }
 }

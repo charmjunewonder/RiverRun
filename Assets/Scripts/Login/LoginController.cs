@@ -49,8 +49,14 @@ public class LoginController : MonoBehaviour {
 		loginCanvas.SetActive(false);
 		signupController.SetActive(true);
 	}
-	
-	IEnumerator LoginData (string name, string pw, string serverUrl)
+
+    public void OnMagicPressed()
+    {
+        Application.LoadLevel("Lobby");
+
+    }
+
+    IEnumerator LoginData (string name, string pw, string serverUrl)
 	{
 		WWWForm form = new WWWForm ();
 		
