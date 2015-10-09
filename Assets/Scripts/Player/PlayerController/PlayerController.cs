@@ -9,9 +9,10 @@ public class PlayerController : NetworkBehaviour {
 	public GameObject uiPrefab;
     public int slot;
 
+    [SyncVar]
     public PlayerRole role;
-    
 
+    public Sprite[] skillIcons;
 
     [SerializeField] 
 	private Camera cam;
@@ -141,10 +142,12 @@ public class PlayerController : NetworkBehaviour {
     }
 
     private void setControllers(GameObject ui) {
-
+        Debug.Log(role);
         Transform skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
+        skillPanel.GetChild(0).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[0] : skillIcons[2];
         skillPanel.GetChild(1).GetComponent<SkillController>().setPlayerController(this);
+        skillPanel.GetChild(1).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[1] : skillIcons[3];
 
         Transform supportCrystalPanel = ui.transform.GetChild(2);
         supportCrystalPanel.GetChild(0).GetComponent<CrystalController>().setPlayerController(this);

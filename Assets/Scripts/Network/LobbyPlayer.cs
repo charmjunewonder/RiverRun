@@ -93,7 +93,7 @@ public class LobbyPlayer : NetworkBehaviour {
     [ClientRpc]
     public void RpcChooseRole(PlayerRole r)
     {
-        ownRole = PlayerRole.Striker;
+        ownRole = r;
         ChooseRole(r);
         //OnGUIReady();
         if (isLocalPlayer)
