@@ -4,26 +4,10 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 
 public class LoginController : MonoBehaviour {
-	public GameObject loginCanvas;
-	public GameObject signupController;
 		
 	public InputField uName;
 	public InputField password;
 	public Text displayMessage;
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	
-	void OnEnable() {		
-		loginCanvas.SetActive(true);
-		signupController.SetActive(false);
-		
-	}
 	
 	public void OnLoginPressed(){
 		string serverUrl = ServerUtils.urlHeader + ServerUtils.domainName + "/login.php";
@@ -43,11 +27,6 @@ public class LoginController : MonoBehaviour {
 		if(isValid){			
 			StartCoroutine (LoginData (name, pswd, serverUrl));
 		}
-	}
-	
-	public void OnSignupPressed(){
-		loginCanvas.SetActive(false);
-		signupController.SetActive(true);
 	}
 
     public void OnMagicPressed()
