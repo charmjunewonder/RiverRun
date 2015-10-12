@@ -19,23 +19,36 @@ public class LobbyPlayer : NetworkBehaviour {
     [SyncVar]
     public int slot = -1;
 
+    public Canvas lobbyPlayerCanvas;
     public Text nameText;
     public Button[] rolesButtons;
     public Text roleText;
     public Button reselectButton;
     public RectTransform panelPos;
-
     public PlayerRole ownRole;
 
     void Start()
     {
         panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 0, 0);
+        if(isLocalPlayer)
+            NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
     }
 
     private float GetLobbyPlayerPos(int slot)
     {
         //return -(800 / 2) + 800 / 5 * (slot + 1);
         return -400 + 160 * (slot + 1);
+    }
+
+    public void ToggleVisibility(bool visible)
+    {
+        lobbyPlayerCanvas.enabled = visible;
+    }
+    
+    [Command]
+    public void CmdSetLevelWithSlot(LevelEnum le)
+    {
+        NetworkManagerCustom.SingletonNM.SetLevelWithSlot(le, slot);
     }
 
     public override void OnStartClient()
@@ -100,6 +113,15 @@ public class LobbyPlayer : NetworkBehaviour {
         {
             //var lobby = GuiLobbyManager.singleton as GuiLobbyManager;
             //lobby.ownRole = Roles.Striker;
+        }
+    }
+
+    [ClientRpc]
+    public void RpcChangeToLobby()
+    {
+        if (isLocalPlayer)
+        {
+            NetworkManagerCustom.SingletonNM.ChangeToLobbyPanelUtil();
         }
     }
 

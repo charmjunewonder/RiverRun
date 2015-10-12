@@ -17,22 +17,21 @@ public class NetworkManagerCustom : NetworkManager {
     public NetworkMode currentMode { get; set; }
 
     static public NetworkManagerCustom SingletonNM { get; set;}
-
+    
     #region Lobby Variable
 
     public int maxPlayers = 4;
     public int minPlayers = 1;
 
-    public LobbyTopPanel topPanel;
+    public LobbyConnectPanel topPanel;
 
-    public RectTransform mainMenuPanel;
+    public RectTransform connectPanel;
+    public RectTransform levelPanel;
     public RectTransform lobbyPanel;
 
     public LobbyInfoPanel infoPanel;
 
     protected RectTransform currentPanel;
-
-    public Button backButton;
 
     public Text statusInfo;
     public Text hostInfo;
@@ -40,7 +39,7 @@ public class NetworkManagerCustom : NetworkManager {
     #endregion
 
     private string selectedLevel = "Level1";
-
+    private ArrayList levels;
     void Start()
     {
         SingletonNM = this;
@@ -48,24 +47,23 @@ public class NetworkManagerCustom : NetworkManager {
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
         disconnectedPlayerControllers = new ArrayList(maxPlayers);
+        levels = new ArrayList(maxPlayers);
         for (int i = 0; i < maxPlayers; i++)
         {
             lobbyPlayerArray.Add(null);
             gameplayerControllers.Add(null);
             disconnectedPlayerControllers.Add(null);
+            levels.Add(LevelEnum.Unselected);
         }
 
         lobbySystemStartSetting();
-
-
     }
 
     #region Lobby
     private void lobbySystemStartSetting()
     {
-        backButton.gameObject.SetActive(false);
         SetServerInfo("Offline", "None");
-        currentPanel = mainMenuPanel;
+        currentPanel = connectPanel;
     }
 
 
@@ -83,13 +81,8 @@ public class NetworkManagerCustom : NetworkManager {
 
         currentPanel = newPanel;
 
-        if (currentPanel != mainMenuPanel)
+        if (currentPanel == connectPanel)
         {
-            backButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            backButton.gameObject.SetActive(false);
             SetServerInfo("Offline", "None");
         }
     }
@@ -117,28 +110,28 @@ public class NetworkManagerCustom : NetworkManager {
     public void SimpleBackClbk()
     {
         Debug.Log("SimpleBackClbk");
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
     }
 
     public void StopHostClbk()
     {
         Debug.Log("StopHostClbk");
         StopHost();
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
     }
 
     public void StopClientClbk()
     {
         Debug.Log("StopClientClbk");
         StopClient();
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
     }
 
     public void StopServerClbk()
     {
         Debug.Log("StopServerClbk");
         StopServer();
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
     }
 
     public void StopGameClbk()
@@ -171,6 +164,60 @@ public class NetworkManagerCustom : NetworkManager {
             }
             yield return new WaitForSeconds(0.2f);
         }
+    }
+
+    IEnumerator CheckLevelSelect()
+    {
+        Debug.Log("CheckLevelSelect");
+        while (true)
+        {
+            LevelEnum firstLevel = LevelEnum.Easy;
+            bool isAllSame = false;
+            bool isFirst = true;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                if (lobbyPlayerArray[i] != null)
+                {
+                    LevelEnum curr = (LevelEnum)levels[i];
+                    if (isFirst) {
+                        isAllSame = true;
+                        firstLevel = curr;
+                        Debug.Log("Level Select Same  " + firstLevel.ToString());
+                        isFirst = false;
+                        isAllSame &= (firstLevel != LevelEnum.Unselected);
+                    }
+                    else
+                    {
+                        isAllSame &= (firstLevel == curr);
+                    }
+                }
+            }
+            if (isAllSame)
+            {
+                Debug.Log("Level Select Same");
+                ChangeToLobbyPanel();
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    private void ChangeToLobbyPanel()
+    {
+        StopCoroutine("CheckLevelSelect");
+        ChangeToLobbyPanelUtil();
+        foreach (LobbyPlayer lp in lobbyPlayerArray)
+        {
+            if (lp != null)
+            {
+                lp.RpcChangeToLobby();
+            }
+        }
+    }
+
+    public void ChangeToLobbyPanelUtil()
+    {
+        ChangeTo(lobbyPanel);
+        ChangeVisibilityOfLobbyPlayer(true);
     }
 
     private void ChangeLobbyToGameScene()
@@ -213,9 +260,18 @@ public class NetworkManagerCustom : NetworkManager {
     private void DisableLobbyUI()
     {
         topPanel.gameObject.SetActive(false);
-        mainMenuPanel.gameObject.SetActive(false);
+        connectPanel.gameObject.SetActive(false);
         lobbyPanel.gameObject.SetActive(false);
         infoPanel.gameObject.SetActive(false);
+    }
+
+    public void SetLevelWithSlot(LevelEnum le, int newSlot)
+    {
+        if(newSlot >=0 && newSlot < maxPlayers)
+        {
+            Debug.Log("Set Level " + le.ToString() + " " + newSlot);
+            levels[newSlot] = le;
+        }
     }
     #endregion
 
@@ -225,7 +281,8 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("OnStartServer");
         currentMode = NetworkMode.Lobby;
-        StartCoroutine("CheckLobbyReady");
+        StartCoroutine("CheckLevelSelect");
+        //StartCoroutine("CheckLobbyReady");
     }
 
     //This hook is called when a server is stopped - including when a host is stopped.
@@ -325,7 +382,9 @@ public class NetworkManagerCustom : NetworkManager {
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
                 lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
+                //player.GetComponent<LobbyPlayer>().ToggleVisibility(false);
                 NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+
                 break;
             case NetworkMode.Game:
                 Debug.Log("OnServerAddPlayer Game ");
@@ -370,7 +429,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         base.OnClientDisconnect(conn);
         //return back to lobby
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
         DisableGameUI();
         currentMode = NetworkMode.Lobby;
     }
@@ -379,7 +438,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("OnClientError " + conn.connectionId);
 
-        ChangeTo(mainMenuPanel);
+        ChangeTo(connectPanel);
         infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
         DisableGameUI();
         currentMode = NetworkMode.Lobby;
@@ -395,7 +454,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         if (!NetworkServer.active)
         {//only to do on pure client (not self hosting client)
-            ChangeTo(lobbyPanel);
+            ChangeTo(levelPanel);
             backDelegate = StopClientClbk;
             SetServerInfo("Client", networkAddress);
         }
@@ -415,7 +474,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         base.OnStartHost();
 
-        ChangeTo(lobbyPanel);
+        ChangeTo(levelPanel);
         backDelegate = StopHostClbk;
         SetServerInfo("Hosting", networkAddress);
     }
@@ -436,6 +495,18 @@ public class NetworkManagerCustom : NetworkManager {
         foreach (GameObject go in gameUIs)
         {
             Destroy(go);
+        }
+    }
+
+    private void ChangeVisibilityOfLobbyPlayer(bool visible)
+    {
+        GameObject[] lps = GameObject.FindGameObjectsWithTag("LobbyPlayerUI");
+        foreach(GameObject lp in lps)
+        {
+            if(lp != null)
+            {
+                lp.GetComponent<LobbyPlayer>().ToggleVisibility(visible);
+            }
         }
     }
 }
