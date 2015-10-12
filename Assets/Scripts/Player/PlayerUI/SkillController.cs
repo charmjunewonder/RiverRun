@@ -42,7 +42,7 @@ public class SkillController : MonoBehaviour {
         coolDownText.text = "";
     }
 
-	private void coolingDown(){
+	protected void coolingDown(){
 		coolDownTimer -= Time.deltaTime;
 		if(coolDownTimer <= 0.0f){
 			coolDownStarted = false;

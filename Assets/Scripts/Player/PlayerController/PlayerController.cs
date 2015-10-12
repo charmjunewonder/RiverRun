@@ -15,24 +15,24 @@ public class PlayerController : NetworkBehaviour {
     public Sprite[] skillIcons;
 
     [SerializeField] 
-	private Camera cam;
+	protected Camera cam;
 
 	[SyncVar]
-	private int skillIndex;
+	protected int skillIndex;
 
-    private int[] crystals;
+    protected int[] crystals;
 
-	private EventSystem e;
-	private SkillController[] skillControllers;
-	private PlayerInfo playerInfo;
+    protected EventSystem e;
+    protected SkillController[] skillControllers;
+    protected PlayerInfo playerInfo;
 
-	private Skill[] skills;
+    protected Skill[] skills;
     private SpriteRenderer uiTarget;
 
-    private UltiCrystalController ultiCrystalController;
+    protected UltiCrystalController ultiCrystalController;
 
 
-    private ReminderController reminderController;
+    protected ReminderController reminderController;
 
 	void Start () {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
@@ -42,7 +42,7 @@ public class PlayerController : NetworkBehaviour {
 			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity);
             GameObject.DontDestroyOnLoad(ui);
 
-            setControllers(ui);
+            setStrikerDefenderControllers(ui);
 			
 			cam.enabled = true;
 
@@ -62,9 +62,7 @@ public class PlayerController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {		
 		if(!isLocalPlayer) return;
-        //if (e == null) {
-        //    e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-        //}
+
 
         cam.enabled = true;
 
@@ -141,7 +139,7 @@ public class PlayerController : NetworkBehaviour {
 
     }
 
-    private void setControllers(GameObject ui) {
+    private void setStrikerDefenderControllers(GameObject ui) {
         Debug.Log(role);
         Transform skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
@@ -168,6 +166,7 @@ public class PlayerController : NetworkBehaviour {
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);
     }
+
 
 
     #region Operation

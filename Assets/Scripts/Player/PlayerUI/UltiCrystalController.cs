@@ -14,7 +14,6 @@ public class UltiCrystalController : MonoBehaviour {
     private PlayerController playerController;
 
     public GameObject arrows;
-    private bool startArrows, startBar, startCrystal;
 
     public void setPlayerController(PlayerController plc) { playerController = plc; }
     
