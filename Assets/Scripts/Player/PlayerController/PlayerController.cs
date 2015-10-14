@@ -62,9 +62,7 @@ public class PlayerController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {		
 		if(!isLocalPlayer) return;
-
-
-        cam.enabled = true;
+        if (role == PlayerRole.Engineer) return;
 
 #if UNITY_STANDALONE_WIN  
         if (Input.GetMouseButtonDown(0))
@@ -158,7 +156,7 @@ public class PlayerController : NetworkBehaviour {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
-        uiTarget = transform.GetChild(2).GetComponent<SpriteRenderer>();
+        uiTarget = transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);

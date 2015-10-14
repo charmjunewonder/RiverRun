@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EngiSkill1Controller : MonoBehaviour {
+public class EngiSkill1Controller : SkillController {
 
     public CrystalProductionController crystalProductionPanel; 
 

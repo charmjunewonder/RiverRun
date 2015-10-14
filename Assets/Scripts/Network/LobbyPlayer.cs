@@ -82,6 +82,7 @@ public class LobbyPlayer : NetworkBehaviour {
 
     public void OnChooseEngineer()
     {
+        //Debug.Log("OnChooseEngineer");
         CmdChooseRole(PlayerRole.Engineer);
 
     }
@@ -97,6 +98,8 @@ public class LobbyPlayer : NetworkBehaviour {
     [Command]
     public void CmdChooseRole(PlayerRole r)
     {
+        //Debug.Log("CmdChooseRole");
+
         ownRole = r;
         ChooseRole(r);
         RpcChooseRole(r);
@@ -106,6 +109,7 @@ public class LobbyPlayer : NetworkBehaviour {
     [ClientRpc]
     public void RpcChooseRole(PlayerRole r)
     {
+        //Debug.Log("RpcChooseRole");
         ownRole = r;
         ChooseRole(r);
         //OnGUIReady();

@@ -37,6 +37,7 @@ public class EngineerController : PlayerController {
         Transform skillPanel = ui.transform.GetChild(1);
 
         skillPanel.GetChild(0).GetComponent<EngiSkill0Controller>().setPlayerController(this);
+        skillPanel.GetChild(1).GetComponent<EngiSkill1Controller>().setPlayerController(this);
         skillPanel.GetChild(2).GetComponent<SkillController>().setPlayerController(this);
 
         Transform supportCrystalPanel = ui.transform.GetChild(2);

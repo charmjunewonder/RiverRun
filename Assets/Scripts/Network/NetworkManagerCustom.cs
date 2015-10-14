@@ -9,6 +9,7 @@ public enum NetworkMode { Lobby, Game };
 public class NetworkManagerCustom : NetworkManager {
     public GameObject LobbyPlayerPrefab;
     public GameObject StrikerPrefab;
+    public GameObject EngineerPrefab;
     public GameObject DisconnectedPlayerPrefab;
 
     public ArrayList gameplayerControllers { get; set; }
@@ -147,6 +148,8 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("CheckLobbyReady");
         while (true)
         {
+            Debug.Log("CheckLobbyReady inside");
+
             int count = 0;
             bool isAllReady = true;
             for (int i = 0; i < maxPlayers; i++)
@@ -160,6 +163,8 @@ public class NetworkManagerCustom : NetworkManager {
             }
             if (count >= minPlayers && isAllReady)
             {
+                Debug.Log("CheckLobbyReady ready");
+
                 ChangeLobbyToGameScene();
             }
             yield return new WaitForSeconds(0.2f);
@@ -195,6 +200,7 @@ public class NetworkManagerCustom : NetworkManager {
             if (isAllSame)
             {
                 Debug.Log("Level Select Same");
+                StartCoroutine("CheckLobbyReady");
                 ChangeToLobbyPanel();
             }
             yield return new WaitForSeconds(0.2f);
@@ -222,6 +228,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     private void ChangeLobbyToGameScene()
     {
+        Debug.Log("ChangeLobbyToGameScene");
         StopCoroutine("CheckLobbyReady");
         DisableLobbyUI();
         //RpcSetupGameScene();
@@ -231,19 +238,37 @@ public class NetworkManagerCustom : NetworkManager {
             {
                 LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
                 NetworkConnection conn = lp.connectionToClient;
-                GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
-                newPlayer.GetComponent<PlayerController>().slot = lp.slot;
-                gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
-                //NetworkServer.Spawn(newPlayer);
-                short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
-                Debug.Log("playercontrollerid: " + id);
-                newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
-                NetworkServer.Destroy(lp.gameObject);
-                
-                //Destroy(lp.gameObject);
+                if (lp.ownRole == PlayerRole.Engineer){
+                    GameObject newPlayer = (GameObject)Instantiate(EngineerPrefab, Vector3.zero, Quaternion.identity);
+                    newPlayer.GetComponent<EngineerController>().slot = lp.slot;
+                    gameplayerControllers[i] = newPlayer.GetComponent<EngineerController>();
+                    //NetworkServer.Spawn(newPlayer);
+                    short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
+                    //Debug.Log("playercontrollerid: " + id);
+                    newPlayer.GetComponent<EngineerController>().role = lp.ownRole;
+                    NetworkServer.Destroy(lp.gameObject);
 
-                bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
-                Debug.Log("ReplacePlayerForConnection " + success);
+                    //Destroy(lp.gameObject);
+
+                    bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
+                    Debug.Log("ReplacePlayerForConnection " + success);
+                }
+                else {
+                    GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
+                    newPlayer.GetComponent<PlayerController>().slot = lp.slot;
+                    gameplayerControllers[i] = newPlayer.GetComponent<PlayerController>();
+                    //NetworkServer.Spawn(newPlayer);
+                    short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
+                    //Debug.Log("playercontrollerid: " + id);
+                    newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
+                    NetworkServer.Destroy(lp.gameObject);
+
+                    //Destroy(lp.gameObject);
+
+                    bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
+                    Debug.Log("ReplacePlayerForConnection " + success);
+                }
+                
 
             }
         }
