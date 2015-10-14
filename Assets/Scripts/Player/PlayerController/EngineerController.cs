@@ -31,13 +31,6 @@ public class EngineerController : PlayerController {
 
         }
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-
 
     private void setEngineerController(GameObject ui)
     {
@@ -47,9 +40,8 @@ public class EngineerController : PlayerController {
         skillPanel.GetChild(2).GetComponent<SkillController>().setPlayerController(this);
 
         Transform supportCrystalPanel = ui.transform.GetChild(2);
-        for (int i = 0; i < 4; i++) {
-            supportCrystalPanel.GetChild(i).GetComponent<CrystalController>().setPlayerController(this);
-        }
+        mainCrystalController = supportCrystalPanel.GetComponent<MainCrystalController>();
+        mainCrystalController.SetPlayerController(this);
 
         GameObject ulticrystalObject = ui.transform.GetChild(3).gameObject;
         ultiCrystalController = ulticrystalObject.GetComponent<UltiCrystalController>();
@@ -64,10 +56,12 @@ public class EngineerController : PlayerController {
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);
-
-        
     }
 
+    [Command]
+    public void CmdAssignCrystal(int slot, int crystal) {
+        PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
 
+    }
 
 }

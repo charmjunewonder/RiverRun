@@ -30,7 +30,7 @@ public class PlayerController : NetworkBehaviour {
     private SpriteRenderer uiTarget;
 
     protected UltiCrystalController ultiCrystalController;
-
+    protected MainCrystalController mainCrystalController;
 
     protected ReminderController reminderController;
 
@@ -148,15 +148,12 @@ public class PlayerController : NetworkBehaviour {
         skillPanel.GetChild(1).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[1] : skillIcons[3];
 
         Transform supportCrystalPanel = ui.transform.GetChild(2);
-        supportCrystalPanel.GetChild(0).GetComponent<CrystalController>().setPlayerController(this);
-        supportCrystalPanel.GetChild(1).GetComponent<CrystalController>().setPlayerController(this);
-        supportCrystalPanel.GetChild(2).GetComponent<CrystalController>().setPlayerController(this);
-        supportCrystalPanel.GetChild(3).GetComponent<CrystalController>().setPlayerController(this);
+        mainCrystalController = supportCrystalPanel.GetComponent<MainCrystalController>();
+        mainCrystalController.SetPlayerController(this);
 
         GameObject ulticrystalObject = ui.transform.GetChild(3).gameObject;
         ultiCrystalController = ulticrystalObject.GetComponent<UltiCrystalController>();
         ultiCrystalController.setPlayerController(this);
-        //ulticrystalObject.SetActive(false);
 
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
@@ -268,6 +265,15 @@ public class PlayerController : NetworkBehaviour {
         UltiController.setUltiEnchanting(false);
     }
 
+
+    #endregion
+
+    #region Engineer
+
+    [ClientRpc]
+    public void RpcAcceptCrystalFromEngineer(int crys_num) {
+        mainCrystalController.AcceptCrystal(crys_num);
+    }
 
     #endregion
 

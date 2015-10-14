@@ -22,6 +22,8 @@ public class CrystalProductionController : MonoBehaviour {
         crystalSelected = index;
     }
 
+    public int GetCrystal() { return crystalSelected; }
+
     #region Animation
     public void TriggerAnimation() {
         if(!isFinished())
@@ -31,8 +33,10 @@ public class CrystalProductionController : MonoBehaviour {
     public void Revoke() {
         StopAllCoroutines();
         for (int i = 0; i < 5; i++) {
-            Image subImage = transform.GetChild(i).GetComponent<Image>();
-            subImage.raycastTarget = false;
+            Image image = transform.GetChild(i).GetComponent<Image>();
+            image.raycastTarget = false;
+            image.color = new Color(1, 1, 1, 0);
+
         }
         crystalSelected = -1;
         StartCoroutine("CloseBar");
@@ -66,6 +70,7 @@ public class CrystalProductionController : MonoBehaviour {
             Image image = transform.GetChild(i).GetComponent<Image>();
             image.fillAmount = 1;
             image.raycastTarget = true;
+            image.color = new Color(1, 1, 1, 1);
         }
     }
 

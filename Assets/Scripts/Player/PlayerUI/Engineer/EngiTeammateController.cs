@@ -7,7 +7,6 @@ public class EngiTeammateController : MonoBehaviour {
     public EngiSkill0Controller skill0Controller;
     public CrystalProductionController crystalProductionController;
 
-
     private EngineerController engineerController;
 
     public void Highlight() {
