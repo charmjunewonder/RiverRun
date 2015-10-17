@@ -20,18 +20,21 @@ public class LobbyPlayer : NetworkBehaviour {
     public int slot = -1;
 
     public Canvas lobbyPlayerCanvas;
+    public Image lobbyPanel;
     public Text nameText;
     public Button[] rolesButtons;
-    public Text roleText;
     public Button reselectButton;
     public RectTransform panelPos;
     public PlayerRole ownRole;
-
+    public GameObject lobbySelect;
+    public Sprite strikerSprite, engineerSprite, defenderSprite;
     void Start()
     {
         panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 0, 0);
-        if(isLocalPlayer)
+        if (isLocalPlayer)
+        {
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
+        }
     }
 
     private float GetLobbyPlayerPos(int slot)
@@ -43,8 +46,12 @@ public class LobbyPlayer : NetworkBehaviour {
     public void ToggleVisibility(bool visible)
     {
         lobbyPlayerCanvas.enabled = visible;
+        if (isLocalPlayer)
+        {
+            lobbySelect.SetActive(true);
+        }
     }
-    
+
     [Command]
     public void CmdSetLevelWithSlot(LevelEnum le)
     {
@@ -131,12 +138,22 @@ public class LobbyPlayer : NetworkBehaviour {
 
     private void ChooseRole(PlayerRole r)
     {
-        foreach (Button b in rolesButtons)
+        //foreach (Button b in rolesButtons)
+        //{
+        //    b.gameObject.SetActive(false);
+        //}
+        switch (r)
         {
-            b.gameObject.SetActive(false);
+            case PlayerRole.Defender:
+                lobbyPanel.sprite = defenderSprite;
+                break;
+            case PlayerRole.Striker:
+                lobbyPanel.sprite = strikerSprite;
+                break;
+            case PlayerRole.Engineer:
+                lobbyPanel.sprite = engineerSprite;
+                break;
         }
-        roleText.gameObject.SetActive(true);
-        roleText.text = r.ToString();
     }
 
     [Command]
@@ -150,4 +167,5 @@ public class LobbyPlayer : NetworkBehaviour {
     {
         isReady = true;
     }
+
 }

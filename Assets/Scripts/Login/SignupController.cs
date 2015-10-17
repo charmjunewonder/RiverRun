@@ -6,41 +6,54 @@ using UnityEngine.UI;
 public class SignupController : MonoBehaviour {
 	
 	public InputField uName;
-	public InputField password;
-	public InputField password2;
-	public Text displayMessage;
-	
-	public void OnSignupPressed(){
+    public InputField uName2;
+    public Button signupButton;
+    public Image signupImage;
+    public Text displayMessage;
+
+    public void OnSignupShowUp()
+    {
+        StartCoroutine(showSignupImage());
+    }
+
+    IEnumerator showSignupImage()
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            signupImage.fillAmount += 0.02f;
+            yield return new WaitForSeconds(0.02f);
+        }
+        uName.gameObject.SetActive(true);
+        uName2.gameObject.SetActive(true);
+        signupButton.gameObject.SetActive(true);
+    }
+
+    public void OnSignupPressed(){
 		string serverUrl = ServerUtils.urlHeader + ServerUtils.domainName + "/register.php";
 		string name = uName.text;
-		string pswd = password.text;
-		string pswd2 = password2.text;
+		string name2 = uName2.text;
 		bool isValid = true;
 		
 		if(!ServerUtils.CheckUsername(name))
 		{
 			displayMessage.text = "User Name Invalid";
 			isValid = false;
-		} else if(!ServerUtils.CheckPass(pswd)){
-			displayMessage.text = "Password Invalid, start with letter and has length 4-17.";
-			isValid = false;
-		} else if(!pswd.Equals(pswd2)){
+		} else if(!name.Equals(name2)){
 			displayMessage.text = "Two Password is Different";
 			isValid = false;
 		}
 		
 		if(isValid){
 			
-			StartCoroutine (RegisterData (name, pswd, serverUrl));
+			StartCoroutine (RegisterData (name, serverUrl));
 		}
 	}
 	
-	IEnumerator RegisterData (string name, string pwd, string serverUrl)
+	IEnumerator RegisterData (string name, string serverUrl)
 	{
 		WWWForm form = new WWWForm ();
 		
 		form.AddField ("pname", name);
-		form.AddField ("ppwd", pwd);
 		
 		// Create a download object
 		WWW download = new WWW (serverUrl, form);

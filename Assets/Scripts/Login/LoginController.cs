@@ -6,26 +6,39 @@ using UnityEngine.UI;
 public class LoginController : MonoBehaviour {
 		
 	public InputField uName;
-	public InputField password;
+    public Button loginButton;
+    public Image loginImage;
 	public Text displayMessage;
-	
-	public void OnLoginPressed(){
+
+    public void OnLoginShowUp()
+    {
+        StartCoroutine(showLoginImage());
+    }
+
+    IEnumerator showLoginImage()
+    {
+        for(int i = 0; i < 50; i++)
+        {
+            loginImage.fillAmount += 0.02f;
+            yield return new WaitForSeconds(0.02f);
+        }
+        uName.gameObject.SetActive(true);
+        loginButton.gameObject.SetActive(true);
+    }
+
+    public void OnLoginPressed(){
 		string serverUrl = ServerUtils.urlHeader + ServerUtils.domainName + "/login.php";
 		string name = uName.text;
-		string pswd = password.text;
 		bool isValid = true;
 		
 		if(!ServerUtils.CheckUsername(name))
 		{
 			displayMessage.text = "User Name Invalid";
 			isValid = false;
-		} else if(!ServerUtils.CheckPass(pswd)){
-			displayMessage.text = "Password Invalid, start with letter and has length 4-17.";
-			isValid = false;
-		} 
+		}
 		
 		if(isValid){			
-			StartCoroutine (LoginData (name, pswd, serverUrl));
+			StartCoroutine (LoginData (name, serverUrl));
 		}
 	}
 
@@ -35,14 +48,12 @@ public class LoginController : MonoBehaviour {
 
     }
 
-    IEnumerator LoginData (string name, string pw, string serverUrl)
+    IEnumerator LoginData (string name, string serverUrl)
 	{
 		WWWForm form = new WWWForm ();
 		
 		form.AddField ("pname", name);
-		
-		form.AddField ("ppwd", pw);
-		
+				
 		// Create a download object
 		WWW download = new WWW (serverUrl, form);
 		Debug.Log (serverUrl);
