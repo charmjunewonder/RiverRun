@@ -27,7 +27,6 @@ public class PlayerController : NetworkBehaviour {
     protected PlayerInfo playerInfo;
 
     protected Skill[] skills;
-    private SpriteRenderer uiTarget;
 
     protected UltiCrystalController ultiCrystalController;
     protected MainCrystalController mainCrystalController;
@@ -69,17 +68,14 @@ public class PlayerController : NetworkBehaviour {
         {
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-                Color color = uiTarget.color;
+                //Color color = uiTarget.color;
 
-                uiTarget.color = new Color(color.r, color.g, color.b, 1);
+                //uiTarget.color = new Color(color.r, color.g, color.b, 1);
             }
         }
         if (Input.GetMouseButton(0))
         {
-            if (uiTarget.color.a != 0)
-            {
-                uiTarget.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, uiTarget.transform.position.z);
-            }
+        
         }
         if(Input.GetMouseButtonUp(0)){
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
@@ -93,8 +89,6 @@ public class PlayerController : NetworkBehaviour {
 
                 CmdDoFire(skillIndex, ray);
 
-                Color color = uiTarget.color;
-                uiTarget.color = new Color(color.r, color.g, color.b, 0);
             }
             else if (!e.IsPointerOverGameObject() && skillControllers[skillIndex].getCoolDownStatus())
             {
@@ -115,7 +109,6 @@ public class PlayerController : NetworkBehaviour {
                 CmdDoFire(skillIndex, ray);
 
                 Color color = uiTarget.color;
-                uiTarget.color = new Color(color.r, color.g, color.b, 0);
             }
             else if (!e.IsPointerOverGameObject() && uiControllers[skillIndex].getCoolDownStatus())
             {
@@ -134,7 +127,6 @@ public class PlayerController : NetworkBehaviour {
 
         if (level == 13)
             print("Woohoo");
-
     }
 
     private void setStrikerDefenderControllers(GameObject ui) {
@@ -155,8 +147,6 @@ public class PlayerController : NetworkBehaviour {
 
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
-
-        uiTarget = transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);
@@ -190,7 +180,7 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [Command]
-    private void CmdRequestUlti(){
+    protected void CmdRequestUlti(){
         Debug.Log("Player Controller Server: Ulti Request");
         if (!UltiController.checkUltiEnchanting()) {
             Debug.Log("Player Controller Server: Ulti Request Success");
@@ -205,13 +195,15 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [ClientRpc]
-    private void RpcUltiActivationStatusUpdate(bool status) {
+    protected void RpcUltiActivationStatusUpdate(bool status)
+    {
         if (isLocalPlayer){
             Debug.Log("Player Controller: Start Cooling Down");
             Debug.Log("skillIndex " + skillIndex);
             if (status){
                 ultiCrystalController.GenerateUltiCrystals();
-                skillControllers[1].StartCoolDown();
+                int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+                skillControllers[ulti_index].StartCoolDown();
             }
         }
     }
@@ -219,12 +211,16 @@ public class PlayerController : NetworkBehaviour {
     public void ActivateUlti() {
         Debug.Log("Player Controller: Activate Ulti Success");
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        CmdDoFire(2, ray);
+        int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+        CmdDoFire(ulti_index, ray);
+        ultiCrystalController.Clear();
+        UltiController.setUltiEnchanting(false);
     }
 
     public void RevokeUlti() {
         Debug.Log("PlayerController RevokeUlti");
-        skillControllers[1].RevokeCoolDown();
+        int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+        skillControllers[ulti_index].RevokeCoolDown();
     }
     #endregion
 

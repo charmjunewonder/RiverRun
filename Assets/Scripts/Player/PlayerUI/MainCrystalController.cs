@@ -23,7 +23,7 @@ public class MainCrystalController : MonoBehaviour {
                 crystals[i] = crys_num;
 
                 Image image = transform.GetChild(i).GetChild(0).GetComponent<Image>();
-                image.sprite = crystalSprites[i];
+                image.sprite = crystalSprites[crys_num];
                 image.color = new Color(1, 1, 1, 1);
 
                 break;

@@ -9,6 +9,7 @@ public class EngiTeammateController : MonoBehaviour {
 
     private EngineerController engineerController;
 
+
     public void Highlight() {
         if (skill0Controller.IsSkillSelected() || crystalProductionController.isFinished())
             transform.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 1);
@@ -24,7 +25,7 @@ public class EngiTeammateController : MonoBehaviour {
 
             skill0Controller.DeslectedSkill();
         } else if (crystalProductionController.isFinished()) {
-            
+            engineerController.CmdAssignCrystal(num, crystalProductionController.GetCrystal());
             
             crystalProductionController.Revoke();
         }

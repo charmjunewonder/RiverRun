@@ -239,19 +239,23 @@ public class NetworkManagerCustom : NetworkManager {
                 LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
                 NetworkConnection conn = lp.connectionToClient;
                 if (lp.ownRole == PlayerRole.Engineer){
+
                     GameObject newPlayer = (GameObject)Instantiate(EngineerPrefab, Vector3.zero, Quaternion.identity);
+
+                    Debug.Log("@@@@@@@@");
+
                     newPlayer.GetComponent<EngineerController>().slot = lp.slot;
                     gameplayerControllers[i] = newPlayer.GetComponent<EngineerController>();
-                    //NetworkServer.Spawn(newPlayer);
+                    ////NetworkServer.Spawn(newPlayer);
                     short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
-                    //Debug.Log("playercontrollerid: " + id);
+                    ////Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<EngineerController>().role = lp.ownRole;
                     NetworkServer.Destroy(lp.gameObject);
 
-                    //Destroy(lp.gameObject);
+                    ////Destroy(lp.gameObject);
 
-                    bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
-                    Debug.Log("ReplacePlayerForConnection " + success);
+                    NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
+                    //Debug.Log("ReplacePlayerForConnection " + success);
                 }
                 else {
                     GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
@@ -265,8 +269,8 @@ public class NetworkManagerCustom : NetworkManager {
 
                     //Destroy(lp.gameObject);
 
-                    bool success = NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
-                    Debug.Log("ReplacePlayerForConnection " + success);
+                    NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
+                    //Debug.Log("ReplacePlayerForConnection " + success);
                 }
                 
 
@@ -430,7 +434,7 @@ public class NetworkManagerCustom : NetworkManager {
                             GameObject gamePlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
                             gamePlayer.GetComponent<PlayerController>().slot = k;
-                            bool success = NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, 0);
+                            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, 0);
 
                             Destroy(dpc.gameObject);
                         }

@@ -26,30 +26,26 @@ public class CrystalProductionController : MonoBehaviour {
 
     #region Animation
     public void TriggerAnimation() {
+        Debug.Log("TriggerAnimation");
         if(!isFinished())
             StartCoroutine("StartArrow");
     }
 
     public void Revoke() {
         StopAllCoroutines();
-        for (int i = 0; i < 5; i++) {
-            Image image = transform.GetChild(i).GetComponent<Image>();
-            image.raycastTarget = false;
-            image.color = new Color(1, 1, 1, 0);
-
-        }
         crystalSelected = -1;
         StartCoroutine("CloseBar");
     }
 
     public bool isFinished() {
-        return transform.GetChild(4).GetComponent<Image>().fillAmount == 1;
+        return transform.GetChild(4).GetComponent<Image>().color.a == 1;
     }
     #endregion
 
     #region Coroutines
     IEnumerator StartArrow()
     {
+        Debug.Log("Coroutine");
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
             arrows.GetComponent<Image>().fillAmount += 0.02f;
@@ -76,6 +72,15 @@ public class CrystalProductionController : MonoBehaviour {
 
     IEnumerator CloseBar()
     {
+        for (int i = 1; i < 5; i++){
+            Transform child = transform.GetChild(i);
+            Image image = child.GetComponent<Image>();
+            image.raycastTarget = false;
+            image.color = new Color(1, 1, 1, 0);
+            child.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+
+        }
+
         while (GetComponent<Image>().fillAmount > 0)
         {
             GetComponent<Image>().fillAmount -= 0.04f;

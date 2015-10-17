@@ -40,6 +40,7 @@ public class SkillController : MonoBehaviour {
         coolDownStarted = false;
         coolDownImage.fillAmount = 0;
         coolDownText.text = "";
+        Debug.Log(coolDownStarted);
     }
 
 	protected void coolingDown(){

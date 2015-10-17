@@ -5,8 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class EngineerController : PlayerController {
-    
-	void Start () {
+
+    void Start()
+    {
         playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
 
@@ -32,6 +33,11 @@ public class EngineerController : PlayerController {
         }
 	}
 
+    void Update() {
+    
+    
+    }
+
     private void setEngineerController(GameObject ui)
     {
         Transform skillPanel = ui.transform.GetChild(1);
@@ -55,6 +61,9 @@ public class EngineerController : PlayerController {
             teammatePanel.GetChild(i).GetComponent<EngiTeammateController>().setEngineerController(this);
         }
 
+        Transform crystalProductionPanel = ui.transform.GetChild(6);
+        crystalProductionPanel.GetComponent<CrystalProductionController>().setEngineerConrtroller(this);
+
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);
     }
@@ -63,6 +72,19 @@ public class EngineerController : PlayerController {
     public void CmdAssignCrystal(int slot, int crystal) {
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
 
+        plc.RpcAcceptCrystalFromEngineer(crystal);
+
     }
 
+
+    void OnLevelWasLoaded(int level)
+    {
+        if (isLocalPlayer)
+        {
+            ClientScene.Ready(connectionToServer);
+        }
+
+        if (level == 13)
+            print("Woohoo");
+    }
 }

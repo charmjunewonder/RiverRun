@@ -3,58 +3,48 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class EnemySpawnManager : NetworkBehaviour {
-	[SerializeField] GameObject enemyPrefab;
-	private GameObject[] enemySpawns;
-	private int counter;
-	private int numberOfEnemy = 20;
-	private int maxNumberOfEnemy = 80;
-	private float waveRate = 10f;
-	private bool isSpawnActivated = true;
-	private GameObject enemies;
-	
-	public override void OnStartServer ()
-	{
-		enemySpawns = GameObject.FindGameObjectsWithTag("EnemySpawn");
-		
-		enemies = new GameObject();
-		enemies.name = "Enemies";
-		
-		StartCoroutine(EnemySpawner());
+	[SerializeField] GameObject[] enemyPrefab;
 
-	}
-	
-	IEnumerator EnemySpawner()
-	{
-		for(;;)
-		{
-			GameObject[] zombies = GameObject.FindGameObjectsWithTag("Enemy");
-			if(zombies.Length < maxNumberOfEnemy)
-			{
-				CommenceSpawn();
-			}
-			yield return new WaitForSeconds(waveRate);
-			
-		}
-	}
-	
-	void CommenceSpawn()
-	{
-		if(isSpawnActivated)
-		{
-			for(int i = 0; i < numberOfEnemy; i++)
-			{
-				int randomIndex = Random.Range(0, enemySpawns.Length);
-				SpawnEnemy(enemySpawns[randomIndex].transform.position);
-			}
-		}
-	}
-	
-	void SpawnEnemy(Vector3 spawnPos)
-	{
-		counter++;
-		GameObject go = GameObject.Instantiate(enemyPrefab, spawnPos, Quaternion.identity) as GameObject;
-		go.transform.parent = enemies.transform;
-		//go.GetComponent<Zombie_ID>().zombieID = "Zombie " + counter;
-		NetworkServer.Spawn(go);
-	}
+    public int enemiesMin, enemiesMax;
+
+    public GameObject enemySkills;
+
+    private GameObject[] enemies;
+
+    private GameObject spaceship;
+
+    void Start() {
+        spaceship = GameObject.FindGameObjectWithTag("Spaceship");
+        GenerateEnemies();
+    }
+
+    public GameObject GetSpaceShip() { return spaceship; }
+
+    private void GenerateEnemies() {
+        int enemiesNum = Random.Range(enemiesMin, enemiesMax);
+
+        for (int i = 0; i < enemiesNum; i++){
+            int enemyNum = Random.Range(0, enemyPrefab.Length);
+
+            Vector3 spaceshipPos = spaceship.transform.position;
+
+            float randomZ = Random.Range(300.0f, 600.0f);
+            float randomX = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
+            float randomY = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
+
+            Vector3 pos = new Vector3(randomX, randomY, spaceshipPos.z + randomZ);
+
+            GameObject enemy = GameObject.Instantiate(enemyPrefab[enemyNum], pos, Quaternion.identity) as GameObject;
+
+            enemy.transform.LookAt(spaceship.transform);
+            enemy.transform.parent = transform;
+
+            EnemyMotion em = enemy.GetComponent<EnemyMotion>();
+            em.setEnemySkills(enemySkills);
+            NetworkServer.Spawn(enemy);
+            
+        }
+    }
+
+
 }
