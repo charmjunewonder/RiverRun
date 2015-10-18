@@ -5,17 +5,33 @@ using System.Collections;
 public class EnemyMotion : NetworkBehaviour {
 
     public GameObject bullet;
+    [SyncVar]
+    public int index;
 
     private Vector3 velocity;
     private GameObject spaceship;
     private GameObject enemySkills;
     private float skillTimer;
 
-
+    [SyncVar]
+    public float blood;
+    [SyncVar]
+    private float max_blood;
 
     public void setSpaceship(GameObject ss) { spaceship = ss; }
     public void setEnemySkills(GameObject es) { enemySkills = es; }
+    public void setBlood(float b) { blood = b; }
+    public float getBlood() { return blood; }
+    public void setMaxBlood(float b) { max_blood = b; }
+    public float getMaxBlood() { return max_blood; }
+    public void setIndex(int ind) { index = ind; }
 
+    public void DecreaseBlood(float damage) {
+        blood -= damage;
+        Debug.Log("CmdDecreaseBlood " + blood);
+        if (blood <= 0)
+            NetworkServer.Destroy(gameObject);
+    }
 
 	void Start () {
         if (isServer) {
@@ -30,7 +46,7 @@ public class EnemyMotion : NetworkBehaviour {
 	
 	void Update () {
         if (isServer) {
-            if (Vector3.Distance(spaceship.transform.position, transform.position) > 100){
+            if (Vector3.Distance(spaceship.transform.position, transform.position) > 300){
                 transform.position += velocity;
             }
         }

@@ -14,8 +14,10 @@ public class EnemySpawnManager : NetworkBehaviour {
     private GameObject spaceship;
 
     void Start() {
-        spaceship = GameObject.FindGameObjectWithTag("Spaceship");
-        GenerateEnemies();
+        if (isServer) {
+            spaceship = GameObject.FindGameObjectWithTag("Spaceship");
+            GenerateEnemies();
+        }
     }
 
     public GameObject GetSpaceShip() { return spaceship; }
@@ -41,6 +43,10 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();
             em.setEnemySkills(enemySkills);
+            em.setBlood(10.0f);
+            em.setMaxBlood(10.0f);
+            em.setIndex(i);
+
             NetworkServer.Spawn(enemy);
             
         }

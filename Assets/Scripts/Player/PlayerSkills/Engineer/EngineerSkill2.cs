@@ -7,6 +7,6 @@ public class EngineerSkill2 : Skill {
         int level = gameObject.GetComponent<PlayerInfo>().getLevel();
         damage = 0;
         heal = 0;
-        coolDown = 5 / level;
+        coolDown = 5 / (level + 1);
     }
 }
