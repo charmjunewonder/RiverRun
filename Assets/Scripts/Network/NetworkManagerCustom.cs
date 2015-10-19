@@ -43,6 +43,7 @@ public class NetworkManagerCustom : NetworkManager {
     private string selectedLevel = "Level1";
     private ArrayList levels;
     private bool isServer = false;
+    private bool isSetReady = false;
     void Start()
     {
         GameObject es = GameObject.Find("EventSystem");
@@ -304,6 +305,7 @@ public class NetworkManagerCustom : NetworkManager {
                     short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
                     ////Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<EngineerController>().role = lp.ownRole;
+                    newPlayer.GetComponent<EngineerController>().username = lp.userName;
                     NetworkServer.Destroy(lp.gameObject);
 
                     ////Destroy(lp.gameObject);
@@ -319,6 +321,7 @@ public class NetworkManagerCustom : NetworkManager {
                     short id = lp.GetComponent<LobbyPlayer>().playerControllerId;
                     //Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
+                    newPlayer.GetComponent<PlayerController>().username = lp.userName;
                     NetworkServer.Destroy(lp.gameObject);
 
                     //Destroy(lp.gameObject);
@@ -409,7 +412,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("OnServerDisconnect " + conn.connectionId);
         base.OnServerDisconnect(conn);
-
+        
         switch (currentMode)
         {
             case NetworkMode.Lobby:
@@ -444,13 +447,17 @@ public class NetworkManagerCustom : NetworkManager {
                         if (pcconnid == conn.connectionId)
                         {
                             Debug.Log(i + " set disconnected player " + pcconnid);
+                            //conn.isReady = false;
                             gameplayerControllers[i] = null;
                             GameObject disconPlayer = (GameObject)Instantiate(DisconnectedPlayerPrefab, Vector3.zero, Quaternion.identity);
                             disconnectedPlayerControllers[i] = disconPlayer.GetComponent<DisconnectedPlayerController>();
                             disconPlayer.GetComponent<DisconnectedPlayerController>().slot = i;
                             disconPlayer.GetComponent<DisconnectedPlayerController>().connId = conn.connectionId;
                             disconPlayer.GetComponent<DisconnectedPlayerController>().currentRole = pc.role;
+                            disconPlayer.GetComponent<DisconnectedPlayerController>().username = pc.username;
                             NetworkServer.Destroy(pc.gameObject);
+                            conn.isReady = false;
+                            Debug.Log("disconnect " + conn.isReady);
                         }
                     }
                 }
@@ -512,6 +519,8 @@ public class NetworkManagerCustom : NetworkManager {
                             GameObject gamePlayer = (GameObject)Instantiate(selectedprefab, Vector3.zero, Quaternion.identity);
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
                             gamePlayer.GetComponent<PlayerController>().slot = k;
+                            gamePlayer.GetComponent<PlayerController>().username = dpc.username;
+
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
 
                             Destroy(dpc.gameObject);
@@ -573,9 +582,15 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientSceneChanged " + conn.connectionId);
 
         DisableLobbyUI();
-        
-        if(!conn.isReady)
+        Debug.Log("SetReady " + conn.isReady);
+        //ClientScene.Ready(conn);
+
+        if (!isSetReady)
+        {
+            Debug.Log("SetReady");
             ClientScene.Ready(conn);
+            isSetReady = true;
+        } 
 
         //ClientScene.Ready(connetion);
     }
@@ -607,6 +622,7 @@ public class NetworkManagerCustom : NetworkManager {
             case NetworkMode.Game:
                 Debug.Log("Change Scene ");
                 Application.LoadLevel("Level1");
+                isSetReady = true;
                 break;
         }
     }

@@ -33,12 +33,15 @@ public class LobbyPlayer : NetworkBehaviour {
     public LobbyMode currentLobby;
     [SyncVar]
     public NetworkMode currentMode;
+    [SyncVar]
+    public string userName;
 
     void Start()
     {
         panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 85.8f, 0);
         if (isLocalPlayer)
         {
+            userName = PlayerPrefs.GetString("name");
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
             Debug.Log("OnServerAddPlayer Lobby " + currentLobby);
             if (currentMode == NetworkMode.Lobby && currentLobby == LobbyMode.Role)

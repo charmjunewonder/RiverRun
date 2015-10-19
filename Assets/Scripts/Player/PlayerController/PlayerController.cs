@@ -8,6 +8,7 @@ public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
     public int slot;
+    public string username;
 
     [SyncVar]
     public PlayerRole role;
@@ -378,7 +379,7 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer)
         {
             //if(level != 0)
-            //    ClientScene.Ready(connectionToServer);
+            //ClientScene.Ready(connectionToServer);
 
             isInGame = true;
         }

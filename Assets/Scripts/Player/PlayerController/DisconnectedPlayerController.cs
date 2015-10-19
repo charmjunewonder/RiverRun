@@ -7,4 +7,5 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public int slot;
     public int connId;
     public PlayerRole currentRole;
+    public string username;
 }
