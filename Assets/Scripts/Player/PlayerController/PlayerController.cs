@@ -13,6 +13,7 @@ public class PlayerController : NetworkBehaviour {
     public PlayerRole role;
 
     public Sprite[] skillIcons;
+    public Sprite[] enemyIcons;
 
     [SerializeField] 
 	protected Camera cam;
@@ -36,7 +37,8 @@ public class PlayerController : NetworkBehaviour {
 
     private bool isInGame;
 
-	void Start () {
+    #region StartUpdate
+    void Start () {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
 
@@ -58,8 +60,7 @@ public class PlayerController : NetworkBehaviour {
             isInGame = false;
 		}
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
         if (!isLocalPlayer) {
             if (enemyManager == null)
@@ -87,10 +88,14 @@ public class PlayerController : NetworkBehaviour {
                         Transform target = enemyUITarget.GetChild(i);
                         target.position = screenPoint;
                         target.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-                        Image image = target.GetChild(0).GetComponent<Image>();
-                        image.color = new Color(1, 1, 1, 1);
-                        float blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
-                        image.fillAmount = blood_perc;
+
+                        if (role == PlayerRole.Striker) {
+                            Image image = target.GetChild(0).GetComponent<Image>();
+                            image.color = new Color(1, 1, 1, 1);
+                            float blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
+                            image.fillAmount = blood_perc;
+                        }
+                        
                         
                     } else {
                         Transform target = enemyUITarget.GetChild(i);
@@ -102,7 +107,6 @@ public class PlayerController : NetworkBehaviour {
                     }
                 }
             }
-            
         }
 
 
@@ -129,19 +133,39 @@ public class PlayerController : NetworkBehaviour {
 
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-                for (int i = 0; i < enemyManager.transform.childCount; i++) {
-                    Transform enemyUI = enemyUITarget.transform.GetChild(i);
-                    Transform enemy = enemyManager.transform.GetChild(i);
-                    Vector2 enemyPos2d = new Vector2(enemyUI.position.x, enemyUI.position.y);
-                    Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                if (role == PlayerRole.Striker)
+                {
+                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    {
+                        Transform enemyUI = enemyUITarget.transform.GetChild(i);
+                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Vector2 enemyPos2d = new Vector2(enemyUI.position.x, enemyUI.position.y);
+                        Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                    if (Vector2.Distance(enemyPos2d, mousePos2d) < 20) {
-                        CmdDoFire(skillIndex, ray, enemy.GetComponent<EnemyMotion>().index);
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 20)
+                        {
+                            CmdDoFire(skillIndex, ray, enemy.GetComponent<EnemyMotion>().index);
+                        }
                     }
                 }
+                else {
+                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    {
+                        
+                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
+                        Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
+                        Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 20)
+                        {
+                            CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
+                        }
+                        
+                    }
                 
-
+                }
+                
             }
             else if (!e.IsPointerOverGameObject() && skillControllers[skillIndex].getCoolDownStatus())
             {
@@ -171,40 +195,7 @@ public class PlayerController : NetworkBehaviour {
 #endif
 	}
 
-    void OnLevelWasLoaded(int level)
-    {
-        if (isLocalPlayer)
-        {
-            ClientScene.Ready(connectionToServer);
-            isInGame = true;
-        }
-
-        if (level == 13)
-            print("Woohoo");
-    }
-
-    void LoadEnemyObject() {
-        GameObject[] enemyObjects;
-        if (role == PlayerRole.Striker)
-        {
-            enemyManager = GameObject.Find("EnemyManager");
-            enemyObjects = GameObject.FindGameObjectsWithTag("Enemy");
-            for (int i = 0; i < enemyObjects.Length; i++) {
-                enemyObjects[i].transform.parent = enemyManager.transform;
-            }
-        }
-        else {
-            enemyManager = GameObject.Find("EnemySkills");
-            enemyObjects = GameObject.FindGameObjectsWithTag("EnemySkill");
-        }
-        for (int i = 0; i < enemyObjects.Length; i++){
-            enemyObjects[i].transform.parent = enemyManager.transform;
-        }
-    }
-
-   
-
-
+    #endregion
 
     #region Operation
     [Command]
@@ -220,7 +211,6 @@ public class PlayerController : NetworkBehaviour {
         }
         else {
             enemyManager.transform.GetChild(enemyIndex).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
-          
         }
 
 
@@ -234,6 +224,14 @@ public class PlayerController : NetworkBehaviour {
 		bullet.GetComponent<Rigidbody>().velocity = ray.direction * 100;
 		*/
 	}
+
+    [Command]
+    void CmdDefendAttack(NetworkInstanceId netID) {
+        GameObject obj = NetworkServer.FindLocalObject(netID);
+        NetworkServer.Destroy(obj);
+    }
+
+
     #endregion
 
     #region UltiActivation
@@ -336,15 +334,12 @@ public class PlayerController : NetworkBehaviour {
     }
 
     #endregion
-
+    
+    #region Initialization Setup
     public void SetSlot(int s)
     {
         slot = s;
     }
-
-
-
-
     private void setStrikerDefenderControllers(GameObject ui)
     {
         Debug.Log(role);
@@ -366,7 +361,60 @@ public class PlayerController : NetworkBehaviour {
 
         enemyUITarget = ui.transform.GetChild(6);
 
+        if (role == PlayerRole.Defender) {
+            for (int i = 0; i < enemyUITarget.childCount; i++){
+                enemyUITarget.GetChild(i).GetComponent<Image>().sprite = enemyIcons[2];
+                enemyUITarget.GetChild(i).GetChild(0).GetComponent<Image>().sprite = enemyIcons[3];
+
+            }
+        }
+
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         GameObject.DontDestroyOnLoad(e);
     }
+
+    void OnLevelWasLoaded(int level)
+    {
+        if (isLocalPlayer)
+        {
+            ClientScene.Ready(connectionToServer);
+            isInGame = true;
+        }
+
+        if (level == 13)
+            print("Woohoo");
+    }
+
+    void LoadEnemyObject()
+    {
+        GameObject[] enemyObjects;
+        if (role == PlayerRole.Striker)
+        {
+            enemyManager = GameObject.Find("EnemyManager");
+            enemyObjects = GameObject.FindGameObjectsWithTag("Enemy");
+            for (int i = 0; i < enemyObjects.Length; i++)
+            {
+                enemyObjects[i].transform.parent = enemyManager.transform;
+            }
+
+        }
+        else
+        {
+            enemyManager = GameObject.Find("EnemySkills");
+            enemyObjects = GameObject.FindGameObjectsWithTag("EnemySkill");
+        }
+        for (int i = 0; i < enemyObjects.Length; i++)
+        {
+            enemyObjects[i].transform.parent = enemyManager.transform;
+        }
+    }
+    #endregion
+
+    #region Utility
+
+    public void Damage(float damage) {
+        GetComponent<PlayerInfo>().Damage(damage);
+    }
+
+    #endregion
 }

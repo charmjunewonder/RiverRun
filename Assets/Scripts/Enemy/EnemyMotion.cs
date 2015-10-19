@@ -10,7 +10,8 @@ public class EnemyMotion : NetworkBehaviour {
 
     private Vector3 velocity;
     private GameObject spaceship;
-    private GameObject enemySkills;
+    private GameObject enemySkillManager;
+
     private float skillTimer;
 
     [SyncVar]
@@ -18,13 +19,19 @@ public class EnemyMotion : NetworkBehaviour {
     [SyncVar]
     private float max_blood;
 
+    private int attackCount;
+
+    private GameObject[] players;
+
+
     public void setSpaceship(GameObject ss) { spaceship = ss; }
-    public void setEnemySkills(GameObject es) { enemySkills = es; }
+    public void setEnemySkills(GameObject es) { enemySkillManager = es; }
     public void setBlood(float b) { blood = b; }
     public float getBlood() { return blood; }
     public void setMaxBlood(float b) { max_blood = b; }
     public float getMaxBlood() { return max_blood; }
     public void setIndex(int ind) { index = ind; }
+    public void setPlayers(GameObject[] p) { players = p; }
 
     public void DecreaseBlood(float damage) {
         blood -= damage;
@@ -39,7 +46,9 @@ public class EnemyMotion : NetworkBehaviour {
 
             velocity = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.1f, 0.15f);
 
-            skillTimer = Random.Range(3.0f, 8.0f);
+            skillTimer = Random.Range(3.0f, 15f);
+
+            attackCount = 0;
         }
 
 	}
@@ -49,6 +58,26 @@ public class EnemyMotion : NetworkBehaviour {
             if (Vector3.Distance(spaceship.transform.position, transform.position) > 300){
                 transform.position += velocity;
             }
+
+            skillTimer -= Time.deltaTime;
+
+            if (skillTimer <= 0) {
+                GameObject attack = GameObject.Instantiate(bullet, transform.position, Quaternion.identity) as GameObject;
+
+                attack.transform.parent = enemySkillManager.transform;
+
+                EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
+                esm.setDamage(1);
+                esm.setVelocity(Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.2f, 0.3f));
+                esm.setSpaceship(spaceship);
+                esm.setTargetPlayer(players[Random.Range(0, players.Length)]);
+                attackCount++;
+
+                NetworkServer.Spawn(attack);
+
+                skillTimer = Random.Range(5.0f, 20.0f);
+            }
+
         }
 
 	}

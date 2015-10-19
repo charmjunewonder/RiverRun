@@ -4,8 +4,10 @@ using System.Collections;
 public class PlayerInfo : MonoBehaviour {
 
 	public PlayerRole role;
-	protected int level;
-	protected int health;
+	public int level;
+	public float health;
+
+    protected float max_health;
 	protected Skill[] skills;
 
 	void Awake(){
@@ -24,13 +26,24 @@ public class PlayerInfo : MonoBehaviour {
             skills[0] = gameObject.GetComponent<StrikerSkill1>();
             skills[1] = gameObject.GetComponent<StrikerSkill2>();
         }
-
         level = 1;
+        health = 10;
   	}
 	public Skill[] getSkills(){ return skills; }
 	public Skill getSkill(int index) { 
-		Debug.Log (index);
 		return skills[index]; 
 	}
 	public int getLevel(){ return level; }
+
+    public void Damage(float damage) {
+        health -= damage;
+
+        if (health < 0)
+            health = 0;
+
+        for (int i = 0; i < skills.Length; i++) {
+            skills[i].damage *= (health / max_health);
+            skills[i].heal *= (health / max_health);
+        }
+    }
 }
