@@ -377,8 +377,8 @@ public class PlayerController : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            if(level != 0)
-                ClientScene.Ready(connectionToServer);
+            //if(level != 0)
+            //    ClientScene.Ready(connectionToServer);
 
             isInGame = true;
         }

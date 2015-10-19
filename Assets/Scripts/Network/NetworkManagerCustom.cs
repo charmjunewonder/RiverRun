@@ -573,6 +573,10 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientSceneChanged " + conn.connectionId);
 
         DisableLobbyUI();
+        
+        if(!conn.isReady)
+            ClientScene.Ready(conn);
+
         //ClientScene.Ready(connetion);
     }
     #endregion
