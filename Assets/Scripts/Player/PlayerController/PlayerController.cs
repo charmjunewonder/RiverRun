@@ -370,14 +370,16 @@ public class PlayerController : NetworkBehaviour {
         }
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-        GameObject.DontDestroyOnLoad(e);
+        //GameObject.DontDestroyOnLoad(e);
     }
 
     void OnLevelWasLoaded(int level)
     {
         if (isLocalPlayer)
         {
-            ClientScene.Ready(connectionToServer);
+            if(level != 0)
+                ClientScene.Ready(connectionToServer);
+
             isInGame = true;
         }
 

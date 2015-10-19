@@ -46,7 +46,7 @@ public class SignupController : MonoBehaviour {
 			displayMessage.text = "User Name Invalid";
 			isValid = false;
 		} else if(!name.Equals(name2)){
-			displayMessage.text = "Two Password is Different";
+			displayMessage.text = "Two User Names Are Different";
 			isValid = false;
 		}
 		
@@ -98,7 +98,7 @@ public class SignupController : MonoBehaviour {
 					}
 					else if (result == "empty")
 					{
-						displayMessage.text = "User name or password is empty";
+						displayMessage.text = "User name is empty";
 					}
 					else
 					{

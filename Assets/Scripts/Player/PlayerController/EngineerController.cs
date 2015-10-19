@@ -65,7 +65,7 @@ public class EngineerController : PlayerController {
         crystalProductionPanel.GetComponent<CrystalProductionController>().setEngineerConrtroller(this);
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-        GameObject.DontDestroyOnLoad(e);
+        //GameObject.DontDestroyOnLoad(e);
     }
 
     [Command]
@@ -81,7 +81,8 @@ public class EngineerController : PlayerController {
     {
         if (isLocalPlayer)
         {
-            ClientScene.Ready(connectionToServer);
+            if (level != 0)
+                ClientScene.Ready(connectionToServer);
         }
 
         if (level == 13)

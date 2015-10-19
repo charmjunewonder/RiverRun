@@ -45,10 +45,13 @@ public class NetworkManagerCustom : NetworkManager {
     private bool isServer = false;
     void Start()
     {
+        GameObject es = GameObject.Find("EventSystem");
+        GameObject.DontDestroyOnLoad(es);
+
         SingletonNM = this;
         currentMode = NetworkMode.Lobby;
         currentLobby = LobbyMode.Level;
-
+        //currentPanel = connectPanel;
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
         disconnectedPlayerControllers = new ArrayList(maxPlayers);
@@ -74,6 +77,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void ChangeTo(RectTransform newPanel)
     {
+        Debug.Log("ChangeTo " + newPanel.gameObject.name);
         if (currentPanel != null)
         {
             currentPanel.gameObject.SetActive(false);
@@ -392,6 +396,10 @@ public class NetworkManagerCustom : NetworkManager {
 
             //tell the client
         }
+        ServerMessage sm = new ServerMessage();
+        sm.currentMode = currentMode;
+        sm.currentLobby = currentLobby;
+        NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
         //		slotArray[i] = conn.playerControllers[0].gameObject;
         //		conn.playerControllers[0].gameObject.GetComponent<Player_ID>().SetSlot(i);
 	}
@@ -548,9 +556,9 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientConnect " + conn.connectionId);
 
         base.OnClientConnect(conn);
-
+        client.RegisterHandler(ServerMessage.MsgType, OnServerMessageReceived);
         infoPanel.gameObject.SetActive(false);
-        ChangeTo(levelPanel);
+        //ChangeTo(levelPanel);
         if (!NetworkServer.active)
         {//only to do on pure client (not self hosting client)
             Debug.Log("pure client");
@@ -582,6 +590,23 @@ public class NetworkManagerCustom : NetworkManager {
     }
     #endregion
 
+    #region Message
+    public void OnServerMessageReceived(NetworkMessage msg)
+    {
+        ServerMessage mx = msg.ReadMessage<ServerMessage>();
+        Debug.Log(string.Format("SERVER: {0}", mx));
+        switch (mx.currentMode)
+        {
+            case NetworkMode.Lobby:
+                ChangeTo(levelPanel);
+                break;
+            case NetworkMode.Game:
+                Debug.Log("Change Scene ");
+                Application.LoadLevel("Level1");
+                break;
+        }
+    }
+    #endregion
     private void ResetLobbyPlayerArray()
     {
         lobbyPlayerArray.Clear();
