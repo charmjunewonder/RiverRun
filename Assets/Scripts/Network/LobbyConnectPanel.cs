@@ -45,10 +45,10 @@ public class LobbyConnectPanel : MonoBehaviour {
     public void ToggleVisibility(bool visible)
     {
         isDisplayed = visible;
-        foreach (Transform t in transform)
-        {
-            t.gameObject.SetActive(isDisplayed);
-        }
+        //foreach (Transform t in transform)
+        //{
+        //    t.gameObject.SetActive(isDisplayed);
+        //}
 
         if (panelImage != null)
         {
@@ -95,7 +95,7 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public void OnClickSetting()
     {
-        NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.settingPanel);
+        NetworkManagerCustom.SingletonNM.ChangeToSettingPanel();
     }
 
     void onEndEditIP(string text)

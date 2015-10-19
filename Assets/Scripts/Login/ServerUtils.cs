@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 public class ServerUtils : MonoBehaviour{
 	public static string urlHeader = "http://";
-	public static string domainName = "128.2.236.211:80";
+	public static string domainName = "128.2.236.211";
     public static string GameDomainName = "127.0.0.1";
 
     public static bool IsNum(string str)

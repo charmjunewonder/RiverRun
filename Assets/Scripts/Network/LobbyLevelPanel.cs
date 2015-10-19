@@ -55,12 +55,17 @@ public class LobbyLevelPanel : MonoBehaviour {
         infoText.text = "You have selected Level " + le.ToString();
     }
 
+    public void LevelSelectNotSame()
+    {
+        ResetButtons();
+        infoText.text = "Please select the same level with your teammates!";
+    }
+
     public void ResetButtons()
     {
-        foreach(Button b in levelButtons)
+        foreach (Button b in levelButtons)
         {
             b.image.sprite = unclickedSprite;
         }
-        infoText.text = "Please select the same level with your teammates!";
     }
 }

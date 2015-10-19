@@ -29,7 +29,14 @@ public class SignupController : MonoBehaviour {
     }
 
     public void OnSignupPressed(){
-		string serverUrl = ServerUtils.urlHeader + ServerUtils.domainName + "/register.php";
+        string domain = ServerUtils.domainName + ":80";
+        string storedDomain = PlayerPrefs.GetString("DataIp");
+        if (ServerUtils.CheckIpAddress(storedDomain))
+        {
+            domain = storedDomain + ":80";
+        }
+        
+        string serverUrl = ServerUtils.urlHeader + domain + "/register.php";
 		string name = uName.text;
 		string name2 = uName2.text;
 		bool isValid = true;

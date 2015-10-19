@@ -9,9 +9,11 @@ public class LoginController : MonoBehaviour {
     public Button loginButton;
     public Image loginImage;
 	public Text displayMessage;
+    public LobbyConnectPanel lcp;
 
     public void OnLoginShowUp()
     {
+        if (loginImage.fillAmount == 0.9f) return;
         StartCoroutine(showLoginImage());
     }
 
@@ -27,7 +29,14 @@ public class LoginController : MonoBehaviour {
     }
 
     public void OnLoginPressed(){
-		string serverUrl = ServerUtils.urlHeader + ServerUtils.domainName + "/login.php";
+        string domain = ServerUtils.domainName + ":80";
+        string storedDomain = PlayerPrefs.GetString("DataIp");
+        if (ServerUtils.CheckIpAddress(storedDomain))
+        {
+            domain = storedDomain + ":80";
+        }
+		string serverUrl = ServerUtils.urlHeader + domain + "/login.php";
+        
 		string name = uName.text;
 		bool isValid = true;
 		
@@ -86,9 +95,32 @@ public class LoginController : MonoBehaviour {
 						PlayerPrefs.SetString("pid", pid);
 						PlayerPrefs.SetString("name", name);
 						Debug.Log("pid stored: "+ pid);
-						Application.LoadLevel("Lobby");
-						
-					}
+
+                        ex = @"<sl>.+</sl>";
+                        m = Regex.Match(download.text, ex);
+                        string sl = m.Value;
+                        sl = sl.Replace("<sl>", "");
+                        sl = sl.Replace("</sl>", "");
+                        PlayerPrefs.SetString("sl", sl);
+
+                        ex = @"<el>.+</el>";
+                        m = Regex.Match(download.text, ex);
+                        string el = m.Value;
+                        el = el.Replace("<el>", "");
+                        el = el.Replace("</el>", "");
+                        PlayerPrefs.SetString("el", el);
+
+                        ex = @"<dl>.+</dl>";
+                        m = Regex.Match(download.text, ex);
+                        string dl = m.Value;
+                        dl = dl.Replace("<dl>", "");
+                        dl = dl.Replace("</dl>", "");
+                        PlayerPrefs.SetString("dl", dl);
+
+                        Debug.Log("level stored: " + sl + " " + el + " " + dl);
+
+                        lcp.OnClickJoin();
+                    }
 					else if (result == "no user")
 					{
 						displayMessage.text = "User Don't Exist";

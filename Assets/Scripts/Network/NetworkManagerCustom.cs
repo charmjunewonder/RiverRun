@@ -42,7 +42,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     private string selectedLevel = "Level1";
     private ArrayList levels;
-
+    private bool isServer = false;
     void Start()
     {
         SingletonNM = this;
@@ -107,16 +107,18 @@ public class NetworkManagerCustom : NetworkManager {
         backDelegate();
     }
 
-    public void SimpleBackClbk()
+    public void OnSimpleBackClbk()
     {
         Debug.Log("SimpleBackClbk");
-        ChangeTo(connectPanel);
+        if (previousPanel != null)
+            ChangeTo(previousPanel);
     }
 
     public void StopHostClbk()
     {
         Debug.Log("StopHostClbk");
         StopHost();
+        ResetAfterStopServer();
         ChangeTo(connectPanel);
     }
 
@@ -131,6 +133,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("StopServerClbk");
         StopServer();
+        ResetAfterStopServer();
         ChangeTo(connectPanel);
     }
 
@@ -141,12 +144,25 @@ public class NetworkManagerCustom : NetworkManager {
         ChangeTo(lobbyPanel);
     }
 
-    public void OnBackClicked()
+    public void OnLobbyBackToLevelClbk()
     {
-        if(previousPanel != null)
-            ChangeTo(previousPanel);
+        Debug.Log("LobbyBackToLevelClbk");
+        if(isServer)
+            backDelegate = StopServerClbk;
+        else
+            backDelegate = StopClientClbk;
+
+        ChangeVisibilityOfLobbyPlayer(false);
+        ChangeTo(levelPanel);
     }
+
     #endregion
+
+    public void ChangeToSettingPanel()
+    {
+        ChangeTo(settingPanel);
+        //backDelegate = SimpleBackClbk;
+    }
 
     IEnumerator CheckLobbyReady()
     {
@@ -178,9 +194,10 @@ public class NetworkManagerCustom : NetworkManager {
 
     IEnumerator CheckLevelSelect()
     {
-        Debug.Log("CheckLevelSelect");
         while (true)
         {
+            Debug.Log("CheckLevelSelect");
+
             LevelEnum firstLevel = LevelEnum.Easy;
             bool isAllSame = false;
             bool isFirst = true;
@@ -242,6 +259,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         StopCoroutine("CheckLevelSelect");
         ChangeToLobbyPanelUtil();
+        //backDelegate = OnLobbyBackToLevelClbk;
         foreach (LobbyPlayer lp in lobbyPlayerArray)
         {
             if (lp != null)
@@ -341,8 +359,12 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnStartServer()
     {
         Debug.Log("OnStartServer");
+        isServer = true;
         currentMode = NetworkMode.Lobby;
         StartCoroutine("CheckLevelSelect");
+        if(currentPanel == connectPanel)
+            ChangeTo(lobbyPanel);
+
         //StartCoroutine("CheckLobbyReady");
     }
 
@@ -537,6 +559,8 @@ public class NetworkManagerCustom : NetworkManager {
     #region HostOverride
     public override void OnStartHost()
     {
+        Debug.Log("OnStartHost");
+
         base.OnStartHost();
 
         ChangeTo(levelPanel);
@@ -574,5 +598,22 @@ public class NetworkManagerCustom : NetworkManager {
                 lp.GetComponent<LobbyPlayer>().ToggleVisibility(visible);
             }
         }
+    }
+
+    private void ResetAfterStopServer()
+    {
+        Debug.Log("ResetAfterStopServer");
+        currentMode = NetworkMode.Lobby;
+        currentLobby = LobbyMode.Level;
+
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            lobbyPlayerArray[i] = null;
+            gameplayerControllers[i] = null;
+            disconnectedPlayerControllers[i] = null;
+            levels[i] = LevelEnum.Unselected;
+        }
+        StopCoroutine("CheckLevelSelect");
+        levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 }
