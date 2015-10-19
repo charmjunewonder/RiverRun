@@ -31,18 +31,18 @@ public class NetworkManagerCustom : NetworkManager {
     public RectTransform connectPanel;
     public RectTransform levelPanel;
     public RectTransform lobbyPanel;
+    public RectTransform settingPanel;
 
     public LobbyInfoPanel infoPanel;
 
     protected RectTransform currentPanel;
-
-    public Text statusInfo;
-    public Text hostInfo;
+    protected RectTransform previousPanel;
 
     #endregion
 
     private string selectedLevel = "Level1";
     private ArrayList levels;
+
     void Start()
     {
         SingletonNM = this;
@@ -67,7 +67,7 @@ public class NetworkManagerCustom : NetworkManager {
     #region Lobby
     private void lobbySystemStartSetting()
     {
-        SetServerInfo("Offline", "None");
+        //SetServerInfo("Offline", "None");
         currentPanel = connectPanel;
     }
 
@@ -77,6 +77,7 @@ public class NetworkManagerCustom : NetworkManager {
         if (currentPanel != null)
         {
             currentPanel.gameObject.SetActive(false);
+            previousPanel = currentPanel;
         }
 
         if (newPanel != null)
@@ -88,7 +89,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         if (currentPanel == connectPanel)
         {
-            SetServerInfo("Offline", "None");
+            //SetServerInfo("Offline", "None");
         }
     }
 
@@ -96,12 +97,6 @@ public class NetworkManagerCustom : NetworkManager {
     {
         var _this = this;
         infoPanel.Display("Connecting...", "Cancel", () => { _this.backDelegate(); });
-    }
-
-    public void SetServerInfo(string status, string host)
-    {
-        statusInfo.text = status;
-        hostInfo.text = host;
     }
 
     #region Disconnect Button
@@ -144,6 +139,12 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("StopGameClbk");
         //SendReturnToLobby();
         ChangeTo(lobbyPanel);
+    }
+
+    public void OnBackClicked()
+    {
+        if(previousPanel != null)
+            ChangeTo(previousPanel);
     }
     #endregion
 
@@ -520,7 +521,7 @@ public class NetworkManagerCustom : NetworkManager {
         {//only to do on pure client (not self hosting client)
             ChangeTo(levelPanel);
             backDelegate = StopClientClbk;
-            SetServerInfo("Client", networkAddress);
+            //SetServerInfo("Client", networkAddress);
         }
     }
 
@@ -540,7 +541,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         ChangeTo(levelPanel);
         backDelegate = StopHostClbk;
-        SetServerInfo("Hosting", networkAddress);
+        //SetServerInfo("Hosting", networkAddress);
     }
     #endregion
 

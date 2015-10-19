@@ -21,6 +21,12 @@ public class LobbyConnectPanel : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         panelImage = GetComponent<Image>();
+
+        string gameIp = PlayerPrefs.GetString("GameIp");
+        if (ServerUtils.CheckIpAddress(gameIp))
+        {
+            ipInput.text = gameIp;
+        }
     }
 
 
@@ -74,7 +80,7 @@ public class LobbyConnectPanel : MonoBehaviour {
         networkManager.backDelegate = networkManager.StopClientClbk;
         networkManager.DisplayIsConnecting();
 
-        networkManager.SetServerInfo("Connecting...", networkManager.networkAddress);
+        //networkManager.SetServerInfo("Connecting...", networkManager.networkAddress);
     }
 
     public void OnClickDedicated()
@@ -84,9 +90,13 @@ public class LobbyConnectPanel : MonoBehaviour {
 
         networkManager.backDelegate = networkManager.StopServerClbk;
 
-        networkManager.SetServerInfo("Dedicated Server", networkManager.networkAddress);
+        //networkManager.SetServerInfo("Dedicated Server", networkManager.networkAddress);
     }
 
+    public void OnClickSetting()
+    {
+        NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.settingPanel);
+    }
 
     void onEndEditIP(string text)
     {

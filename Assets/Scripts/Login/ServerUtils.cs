@@ -5,8 +5,9 @@ using System.Text.RegularExpressions;
 public class ServerUtils : MonoBehaviour{
 	public static string urlHeader = "http://";
 	public static string domainName = "128.2.236.211:80";
-	
-	public static bool IsNum(string str)
+    public static string GameDomainName = "127.0.0.1";
+
+    public static bool IsNum(string str)
 	{
 		return Regex.IsMatch(str, @"^[-]?\d+[.]?\d*$");
 	}
@@ -30,8 +31,23 @@ public class ServerUtils : MonoBehaviour{
 			return reg.IsMatch(pwd);
 		}
 	}
-	
-	public static bool CheckEmail(string email)
+
+    public static bool CheckIpAddress(string ipAddress)
+    {
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            return false;
+        }
+        else
+        {
+
+            Regex reg = new Regex(@"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$");
+
+            return reg.IsMatch(ipAddress);
+        }
+    }
+
+    public static bool CheckEmail(string email)
 	{
 		if (string.IsNullOrEmpty(email))
 		{
