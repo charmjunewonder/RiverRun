@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityStandardAssets.Network;
 
 public enum NetworkMode { Lobby, Game };
+public enum LobbyMode { Level, Role };
 
 public class NetworkManagerCustom : NetworkManager {
     public GameObject LobbyPlayerPrefab;
@@ -16,6 +17,7 @@ public class NetworkManagerCustom : NetworkManager {
     public ArrayList lobbyPlayerArray { get; set; }
     public ArrayList disconnectedPlayerControllers { get; set; }
     public NetworkMode currentMode { get; set; }
+    public LobbyMode currentLobby;
 
     static public NetworkManagerCustom SingletonNM { get; set;}
     
@@ -45,6 +47,8 @@ public class NetworkManagerCustom : NetworkManager {
     {
         SingletonNM = this;
         currentMode = NetworkMode.Lobby;
+        currentLobby = LobbyMode.Level;
+
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
         disconnectedPlayerControllers = new ArrayList(maxPlayers);
@@ -179,29 +183,55 @@ public class NetworkManagerCustom : NetworkManager {
             LevelEnum firstLevel = LevelEnum.Easy;
             bool isAllSame = false;
             bool isFirst = true;
+            bool isAllSelected = false;
+            int userCount = 0;
             for (int i = 0; i < maxPlayers; i++)
             {
                 if (lobbyPlayerArray[i] != null)
                 {
                     LevelEnum curr = (LevelEnum)levels[i];
+                    userCount++;
                     if (isFirst) {
                         isAllSame = true;
+                        isAllSelected = true;
                         firstLevel = curr;
                         Debug.Log("Level Select Same  " + firstLevel.ToString());
                         isFirst = false;
                         isAllSame &= (firstLevel != LevelEnum.Unselected);
+                        isAllSelected &= (firstLevel != LevelEnum.Unselected);
                     }
                     else
                     {
                         isAllSame &= (firstLevel == curr);
+                        isAllSelected &= (curr != LevelEnum.Unselected);
                     }
                 }
+            }
+            if(userCount < minPlayers)
+            {
+                yield return new WaitForSeconds(0.2f);
+                continue;
             }
             if (isAllSame)
             {
                 Debug.Log("Level Select Same");
                 StartCoroutine("CheckLobbyReady");
                 ChangeToLobbyPanel();
+            }
+            else if(isAllSelected)
+            {
+                Debug.Log("Level Select Not Same");
+                foreach(LobbyPlayer lp in lobbyPlayerArray)
+                {
+                    if (lp != null)
+                    {
+                        lp.RpcLevelNotSame();
+                    }
+                }
+                for(int i = 0; i < maxPlayers; i++)
+                {
+                    levels[i] = LevelEnum.Unselected;
+                }
             }
             yield return new WaitForSeconds(0.2f);
         }
@@ -223,6 +253,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void ChangeToLobbyPanelUtil()
     {
         ChangeTo(lobbyPanel);
+        currentLobby = LobbyMode.Role;
         ChangeVisibilityOfLobbyPlayer(true);
     }
 
@@ -410,7 +441,11 @@ public class NetworkManagerCustom : NetworkManager {
                 if (i == maxPlayers) return;
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
+                player.GetComponent<LobbyPlayer>().currentLobby = currentLobby;
+                Debug.Log("OnServerAddPlayer Lobby " + player.GetComponent<LobbyPlayer>().currentLobby);
+
                 lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
+
                 //player.GetComponent<LobbyPlayer>().ToggleVisibility(false);
                 NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 
@@ -529,6 +564,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     private void ChangeVisibilityOfLobbyPlayer(bool visible)
     {
+        Debug.Log("ChangeVisibilityOfLobbyPlayer dsf");
         GameObject[] lps = GameObject.FindGameObjectsWithTag("LobbyPlayerUI");
         foreach(GameObject lp in lps)
         {

@@ -23,24 +23,34 @@ public class LobbyPlayer : NetworkBehaviour {
     public Image lobbyPanel;
     public Text nameText;
     public Button[] rolesButtons;
-    public Button reselectButton;
     public RectTransform panelPos;
     public PlayerRole ownRole;
     public GameObject lobbySelect;
     public Sprite strikerSprite, engineerSprite, defenderSprite;
+    public GameObject readyImage;
+    [SyncVar]
+    public LobbyMode currentLobby;
+
     void Start()
     {
-        panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 0, 0);
+        panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 85.8f, 0);
         if (isLocalPlayer)
         {
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
+            Debug.Log("OnServerAddPlayer Lobby " + currentLobby);
+            if (currentLobby == LobbyMode.Role)
+            {
+                NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
+                CmdChangeToLobbyPanel();
+            }
         }
     }
 
     private float GetLobbyPlayerPos(int slot)
     {
         //return -(800 / 2) + 800 / 5 * (slot + 1);
-        return -400 + 160 * (slot + 1);
+        int[] pos = { -215, -81, 55, 189 };
+        return pos[slot];
     }
 
     public void ToggleVisibility(bool visible)
@@ -94,11 +104,15 @@ public class LobbyPlayer : NetworkBehaviour {
 
     }
 
-    public void OnChooseSimoner()
+    public void OnReadyButton()
     {
-        CmdChooseRole(PlayerRole.Simoner);
-
+        foreach (Button b in rolesButtons)
+        {
+            b.interactable = false;
+        }
+        CmdSetReady();
     }
+
     #endregion
 
 
@@ -110,7 +124,7 @@ public class LobbyPlayer : NetworkBehaviour {
         ownRole = r;
         ChooseRole(r);
         RpcChooseRole(r);
-        SetReady();
+
     }
 
     [ClientRpc]
@@ -125,6 +139,20 @@ public class LobbyPlayer : NetworkBehaviour {
             //var lobby = GuiLobbyManager.singleton as GuiLobbyManager;
             //lobby.ownRole = Roles.Striker;
         }
+    }
+
+    [Command]
+    public void CmdChangeToLobbyPanel()
+    {
+        ToggleVisibility(true);
+        //RpcChangeToLobbyPanel();
+        RpcChangeToLobby();
+    }
+
+    [ClientRpc]
+    public void RpcChangeToLobbyPanel()
+    {
+        ToggleVisibility(true);
     }
 
     [ClientRpc]
@@ -162,10 +190,26 @@ public class LobbyPlayer : NetworkBehaviour {
         playerName = name;
     }
 
-    
-    private void SetReady()
+    [Command]
+    public void CmdSetReady()
     {
         isReady = true;
+        readyImage.SetActive(true);
+        RpcSetReady();
     }
 
+    [ClientRpc]
+    public void RpcSetReady()
+    {
+        readyImage.SetActive(true);
+    }
+
+    [ClientRpc]
+    public void RpcLevelNotSame()
+    {
+        if (isLocalPlayer)
+        {
+            NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
+        }
+    }
 }
