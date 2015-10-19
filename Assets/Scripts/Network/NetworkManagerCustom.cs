@@ -336,7 +336,7 @@ public class NetworkManagerCustom : NetworkManager {
         DisableLobbyUI();
     }
 
-    private void DisableLobbyUI()
+    public void DisableLobbyUI()
     {
         topPanel.gameObject.SetActive(false);
         connectPanel.gameObject.SetActive(false);
@@ -441,6 +441,7 @@ public class NetworkManagerCustom : NetworkManager {
                             disconnectedPlayerControllers[i] = disconPlayer.GetComponent<DisconnectedPlayerController>();
                             disconPlayer.GetComponent<DisconnectedPlayerController>().slot = i;
                             disconPlayer.GetComponent<DisconnectedPlayerController>().connId = conn.connectionId;
+                            disconPlayer.GetComponent<DisconnectedPlayerController>().currentRole = pc.role;
                             NetworkServer.Destroy(pc.gameObject);
                         }
                     }
@@ -465,6 +466,8 @@ public class NetworkManagerCustom : NetworkManager {
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
                 player.GetComponent<LobbyPlayer>().currentLobby = currentLobby;
+                player.GetComponent<LobbyPlayer>().currentMode = currentMode;
+
                 Debug.Log("OnServerAddPlayer Lobby " + player.GetComponent<LobbyPlayer>().currentLobby);
 
                 lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
@@ -489,10 +492,19 @@ public class NetworkManagerCustom : NetworkManager {
                             Debug.Log(k + " existing " + dpcconnid);
                             disconnectedPlayerControllers[k] = null;
 
-                            GameObject gamePlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
+                            GameObject selectedprefab = StrikerPrefab;
+                            switch (dpc.currentRole)
+                            {
+                                case PlayerRole.Engineer:
+                                    selectedprefab = EngineerPrefab;
+                                    Debug.Log("Reconnect EngineerPrefab");
+                                    break;
+                            }
+
+                            GameObject gamePlayer = (GameObject)Instantiate(selectedprefab, Vector3.zero, Quaternion.identity);
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
                             gamePlayer.GetComponent<PlayerController>().slot = k;
-                            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, 0);
+                            NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
 
                             Destroy(dpc.gameObject);
                         }
@@ -538,10 +550,11 @@ public class NetworkManagerCustom : NetworkManager {
         base.OnClientConnect(conn);
 
         infoPanel.gameObject.SetActive(false);
-
+        ChangeTo(levelPanel);
         if (!NetworkServer.active)
         {//only to do on pure client (not self hosting client)
-            ChangeTo(levelPanel);
+            Debug.Log("pure client");
+            //ChangeTo(levelPanel);
             backDelegate = StopClientClbk;
             //SetServerInfo("Client", networkAddress);
         }

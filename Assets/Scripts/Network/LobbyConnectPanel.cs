@@ -72,7 +72,6 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public void OnClickJoin()
     {
-        networkManager.ChangeTo(lobbyPanel);
 
         networkManager.networkAddress = ipInput.text;
         networkManager.StartClient();

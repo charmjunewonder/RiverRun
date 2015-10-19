@@ -45,7 +45,7 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer) {
 			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity);
             GameObject.DontDestroyOnLoad(ui);
-
+            NetworkManagerCustom.SingletonNM.DisableLobbyUI();
             setStrikerDefenderControllers(ui);
 			
 			cam.enabled = true;

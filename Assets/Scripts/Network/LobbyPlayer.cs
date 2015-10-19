@@ -31,6 +31,8 @@ public class LobbyPlayer : NetworkBehaviour {
     public Text strikerLevel, engineerLevel, defenderLevel;
     [SyncVar]
     public LobbyMode currentLobby;
+    [SyncVar]
+    public NetworkMode currentMode;
 
     void Start()
     {
@@ -39,8 +41,10 @@ public class LobbyPlayer : NetworkBehaviour {
         {
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
             Debug.Log("OnServerAddPlayer Lobby " + currentLobby);
-            if (currentLobby == LobbyMode.Role)
+            if (currentMode == NetworkMode.Lobby && currentLobby == LobbyMode.Role)
             {
+                Debug.Log("Lobby Player Change to " + currentLobby);
+
                 NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
                 CmdChangeToLobbyPanel();
             }
@@ -165,6 +169,7 @@ public class LobbyPlayer : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
+            Debug.Log("RpcChangeToLobby");
             NetworkManagerCustom.SingletonNM.ChangeToLobbyPanelUtil();
         }
     }
