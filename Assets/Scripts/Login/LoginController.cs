@@ -10,7 +10,7 @@ public class LoginController : MonoBehaviour {
     public Image loginImage;
 	public Text displayMessage;
     public LobbyConnectPanel lcp;
-
+    public static string userName = "Player";
     public void OnLoginShowUp()
     {
         if (loginImage.fillAmount == 0.9f) return;
@@ -53,8 +53,8 @@ public class LoginController : MonoBehaviour {
 
     public void OnMagicPressed()
     {
-        Application.LoadLevel("Lobby");
-
+        userName = uName.text;
+        lcp.OnClickJoin();
     }
 
     IEnumerator LoginData (string name, string serverUrl)
@@ -93,7 +93,7 @@ public class LoginController : MonoBehaviour {
 						pid = pid.Replace("<pid>", "");
 						pid = pid.Replace("</pid>", "");
 						PlayerPrefs.SetString("pid", pid);
-						PlayerPrefs.SetString("name", name);
+                        userName = name;
 						Debug.Log("pid stored: "+ pid);
 
                         ex = @"<sl>.+</sl>";

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 using UnityStandardAssets.Network;
+using System.Collections.Generic;
 
 public enum NetworkMode { Lobby, Game };
 public enum LobbyMode { Level, Role };
@@ -16,9 +16,10 @@ public class NetworkManagerCustom : NetworkManager {
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
     public ArrayList disconnectedPlayerControllers { get; set; }
+    public HashSet<string> userNameSet;
     public NetworkMode currentMode { get; set; }
     public LobbyMode currentLobby;
-
+    public GameObject serverConnect;
     static public NetworkManagerCustom SingletonNM { get; set;}
     
     #region Lobby Variable
@@ -46,6 +47,11 @@ public class NetworkManagerCustom : NetworkManager {
     private bool isSetReady = false;
     void Start()
     {
+
+#if UNITY_IOS
+        serverConnect.SetActive(false);
+#endif
+
         GameObject es = GameObject.Find("EventSystem");
         GameObject.DontDestroyOnLoad(es);
 
@@ -56,6 +62,7 @@ public class NetworkManagerCustom : NetworkManager {
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
         disconnectedPlayerControllers = new ArrayList(maxPlayers);
+        userNameSet = new HashSet<string>();
         levels = new ArrayList(maxPlayers);
         for (int i = 0; i < maxPlayers; i++)
         {
@@ -66,9 +73,17 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
         lobbySystemStartSetting();
+
+        //StartCoroutine(startLatency());
     }
 
-    #region Lobby
+    IEnumerator startLatency()
+    {
+        yield return new WaitForSeconds(15.0f);
+        useSimulator = true;
+    }
+
+#region Lobby
     private void lobbySystemStartSetting()
     {
         //SetServerInfo("Offline", "None");
@@ -104,7 +119,7 @@ public class NetworkManagerCustom : NetworkManager {
         infoPanel.Display("Connecting...", "Cancel", () => { _this.backDelegate(); });
     }
 
-    #region Disconnect Button
+#region Disconnect Button
     public delegate void BackButtonDelegate();
     public BackButtonDelegate backDelegate;
     public void GoBackButton()
@@ -161,7 +176,11 @@ public class NetworkManagerCustom : NetworkManager {
         ChangeTo(levelPanel);
     }
 
-    #endregion
+    public void ChangeToConnectPanel()
+    {
+        ChangeTo(connectPanel);
+    }
+#endregion
 
     public void ChangeToSettingPanel()
     {
@@ -359,9 +378,9 @@ public class NetworkManagerCustom : NetworkManager {
             levels[newSlot] = le;
         }
     }
-    #endregion
+#endregion
 
-    #region ServerOverride
+#region ServerOverride
     //This hook is invoked when a server is started - including when a host is started.
     public override void OnStartServer()
     {
@@ -403,9 +422,7 @@ public class NetworkManagerCustom : NetworkManager {
         sm.currentMode = currentMode;
         sm.currentLobby = currentLobby;
         NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
-        //		slotArray[i] = conn.playerControllers[0].gameObject;
-        //		conn.playerControllers[0].gameObject.GetComponent<Player_ID>().SetSlot(i);
-	}
+    }
 
     //Called on the server when a client disconnects.
     public override void OnServerDisconnect(NetworkConnection conn)
@@ -430,6 +447,7 @@ public class NetworkManagerCustom : NetworkManager {
                             hasError = false;
                             Debug.Log(i + " remove " + lpconnid);
                             lobbyPlayerArray[i] = null;
+                            userNameSet.Remove(lp.userName);
                         }
                     }
                 }
@@ -466,14 +484,26 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
-    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessageReader)
     {
         Debug.Log("OnServerAddPlayer " + conn.connectionId);
-
+        string playerName = "";
+        if (extraMessageReader != null)
+        {
+            var s = extraMessageReader.ReadMessage<PlayerMessage>();
+            playerName = s.userName;
+            Debug.Log("my name is " + s.userName);
+        }
         switch (currentMode)
         {
             case NetworkMode.Lobby:
                 Debug.Log("OnServerAddPlayer Lobby ");
+                if(!CheckUserNameValid(playerName)){
+                    ErrorMessage em = new ErrorMessage();
+                    em.errorMessage = "This Account Has Already Connected to Server.";
+                    NetworkServer.SendToClient(conn.connectionId, ErrorMessage.MsgType, em);
+                    return;
+                }
                 int i = 0;
                 for (; i < maxPlayers; i++)
                     if (lobbyPlayerArray[i] == null) break;
@@ -489,7 +519,10 @@ public class NetworkManagerCustom : NetworkManager {
 
                 //player.GetComponent<LobbyPlayer>().ToggleVisibility(false);
                 NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-
+                //ServerMessage sm = new ServerMessage();
+                //sm.currentMode = currentMode;
+                //sm.currentLobby = currentLobby;
+                //NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
                 break;
             case NetworkMode.Game:
                 Debug.Log("OnServerAddPlayer Game ");
@@ -501,7 +534,7 @@ public class NetworkManagerCustom : NetworkManager {
                         DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[k];
                         int dpcconnid = dpc.connId;
                         // Disconnected player to Game Player
-                        if (dpcconnid == conn.connectionId)
+                        if (dpc.username == playerName)
                         {
                             isExistingPlayer = true;
                             Debug.Log(k + " existing " + dpcconnid);
@@ -522,23 +555,28 @@ public class NetworkManagerCustom : NetworkManager {
                             gamePlayer.GetComponent<PlayerController>().username = dpc.username;
 
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
-
+                            //ServerMessage sm2 = new ServerMessage();
+                            //sm2.currentMode = currentMode;
+                            //sm2.currentLobby = currentLobby;
+                            //NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm2);
                             Destroy(dpc.gameObject);
                         }
                     }
                 }
                 if (!isExistingPlayer)
                 {
-                    conn.Disconnect();
-                    conn.Dispose();
+                    Debug.Log("No Existing User on the Server");
+                    ErrorMessage em = new ErrorMessage();
+                    em.errorMessage = "No Existing User on the Server";
+                    NetworkServer.SendToClient(conn.connectionId, ErrorMessage.MsgType, em);
                 }
                 break;
         }
 
     }
-    #endregion
+#endregion
 
-    #region ClientOverride
+#region ClientOverride
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         Debug.Log("OnClientDisconnect " + conn.connectionId);
@@ -566,7 +604,12 @@ public class NetworkManagerCustom : NetworkManager {
 
         base.OnClientConnect(conn);
         client.RegisterHandler(ServerMessage.MsgType, OnServerMessageReceived);
+        client.RegisterHandler(ErrorMessage.MsgType, OnErrorShow);
+        PlayerMessage pm = new PlayerMessage();
+        pm.userName = LoginController.userName;
+
         infoPanel.gameObject.SetActive(false);
+        ClientScene.AddPlayer(conn, 0, pm);
         //ChangeTo(levelPanel);
         if (!NetworkServer.active)
         {//only to do on pure client (not self hosting client)
@@ -594,9 +637,9 @@ public class NetworkManagerCustom : NetworkManager {
 
         //ClientScene.Ready(connetion);
     }
-    #endregion
+#endregion
 
-    #region HostOverride
+#region HostOverride
     public override void OnStartHost()
     {
         Debug.Log("OnStartHost");
@@ -607,9 +650,9 @@ public class NetworkManagerCustom : NetworkManager {
         backDelegate = StopHostClbk;
         //SetServerInfo("Hosting", networkAddress);
     }
-    #endregion
+#endregion
 
-    #region Message
+#region Message
     public void OnServerMessageReceived(NetworkMessage msg)
     {
         ServerMessage mx = msg.ReadMessage<ServerMessage>();
@@ -626,7 +669,14 @@ public class NetworkManagerCustom : NetworkManager {
                 break;
         }
     }
-    #endregion
+
+    public void OnErrorShow(NetworkMessage msg)
+    {
+        ErrorMessage em = msg.ReadMessage<ErrorMessage>();
+        Debug.Log(em);
+        infoPanel.Display(em.errorMessage, "Close", StopClientClbk);
+    }
+#endregion
     private void ResetLobbyPlayerArray()
     {
         lobbyPlayerArray.Clear();
@@ -663,7 +713,7 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("ResetAfterStopServer");
         currentMode = NetworkMode.Lobby;
         currentLobby = LobbyMode.Level;
-
+        userNameSet.Clear();
         for (int i = 0; i < maxPlayers; i++)
         {
             lobbyPlayerArray[i] = null;
@@ -674,4 +724,22 @@ public class NetworkManagerCustom : NetworkManager {
         StopCoroutine("CheckLevelSelect");
         levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
+
+    public void ShowWarning(string displayMessage, string buttonMessage)
+    {
+        infoPanel.Display(displayMessage, buttonMessage, null);
+    }
+
+    public bool CheckUserNameValid(string newName) {
+        if (userNameSet.Contains(newName))
+        {
+            return false;
+        }
+        else
+        {
+            userNameSet.Add(newName);
+            return true;
+        }
+    }
+
 }
