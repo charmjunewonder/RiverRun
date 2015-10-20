@@ -22,7 +22,6 @@ public class EngiTeammateController : MonoBehaviour {
     public void AssignToTeammate(int num) {
         if (skill0Controller.IsSkillSelected()) {
 
-
             skill0Controller.DeslectedSkill();
         } else if (crystalProductionController.isFinished()) {
             engineerController.CmdAssignCrystal(num, crystalProductionController.GetCrystal());

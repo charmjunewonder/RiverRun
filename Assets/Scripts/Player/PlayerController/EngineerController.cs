@@ -40,6 +40,8 @@ public class EngineerController : PlayerController {
 
     private void setEngineerController(GameObject ui)
     {
+        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
+
         Transform skillPanel = ui.transform.GetChild(1);
 
         skillPanel.GetChild(0).GetComponent<EngiSkill0Controller>().setPlayerController(this);
@@ -71,9 +73,17 @@ public class EngineerController : PlayerController {
     [Command]
     public void CmdAssignCrystal(int slot, int crystal) {
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
+        
+        if(plc != null)
+            plc.RpcAcceptCrystalFromEngineer(crystal);
+    }
 
-        plc.RpcAcceptCrystalFromEngineer(crystal);
+    [Command]
+    public void CmdHealTeammate(int slot) {
+        PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
 
+        if (plc != null)
+            plc.RpcAcceptHealFromEngineer(GetComponent<EngineerSkill1>().heal);
     }
 
 

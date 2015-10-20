@@ -44,11 +44,12 @@ public class PlayerController : NetworkBehaviour {
         GameObject.DontDestroyOnLoad(gameObject);
 
         if (isLocalPlayer) {
-			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity);
+			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity) as GameObject;
+            ui.SetActive(true);
             GameObject.DontDestroyOnLoad(ui);
             NetworkManagerCustom.SingletonNM.DisableLobbyUI();
             setStrikerDefenderControllers(ui);
-			
+            
 			cam.enabled = true;
 
             skillControllers = new SkillController[3];
@@ -117,9 +118,7 @@ public class PlayerController : NetworkBehaviour {
         {
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-                //Color color = uiTarget.color;
 
-                //uiTarget.color = new Color(color.r, color.g, color.b, 1);
             }
         }
         if (Input.GetMouseButton(0))
@@ -136,16 +135,17 @@ public class PlayerController : NetworkBehaviour {
 
                 if (role == PlayerRole.Striker)
                 {
+                    Debug.Log("children number " + enemyManager.transform.childCount);
                     for (int i = 0; i < enemyManager.transform.childCount; i++)
                     {
-                        Transform enemyUI = enemyUITarget.transform.GetChild(i);
                         Transform enemy = enemyManager.transform.GetChild(i);
-                        Vector2 enemyPos2d = new Vector2(enemyUI.position.x, enemyUI.position.y);
+                        Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
+                        Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 20)
                         {
-                            CmdDoFire(skillIndex, ray, enemy.GetComponent<EnemyMotion>().index);
+                            CmdDoFire(skillIndex, ray, i);
                         }
                     }
                 }
@@ -180,13 +180,40 @@ public class PlayerController : NetworkBehaviour {
             if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
             {
 
-                uiControllers[skillIndex].StartCoolDown();
+                skillControllers[skillIndex].StartCoolDown();
 
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-                CmdDoFire(skillIndex, ray);
+                if (role == PlayerRole.Striker)
+                {
+                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    {
+                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
+                        Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
+                        Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                Color color = uiTarget.color;
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 20)
+                        {
+                            CmdDoFire(skillIndex, ray, i);
+                        }
+                    }
+                }
+                else {
+                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    {
+                        
+                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
+                        Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
+                        Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 20)
+                        {
+                            CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
+                        }   
+                    }
+                }
             }
             else if (!e.IsPointerOverGameObject() && uiControllers[skillIndex].getCoolDownStatus())
             {
@@ -194,7 +221,7 @@ public class PlayerController : NetworkBehaviour {
             }
         }
 #endif
-	}
+    }
 
     #endregion
 
@@ -334,6 +361,11 @@ public class PlayerController : NetworkBehaviour {
         mainCrystalController.AcceptCrystal(crys_num);
     }
 
+    [ClientRpc]
+    public void RpcAcceptHealFromEngineer(float amount) {
+        GetComponent<PlayerInfo>().Damage(-amount);
+    }
+
     #endregion
     
     #region Initialization Setup
@@ -344,6 +376,9 @@ public class PlayerController : NetworkBehaviour {
     private void setStrikerDefenderControllers(GameObject ui)
     {
         Debug.Log(role);
+
+        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
+
         Transform skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
         skillPanel.GetChild(0).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[0] : skillIcons[2];
@@ -415,9 +450,12 @@ public class PlayerController : NetworkBehaviour {
 
     #region Utility
 
-    public void Damage(float damage) {
-        GetComponent<PlayerInfo>().Damage(damage);
+    [ClientRpc]
+    public void RpcDamage(float damage)
+    {
+        if(isLocalPlayer)
+            GetComponent<PlayerInfo>().Damage(damage);
     }
-
+    
     #endregion
 }

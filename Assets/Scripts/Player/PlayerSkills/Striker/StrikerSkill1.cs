@@ -6,7 +6,7 @@ public class StrikerSkill1 : Skill {
 	void Start(){
 		skillName = "hit";
 		int level = gameObject.GetComponent<PlayerInfo>().getLevel();
-		damage = level * 2;
+		damage = level * 5;
 		heal = 0;
 		coolDown = 1;
 	}

@@ -32,7 +32,8 @@ public class EnemySkillMotion : NetworkBehaviour {
             }
             else
             {
-                targetPlayer.GetComponent<PlayerController>().Damage(damage);
+                if(targetPlayer != null)
+                    targetPlayer.GetComponent<PlayerController>().RpcDamage(damage);
                 NetworkServer.Destroy(gameObject);
             }
         }

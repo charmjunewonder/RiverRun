@@ -1,14 +1,21 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class PlayerInfo : MonoBehaviour {
+public class PlayerInfo :  NetworkBehaviour{
 
 	public PlayerRole role;
-	public int level;
-	public float health;
+	protected int level;
 
-    protected float max_health;
+    [SyncVar]
+	protected float health;
+
+    protected float max_health = 10.0f;
 	protected Skill[] skills;
+
+    public HealthController healthController;
+
+    public void setHealthController(HealthController h) { healthController = h; }
 
 	void Awake(){
         if (role == PlayerRole.Engineer) {
@@ -40,10 +47,18 @@ public class PlayerInfo : MonoBehaviour {
 
         if (health < 0)
             health = 0;
+        if (health > 10)
+            health = 10;
 
-        for (int i = 0; i < skills.Length; i++) {
+        int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
+
+        Debug.Log("perc " + health / max_health * 10);
+
+        healthController.setHealth(perc);
+
+        /*for (int i = 0; i < skills.Length; i++) {
             skills[i].damage *= (health / max_health);
             skills[i].heal *= (health / max_health);
-        }
+        }*/
     }
 }
