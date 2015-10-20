@@ -22,7 +22,12 @@ public class EngiTeammateController : MonoBehaviour {
     public void AssignToTeammate(int num) {
         if (skill0Controller.IsSkillSelected()) {
 
+            engineerController.CmdHealTeammate(num);
+
             skill0Controller.DeslectedSkill();
+
+            skill0Controller.StartCoolDown();
+
         } else if (crystalProductionController.isFinished()) {
             engineerController.CmdAssignCrystal(num, crystalProductionController.GetCrystal());
             

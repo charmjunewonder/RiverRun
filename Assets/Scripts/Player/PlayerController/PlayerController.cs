@@ -45,7 +45,6 @@ public class PlayerController : NetworkBehaviour {
 
         if (isLocalPlayer) {
 			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity) as GameObject;
-            ui.SetActive(true);
             GameObject.DontDestroyOnLoad(ui);
             NetworkManagerCustom.SingletonNM.DisableLobbyUI();
             setStrikerDefenderControllers(ui);
@@ -358,12 +357,14 @@ public class PlayerController : NetworkBehaviour {
 
     [ClientRpc]
     public void RpcAcceptCrystalFromEngineer(int crys_num) {
-        mainCrystalController.AcceptCrystal(crys_num);
+        if(isLocalPlayer)
+            mainCrystalController.AcceptCrystal(crys_num);
     }
 
     [ClientRpc]
     public void RpcAcceptHealFromEngineer(float amount) {
-        GetComponent<PlayerInfo>().Damage(-amount);
+        if (isLocalPlayer)
+            GetComponent<PlayerInfo>().Damage(-amount);
     }
 
     #endregion
