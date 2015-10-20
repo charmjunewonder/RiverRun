@@ -176,7 +176,7 @@ public class PlayerController : NetworkBehaviour {
 #if UNITY_IOS
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
-            if (!e.IsPointerOverGameObject() && !uiControllers[skillIndex].getCoolDownStatus())
+            if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
 
                 skillControllers[skillIndex].StartCoolDown();
@@ -214,7 +214,7 @@ public class PlayerController : NetworkBehaviour {
                     }
                 }
             }
-            else if (!e.IsPointerOverGameObject() && uiControllers[skillIndex].getCoolDownStatus())
+            else if (!e.IsPointerOverGameObject() && skillControllers[skillIndex].getCoolDownStatus())
             {
                 reminderController.setReminder("Skill is Cooling Down", 1);
             }
