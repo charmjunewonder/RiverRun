@@ -6,7 +6,7 @@ public class EnemySkillMotion : NetworkBehaviour {
 
     private GameObject spaceship;
     private GameObject targetPlayer;
-    private Vector3 velocity;
+    public Vector3 velocity;
     private float damage;
 
     public void setSpaceship(GameObject ss) { spaceship = ss; }
