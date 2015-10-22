@@ -412,6 +412,7 @@ public class PlayerController : NetworkBehaviour {
 
     void OnLevelWasLoaded(int level)
     {
+        Debug.Log("OnLevelWasLoaded");
         if (isLocalPlayer)
         {
             //if(level != 0)

@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿#define debuglog
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
 using UnityStandardAssets.Network;
 using System.Collections.Generic;
 
-public enum NetworkMode { Lobby, Game };
-public enum LobbyMode { Level, Role };
+public enum NetworkMode { Level, Lobby, Game };
+//public enum LobbyMode { Level, Role };
 
 public class NetworkManagerCustom : NetworkManager {
     public GameObject LobbyPlayerPrefab;
@@ -18,7 +20,6 @@ public class NetworkManagerCustom : NetworkManager {
     public ArrayList disconnectedPlayerControllers { get; set; }
     public HashSet<string> userNameSet;
     public NetworkMode currentMode { get; set; }
-    public LobbyMode currentLobby;
     public GameObject serverConnect;
     static public NetworkManagerCustom SingletonNM { get; set;}
     
@@ -47,6 +48,7 @@ public class NetworkManagerCustom : NetworkManager {
     private bool isSetReady = false;
     void Start()
     {
+        Debug.Log("Start");
 
 #if UNITY_IOS
         serverConnect.SetActive(false);
@@ -56,8 +58,7 @@ public class NetworkManagerCustom : NetworkManager {
         GameObject.DontDestroyOnLoad(es);
 
         SingletonNM = this;
-        currentMode = NetworkMode.Lobby;
-        currentLobby = LobbyMode.Level;
+        currentMode = NetworkMode.Level;
         //currentPanel = connectPanel;
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
@@ -79,6 +80,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     IEnumerator startLatency()
     {
+        Debug.Log("startLatency");
         yield return new WaitForSeconds(15.0f);
         useSimulator = true;
     }
@@ -91,7 +93,7 @@ public class NetworkManagerCustom : NetworkManager {
     }
 
 
-    public void ChangeTo(RectTransform newPanel)
+    private void ChangeTo(RectTransform newPanel)
     {
         Debug.Log("ChangeTo " + newPanel.gameObject.name);
         if (currentPanel != null)
@@ -138,7 +140,6 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("StopHostClbk");
         StopHost();
-        ResetAfterStopServer();
         ChangeTo(connectPanel);
     }
 
@@ -153,7 +154,6 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("StopServerClbk");
         StopServer();
-        ResetAfterStopServer();
         ChangeTo(connectPanel);
     }
 
@@ -171,19 +171,23 @@ public class NetworkManagerCustom : NetworkManager {
             backDelegate = StopServerClbk;
         else
             backDelegate = StopClientClbk;
-
-        ChangeVisibilityOfLobbyPlayer(false);
+        //TODO: 
+        //ChangeVisibilityOfLobbyPlayerOnLocal(false);
         ChangeTo(levelPanel);
     }
 
     public void ChangeToConnectPanel()
     {
+        Debug.Log("ChangeToConnectPanel");
+
         ChangeTo(connectPanel);
     }
 #endregion
 
     public void ChangeToSettingPanel()
     {
+        Debug.Log("ChangeToSettingPanel");
+
         ChangeTo(settingPanel);
         //backDelegate = SimpleBackClbk;
     }
@@ -281,23 +285,17 @@ public class NetworkManagerCustom : NetworkManager {
 
     private void ChangeToLobbyPanel()
     {
-        StopCoroutine("CheckLevelSelect");
-        ChangeToLobbyPanelUtil();
-        //backDelegate = OnLobbyBackToLevelClbk;
-        foreach (LobbyPlayer lp in lobbyPlayerArray)
-        {
-            if (lp != null)
-            {
-                lp.RpcChangeToLobby();
-            }
-        }
-    }
+        Debug.Log("ChangeToLobbyPanel");
 
-    public void ChangeToLobbyPanelUtil()
-    {
+        StopCoroutine("CheckLevelSelect");
+        //backDelegate = OnLobbyBackToLevelClbk;
         ChangeTo(lobbyPanel);
-        currentLobby = LobbyMode.Role;
-        ChangeVisibilityOfLobbyPlayer(true);
+        currentMode = NetworkMode.Lobby;
+
+        ChangeVisibilityOfLobbyPlayerEverywhere(true);
+        ServerMessage sm = new ServerMessage();
+        sm.currentMode = currentMode;
+        NetworkServer.SendToAll(ServerMessage.MsgType, sm);
     }
 
     private void ChangeLobbyToGameScene()
@@ -359,11 +357,15 @@ public class NetworkManagerCustom : NetworkManager {
 
     private void SetupGameScene()
     {
+        Debug.Log("SetupGameScene");
+
         DisableLobbyUI();
     }
 
     public void DisableLobbyUI()
     {
+        Debug.Log("DisableLobbyUI");
+
         topPanel.gameObject.SetActive(false);
         connectPanel.gameObject.SetActive(false);
         lobbyPanel.gameObject.SetActive(false);
@@ -372,7 +374,9 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void SetLevelWithSlot(LevelEnum le, int newSlot)
     {
-        if(newSlot >=0 && newSlot < maxPlayers)
+        Debug.Log("SetLevelWithSlot");
+
+        if (newSlot >=0 && newSlot < maxPlayers)
         {
             Debug.Log("Set Level " + le.ToString() + " " + newSlot);
             levels[newSlot] = le;
@@ -385,22 +389,23 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnStartServer()
     {
         Debug.Log("OnStartServer");
+        base.OnStartServer();
         isServer = true;
-        currentMode = NetworkMode.Lobby;
+        currentMode = NetworkMode.Level;
         StartCoroutine("CheckLevelSelect");
-        if(currentPanel == connectPanel)
-            ChangeTo(lobbyPanel);
-
-        //StartCoroutine("CheckLobbyReady");
+        // change first, if it is a host, it will change back to level.
+        ChangeTo(lobbyPanel);
     }
 
     //This hook is called when a server is stopped - including when a host is stopped.
     public override void OnStopServer()
     {
         Debug.Log("OnStopServer");
-        currentMode = NetworkMode.Lobby;
+        base.OnStopServer();
+        currentMode = NetworkMode.Level;
         StopCoroutine("CheckLobbyReady");
         ResetLobbyPlayerArray();
+        ResetAfterStopServer();
     }
 
     //Called on the server when a new client connects.
@@ -418,9 +423,9 @@ public class NetworkManagerCustom : NetworkManager {
 
             //tell the client
         }
+        base.OnServerConnect(conn);
         ServerMessage sm = new ServerMessage();
         sm.currentMode = currentMode;
-        sm.currentLobby = currentLobby;
         NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
     }
 
@@ -432,6 +437,8 @@ public class NetworkManagerCustom : NetworkManager {
         
         switch (currentMode)
         {
+            //just removing the corresponding object in lobbyPlayerArray
+            case NetworkMode.Level:
             case NetworkMode.Lobby:
                 Debug.Log("OnServerDisconnect Lobby ");
 
@@ -453,6 +460,8 @@ public class NetworkManagerCustom : NetworkManager {
                 }
                 if (hasError) Debug.LogError("Error to remove the lobby when client disconnect.");
                 break;
+            // create a disconnect player to store the data, preparing for reconnect.
+            //TODO: why not store the object itself
             case NetworkMode.Game:
                 Debug.Log("OnServerDisconnect Game ");
                 for (int i = 0; i < maxPlayers; i++)
@@ -487,6 +496,7 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessageReader)
     {
         Debug.Log("OnServerAddPlayer " + conn.connectionId);
+        //cannot add base.OnServerAddPlayer(conn, playerControllerId);
         string playerName = "";
         if (extraMessageReader != null)
         {
@@ -496,33 +506,36 @@ public class NetworkManagerCustom : NetworkManager {
         }
         switch (currentMode)
         {
+            case NetworkMode.Level: 
             case NetworkMode.Lobby:
                 Debug.Log("OnServerAddPlayer Lobby ");
+                //find out the name does not exist
                 if(!CheckUserNameValid(playerName)){
                     ErrorMessage em = new ErrorMessage();
                     em.errorMessage = "This Account Has Already Connected to Server.";
                     NetworkServer.SendToClient(conn.connectionId, ErrorMessage.MsgType, em);
                     return;
                 }
+                //find a empty slot
                 int i = 0;
                 for (; i < maxPlayers; i++)
                     if (lobbyPlayerArray[i] == null) break;
                 if (i == maxPlayers) return;
+                //create lobby object
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
-                player.GetComponent<LobbyPlayer>().currentLobby = currentLobby;
                 player.GetComponent<LobbyPlayer>().currentMode = currentMode;
 
-                Debug.Log("OnServerAddPlayer Lobby " + player.GetComponent<LobbyPlayer>().currentLobby);
+                Debug.Log("OnServerAddPlayer Lobby ");
 
                 lobbyPlayerArray[i] = player.GetComponent<LobbyPlayer>();
 
                 //player.GetComponent<LobbyPlayer>().ToggleVisibility(false);
                 NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-                //ServerMessage sm = new ServerMessage();
-                //sm.currentMode = currentMode;
-                //sm.currentLobby = currentLobby;
-                //NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
+                if(currentMode == NetworkMode.Lobby)
+                { // make lobby visible amoung all clients and server
+                    ChangeVisibilityOfLobbyPlayerEverywhere(true);
+                }
                 break;
             case NetworkMode.Game:
                 Debug.Log("OnServerAddPlayer Game ");
@@ -555,10 +568,6 @@ public class NetworkManagerCustom : NetworkManager {
                             gamePlayer.GetComponent<PlayerController>().username = dpc.username;
 
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
-                            //ServerMessage sm2 = new ServerMessage();
-                            //sm2.currentMode = currentMode;
-                            //sm2.currentLobby = currentLobby;
-                            //NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm2);
                             Destroy(dpc.gameObject);
                         }
                     }
@@ -585,7 +594,7 @@ public class NetworkManagerCustom : NetworkManager {
         //return back to lobby
         ChangeTo(connectPanel);
         DisableGameUI();
-        currentMode = NetworkMode.Lobby;
+        currentMode = NetworkMode.Level;
     }
 
     public override void OnClientError(NetworkConnection conn, int errorCode)
@@ -595,7 +604,7 @@ public class NetworkManagerCustom : NetworkManager {
         ChangeTo(connectPanel);
         infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
         DisableGameUI();
-        currentMode = NetworkMode.Lobby;
+        currentMode = NetworkMode.Level;
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -623,17 +632,17 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnClientSceneChanged(NetworkConnection conn)
     {
         Debug.Log("OnClientSceneChanged " + conn.connectionId);
-
+        base.OnClientSceneChanged(conn);
         DisableLobbyUI();
         Debug.Log("SetReady " + conn.isReady);
         //ClientScene.Ready(conn);
 
-        if (!isSetReady)
-        {
-            Debug.Log("SetReady");
-            ClientScene.Ready(conn);
-            isSetReady = true;
-        } 
+        //if (!isSetReady)
+        //{
+        //    Debug.Log("SetReady");
+        //    ClientScene.Ready(conn);
+        //    isSetReady = true;
+        //} 
 
         //ClientScene.Ready(connetion);
     }
@@ -646,25 +655,40 @@ public class NetworkManagerCustom : NetworkManager {
 
         base.OnStartHost();
 
-        ChangeTo(levelPanel);
+        //ChangeTo(levelPanel);
         backDelegate = StopHostClbk;
         //SetServerInfo("Hosting", networkAddress);
     }
-#endregion
 
-#region Message
+    public override void OnStopHost()
+    {
+        Debug.Log("OnStartHost");
+
+        base.OnStopHost();
+        ResetAfterStopServer();
+
+    }
+    #endregion
+
+    #region Message
+    //change panel on client
     public void OnServerMessageReceived(NetworkMessage msg)
     {
         ServerMessage mx = msg.ReadMessage<ServerMessage>();
         Debug.Log(string.Format("SERVER: {0}", mx));
         switch (mx.currentMode)
         {
-            case NetworkMode.Lobby:
+            case NetworkMode.Level:
+                Debug.Log("OnServerMessageReceived Change levelPanel");
                 ChangeTo(levelPanel);
                 break;
+            case NetworkMode.Lobby:
+                Debug.Log("OnServerMessageReceived Change lobbyPanel");
+                ChangeTo(lobbyPanel);
+                break;
             case NetworkMode.Game:
-                Debug.Log("Change Scene ");
-                Application.LoadLevel("Level1");
+                Debug.Log("OnServerMessageReceived Change Game");
+                //Application.LoadLevel("Level1");
                 isSetReady = true;
                 break;
         }
@@ -672,6 +696,8 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void OnErrorShow(NetworkMessage msg)
     {
+        Debug.Log("OnErrorShow");
+
         ErrorMessage em = msg.ReadMessage<ErrorMessage>();
         Debug.Log(em);
         infoPanel.Display(em.errorMessage, "Close", StopClientClbk);
@@ -679,6 +705,8 @@ public class NetworkManagerCustom : NetworkManager {
 #endregion
     private void ResetLobbyPlayerArray()
     {
+        Debug.Log("ResetLobbyPlayerArray");
+
         lobbyPlayerArray.Clear();
         for(int i = 0; i < maxPlayers; i++)
         {
@@ -695,15 +723,15 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
-    private void ChangeVisibilityOfLobbyPlayer(bool visible)
+    private void ChangeVisibilityOfLobbyPlayerEverywhere(bool visible)
     {
-        Debug.Log("ChangeVisibilityOfLobbyPlayer dsf");
+        Debug.Log("ChangeVisibilityOfLobbyPlayerEverywhere");
         GameObject[] lps = GameObject.FindGameObjectsWithTag("LobbyPlayerUI");
         foreach(GameObject lp in lps)
         {
             if(lp != null)
             {
-                lp.GetComponent<LobbyPlayer>().ToggleVisibility(visible);
+                lp.GetComponent<LobbyPlayer>().CmdToggleVisibility(visible);
             }
         }
     }
@@ -711,8 +739,7 @@ public class NetworkManagerCustom : NetworkManager {
     private void ResetAfterStopServer()
     {
         Debug.Log("ResetAfterStopServer");
-        currentMode = NetworkMode.Lobby;
-        currentLobby = LobbyMode.Level;
+        currentMode = NetworkMode.Level;
         userNameSet.Clear();
         for (int i = 0; i < maxPlayers; i++)
         {
@@ -722,6 +749,7 @@ public class NetworkManagerCustom : NetworkManager {
             levels[i] = LevelEnum.Unselected;
         }
         StopCoroutine("CheckLevelSelect");
+        StopCoroutine("CheckLobbyReady");
         levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 

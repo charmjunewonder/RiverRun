@@ -9,9 +9,6 @@ public class LobbyPlayer : NetworkBehaviour {
 
     //OnMyName function will be invoked on clients when server change the value of playerName
 
-    [SyncVar]
-    private bool isLevelSelected = false;
-
     public bool isReady = false;
 
     [SyncVar]
@@ -27,8 +24,7 @@ public class LobbyPlayer : NetworkBehaviour {
     public Sprite strikerSprite, engineerSprite, defenderSprite;
     public GameObject readyImage;
     public Text strikerLevel, engineerLevel, defenderLevel;
-    [SyncVar]
-    public LobbyMode currentLobby;
+
     [SyncVar]
     public NetworkMode currentMode;
     [SyncVar(hook = "OnMyName")]
@@ -47,14 +43,14 @@ public class LobbyPlayer : NetworkBehaviour {
             CmdNameChanged(LoginController.userName);
 
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
-            Debug.Log("OnServerAddPlayer Lobby " + currentLobby);
-            if (currentMode == NetworkMode.Lobby && currentLobby == LobbyMode.Role)
-            {
-                Debug.Log("Lobby Player Change to " + currentLobby);
+            Debug.Log("OnServerAddPlayer Lobby " );
+            //if (currentMode == NetworkMode.Lobby && currentLobby == LobbyMode.Role)
+            //{
+            //    Debug.Log("Lobby Player Change to " + currentLobby);
 
-                NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
-                CmdChangeToLobbyPanel();
-            }
+            //    NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
+            //    CmdChangeToLobbyPanel();
+            //}
             strikerLevel.text = "LEVEL " + PlayerPrefs.GetInt("sl");
             engineerLevel.text = "LEVEL " + PlayerPrefs.GetInt("el");
             defenderLevel.text = "LEVEL " + PlayerPrefs.GetInt("dl");
@@ -65,6 +61,7 @@ public class LobbyPlayer : NetworkBehaviour {
     private float GetLobbyPlayerPos(int slot)
     {
         //return -(800 / 2) + 800 / 5 * (slot + 1);
+        if (slot < 0 || slot > 3) return -215;
         int[] pos = { -215, -81, 55, 189 };
         return pos[slot];
     }
@@ -163,29 +160,16 @@ public class LobbyPlayer : NetworkBehaviour {
     }
 
     [Command]
-    public void CmdChangeToLobbyPanel()
+    public void CmdToggleVisibility(bool visible)
     {
-        ToggleVisibility(true);
-        //RpcChangeToLobbyPanel();
-        RpcChangeToLobby();
+        ToggleVisibility(visible);
+        RpcToggleVisibility(visible);
     }
 
     [ClientRpc]
-    public void RpcChangeToLobbyPanel()
+    public void RpcToggleVisibility(bool visible)
     {
-        ToggleVisibility(true);
-    }
-
-    [ClientRpc]
-    public void RpcChangeToLobby()
-    {
-        if (isLocalPlayer)
-        {
-            Debug.Log("RpcChangeToLobby");
-            NetworkManagerCustom.SingletonNM.ChangeToLobbyPanelUtil();
-        }
-        ToggleVisibility(true);
-
+        ToggleVisibility(visible);
     }
 
     private void ChooseRole(PlayerRole r)

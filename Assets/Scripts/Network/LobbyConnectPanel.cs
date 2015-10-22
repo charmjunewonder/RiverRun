@@ -84,7 +84,6 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public void OnClickDedicated()
     {
-        networkManager.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
         networkManager.StartServer();
 
         networkManager.backDelegate = networkManager.StopServerClbk;
