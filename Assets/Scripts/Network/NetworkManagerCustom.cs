@@ -17,10 +17,9 @@ public class NetworkManagerCustom : NetworkManager {
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
-    public ArrayList disconnectedPlayerControllers { get; set; }
-    public HashSet<string> userNameSet;
-    public NetworkMode currentMode { get; set; }
-    public GameObject serverConnect;
+    private ArrayList disconnectedPlayerControllers;
+    private HashSet<string> userNameSet;
+    private NetworkMode currentMode;
     static public NetworkManagerCustom SingletonNM { get; set;}
     
     #region Lobby Variable
@@ -45,7 +44,7 @@ public class NetworkManagerCustom : NetworkManager {
     private string selectedLevel = "Level1";
     private ArrayList levels;
     private bool isServer = false;
-    private bool isSetReady = false;
+    private bool hasCreatePlayer = false;
     void Start()
     {
         Debug.Log("Start");
@@ -91,7 +90,6 @@ public class NetworkManagerCustom : NetworkManager {
         //SetServerInfo("Offline", "None");
         currentPanel = connectPanel;
     }
-
 
     private void ChangeTo(RectTransform newPanel)
     {
@@ -225,7 +223,8 @@ public class NetworkManagerCustom : NetworkManager {
         while (true)
         {
             Debug.Log("CheckLevelSelect");
-
+            string debuglog = "CheckLevelSelect ";
+            //TODO: bug
             LevelEnum firstLevel = LevelEnum.Easy;
             bool isAllSame = false;
             bool isFirst = true;
@@ -237,6 +236,7 @@ public class NetworkManagerCustom : NetworkManager {
                 {
                     LevelEnum curr = (LevelEnum)levels[i];
                     userCount++;
+                    debuglog += curr + " ";
                     if (isFirst) {
                         isAllSame = true;
                         isAllSelected = true;
@@ -252,8 +252,15 @@ public class NetworkManagerCustom : NetworkManager {
                         isAllSelected &= (curr != LevelEnum.Unselected);
                     }
                 }
+                else
+                {
+                    debuglog += " null  ";
+                }
             }
-            if(userCount < minPlayers)
+            debuglog += " allSame " + isAllSame + " allselected " + isAllSelected;
+            //Debug.Log(debuglog);
+
+            if (userCount < minPlayers)
             {
                 yield return new WaitForSeconds(0.2f);
                 continue;
@@ -293,6 +300,7 @@ public class NetworkManagerCustom : NetworkManager {
         currentMode = NetworkMode.Lobby;
 
         ChangeVisibilityOfLobbyPlayerEverywhere(true);
+        //ask client to change panel
         ServerMessage sm = new ServerMessage();
         sm.currentMode = currentMode;
         NetworkServer.SendToAll(ServerMessage.MsgType, sm);
@@ -424,8 +432,10 @@ public class NetworkManagerCustom : NetworkManager {
             //tell the client
         }
         base.OnServerConnect(conn);
+        //ask client to change panel
         ServerMessage sm = new ServerMessage();
         sm.currentMode = currentMode;
+        sm.isCreatePlayer = true;
         NetworkServer.SendToClient(conn.connectionId, ServerMessage.MsgType, sm);
     }
 
@@ -583,9 +593,16 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
     }
-#endregion
 
-#region ClientOverride
+    public override void OnServerReady(NetworkConnection conn)
+    {
+        Debug.Log("OnServerReady " + conn.connectionId);
+        base.OnServerReady(conn);
+
+    }
+    #endregion
+
+    #region ClientOverride
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         Debug.Log("OnClientDisconnect " + conn.connectionId);
@@ -607,18 +624,23 @@ public class NetworkManagerCustom : NetworkManager {
         currentMode = NetworkMode.Level;
     }
 
+    public override void OnClientNotReady(NetworkConnection conn)
+    {
+        Debug.Log("OnClientNotReady " + conn.connectionId);
+
+    }
+
     public override void OnClientConnect(NetworkConnection conn)
     {
         Debug.Log("OnClientConnect " + conn.connectionId);
-
-        base.OnClientConnect(conn);
+        Debug.Log("SetReady " + conn.isReady);
+        Debug.Log("SetReady2 " + ClientScene.ready);
+        //base.OnClientConnect(conn);
         client.RegisterHandler(ServerMessage.MsgType, OnServerMessageReceived);
         client.RegisterHandler(ErrorMessage.MsgType, OnErrorShow);
-        PlayerMessage pm = new PlayerMessage();
-        pm.userName = LoginController.userName;
+
 
         infoPanel.gameObject.SetActive(false);
-        ClientScene.AddPlayer(conn, 0, pm);
         //ChangeTo(levelPanel);
         if (!NetworkServer.active)
         {//only to do on pure client (not self hosting client)
@@ -632,18 +654,25 @@ public class NetworkManagerCustom : NetworkManager {
     public override void OnClientSceneChanged(NetworkConnection conn)
     {
         Debug.Log("OnClientSceneChanged " + conn.connectionId);
-        base.OnClientSceneChanged(conn);
-        DisableLobbyUI();
         Debug.Log("SetReady " + conn.isReady);
+        Debug.Log("SetReady2 " + ClientScene.ready);
+
+        DisableLobbyUI();
         //ClientScene.Ready(conn);
 
-        //if (!isSetReady)
-        //{
-        //    Debug.Log("SetReady");
-        //    ClientScene.Ready(conn);
-        //    isSetReady = true;
-        //} 
-
+        if (!ClientScene.ready)
+        {
+            Debug.Log("SetReady");
+            base.OnClientSceneChanged(conn);
+            if (!hasCreatePlayer) {
+                PlayerMessage pm = new PlayerMessage();
+                pm.userName = LoginController.userName;
+                ClientScene.AddPlayer(client.connection, 0, pm);
+                hasCreatePlayer = true;
+            }
+        }
+        Debug.Log("SetReady " + conn.isReady);
+        Debug.Log("SetReady2 " + ClientScene.ready);
         //ClientScene.Ready(connetion);
     }
 #endregion
@@ -676,20 +705,34 @@ public class NetworkManagerCustom : NetworkManager {
     {
         ServerMessage mx = msg.ReadMessage<ServerMessage>();
         Debug.Log(string.Format("SERVER: {0}", mx));
+
         switch (mx.currentMode)
         {
             case NetworkMode.Level:
                 Debug.Log("OnServerMessageReceived Change levelPanel");
                 ChangeTo(levelPanel);
+                if (mx.isCreatePlayer)
+                {
+                    PlayerMessage pm = new PlayerMessage();
+                    pm.userName = LoginController.userName;
+                    ClientScene.AddPlayer(client.connection, 0, pm);
+                    hasCreatePlayer = true;
+                }
                 break;
             case NetworkMode.Lobby:
                 Debug.Log("OnServerMessageReceived Change lobbyPanel");
                 ChangeTo(lobbyPanel);
+                if (mx.isCreatePlayer)
+                {
+                    PlayerMessage pm = new PlayerMessage();
+                    pm.userName = LoginController.userName;
+                    ClientScene.AddPlayer(client.connection, 0, pm);
+                    hasCreatePlayer = true;
+                }
                 break;
             case NetworkMode.Game:
                 Debug.Log("OnServerMessageReceived Change Game");
                 //Application.LoadLevel("Level1");
-                isSetReady = true;
                 break;
         }
     }
@@ -770,4 +813,17 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
+    void OnApplicationQuit()
+    {
+        Debug.Log("Application Quit");
+
+        Debug.Log("StopClient");
+        StopClient();
+        if (isServer)
+        {
+            Debug.Log("StopServer");
+            StopServer();
+        }
+
+    }
 }
