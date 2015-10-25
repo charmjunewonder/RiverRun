@@ -6,22 +6,22 @@ using UnityEngine.Networking;
 
 public class EngineerController : PlayerController {
 
-    struct teammateInfo {
+    public struct teammateInfo {
         public int slot;
         public PlayerRole role;
         public string un;
     }
 
-    [SyncVar(hook = "OnVar")]
-    private ArrayList teammatesInfo;
+    public class SyncListTeammateInfo : SyncListStruct<teammateInfo>{
+    
+    }
+
+    [SyncVar]
+    public SyncListTeammateInfo teammatesInfo = new SyncListTeammateInfo();
 
     public Sprite[] teammatePhotoes;
 
     protected GameObject ui;
-
-    void Awake() {
-        teammatesInfo = new ArrayList();
-    }
 
     void Start()
     {
@@ -127,10 +127,11 @@ public class EngineerController : PlayerController {
     }
     
     public void initializeTeammateUI() {
+
         for (int i = 0; i < teammatesInfo.Count; i++)
         {
-            Transform child = ui.transform.GetChild(5).GetChild(((teammateInfo)teammatesInfo[i]).slot);
-            PlayerRole r = ((teammateInfo)teammatesInfo[i]).role;
+            Transform child = ui.transform.GetChild(5).GetChild(teammatesInfo[i].slot);
+            PlayerRole r = teammatesInfo[i].role;
             if (r == PlayerRole.Striker)
             {
                 child.GetComponent<Image>().sprite = teammatePhotoes[0];
@@ -144,18 +145,19 @@ public class EngineerController : PlayerController {
                 child.GetComponent<Image>().sprite = teammatePhotoes[2];
             }
             child.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-            child.GetChild(1).GetComponent<Text>().text = ((teammateInfo)teammatesInfo[i]).un;
+            child.GetChild(1).GetComponent<Text>().text = teammatesInfo[i].un;
         }
     }
 
     public void initializeTeammate(int slot, PlayerRole role, string un) {
-        if(isServer)
-            Debug.Log("InitializeTeammate");
-        teammateInfo info = new teammateInfo();
-        info.slot = slot;
-        info.role = role;
-        info.un = un;
-        teammatesInfo.Add(info);
+        if(isServer){
+            teammateInfo info = new teammateInfo();
+            info.slot = slot;
+            info.role = role;
+            info.un = un;
+            teammatesInfo.Add(info);
+        }
+        
     }
 
 
@@ -163,7 +165,7 @@ public class EngineerController : PlayerController {
         if (isLocalPlayer) { 
 
             Debug.Log("Client OnVar");
-            
+            /*
             for (int i = 0; i < info.Count; i++) {
                 Transform child = ui.transform.GetChild(5).GetChild(((teammateInfo)info[i]).slot);
                 PlayerRole r = ((teammateInfo)info[i]).role;
@@ -182,7 +184,7 @@ public class EngineerController : PlayerController {
                 child.GetComponent<Image>().color = new Color(1, 1, 1, 1);
                 child.GetChild(1).GetComponent<Text>().text = ((teammateInfo)info[i]).un;
             }
-            teammatesInfo = info;
+            teammatesInfo = info;*/
         }
     }
 

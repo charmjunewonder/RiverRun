@@ -336,7 +336,7 @@ public class NetworkManagerCustom : NetworkManager {
                     ////Destroy(lp.gameObject);
 
                     NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
-                    //Debug.Log("ReplacePlayerForConnection " + success);
+                   // Debug.Log("ReplacePlayerForConnection " + newPlayer.GetComponent<EngineerController>().teammatesInfo);
                 }
                 else {
                     GameObject newPlayer = (GameObject)Instantiate(StrikerPrefab, Vector3.zero, Quaternion.identity);
