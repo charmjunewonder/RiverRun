@@ -159,8 +159,8 @@ public class LobbyPlayer : NetworkBehaviour {
         }
     }
 
-    [Command]
-    public void CmdToggleVisibility(bool visible)
+    
+    public void ServerToggleVisibility(bool visible)
     {
         ToggleVisibility(visible);
         RpcToggleVisibility(visible);

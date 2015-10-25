@@ -774,7 +774,7 @@ public class NetworkManagerCustom : NetworkManager {
         {
             if(lp != null)
             {
-                lp.GetComponent<LobbyPlayer>().CmdToggleVisibility(visible);
+                lp.GetComponent<LobbyPlayer>().ServerToggleVisibility(visible);
             }
         }
     }
