@@ -6,17 +6,32 @@ using UnityEngine.Networking;
 
 public class EngineerController : PlayerController {
 
+    struct teammateInfo {
+        public int slot;
+        public PlayerRole role;
+        public string un;
+    }
+
+    [SyncVar(hook = "OnVar")]
+    private ArrayList teammatesInfo;
+
     public Sprite[] teammatePhotoes;
 
     protected GameObject ui;
 
+    void Awake() {
+        teammatesInfo = new ArrayList();
+    }
+
     void Start()
     {
+        
         playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
 
         if (isLocalPlayer)
         {
+            Debug.Log("ui initialized");
             ui = (GameObject)Instantiate(uiPrefab, transform.position, Quaternion.identity);
             GameObject.DontDestroyOnLoad(ui);
 
@@ -109,13 +124,65 @@ public class EngineerController : PlayerController {
                 child.GetChild(1).GetComponent<Text>().text = un;
             }
         }
-       
+    }
+    
+    public void initializeTeammateUI() {
+        for (int i = 0; i < teammatesInfo.Count; i++)
+        {
+            Transform child = ui.transform.GetChild(5).GetChild(((teammateInfo)teammatesInfo[i]).slot);
+            PlayerRole r = ((teammateInfo)teammatesInfo[i]).role;
+            if (r == PlayerRole.Striker)
+            {
+                child.GetComponent<Image>().sprite = teammatePhotoes[0];
+            }
+            else if (r == PlayerRole.Defender)
+            {
+                child.GetComponent<Image>().sprite = teammatePhotoes[1];
+            }
+            else
+            {
+                child.GetComponent<Image>().sprite = teammatePhotoes[2];
+            }
+            child.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            child.GetChild(1).GetComponent<Text>().text = ((teammateInfo)teammatesInfo[i]).un;
+        }
     }
 
-    private void initializeTeammate() {
-        for (int i = 0; i < 4; i++)
-        {
-            CmdRequestTeammateInfo(i);
+    public void initializeTeammate(int slot, PlayerRole role, string un) {
+        if(isServer)
+            Debug.Log("InitializeTeammate");
+        teammateInfo info = new teammateInfo();
+        info.slot = slot;
+        info.role = role;
+        info.un = un;
+        teammatesInfo.Add(info);
+    }
+
+
+    private void OnVar(ArrayList info) {
+        if (isLocalPlayer) { 
+
+            Debug.Log("Client OnVar");
+            
+            for (int i = 0; i < info.Count; i++) {
+                Transform child = ui.transform.GetChild(5).GetChild(((teammateInfo)info[i]).slot);
+                PlayerRole r = ((teammateInfo)info[i]).role;
+                if (r == PlayerRole.Striker)
+                {
+                    child.GetComponent<Image>().sprite = teammatePhotoes[0];
+                }
+                else if (r == PlayerRole.Defender)
+                {
+                    child.GetComponent<Image>().sprite = teammatePhotoes[1];
+                }
+                else
+                {
+                    child.GetComponent<Image>().sprite = teammatePhotoes[2];
+                }
+                child.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                child.GetChild(1).GetComponent<Text>().text = ((teammateInfo)info[i]).un;
+            }
+            teammatesInfo = info;
         }
     }
 
@@ -127,7 +194,7 @@ public class EngineerController : PlayerController {
             //if (level != 0)
             //ClientScene.Ready(connectionToServer);
             if (level == 0) return;
-            Invoke("initializeTeammate", 0.5f);
+            initializeTeammateUI();
         }
 
         if (level == 13)

@@ -354,13 +354,41 @@ public class NetworkManagerCustom : NetworkManager {
                     NetworkServer.ReplacePlayerForConnection(conn, newPlayer, id);
                     //Debug.Log("ReplacePlayerForConnection " + success);
                 }
-                
-
             }
         }
+
+        SetupEngineerTeammateInfo();
+        
         currentMode = NetworkMode.Game;
         ResetLobbyPlayerArray();
         ServerChangeScene(selectedLevel);
+    }
+
+    private void SetupEngineerTeammateInfo() {
+        Debug.Log("Start to assign teammate");
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            PlayerController ipc = (PlayerController)gameplayerControllers[i];
+            if (ipc != null && ipc.role == PlayerRole.Engineer)
+            {
+                EngineerController ec = (EngineerController)ipc;
+                for (int j = 0; j < maxPlayers; j++)
+                {
+                    PlayerController jpc = (PlayerController)gameplayerControllers[j];
+                    if(jpc != null)
+                        ec.initializeTeammate(jpc.slot, jpc.role, jpc.username);
+                }
+            }
+        }
+    }
+
+    private void SetUpEngineerTeammateInfo(EngineerController self) {
+        for (int j = 0; j < maxPlayers; j++)
+        {
+            PlayerController jpc = (PlayerController)gameplayerControllers[j];
+            if(jpc != null)
+                self.initializeTeammate(jpc.slot, jpc.role, jpc.username);
+        }
     }
 
     private void SetupGameScene()
@@ -559,6 +587,7 @@ public class NetworkManagerCustom : NetworkManager {
                         // Disconnected player to Game Player
                         if (dpc.username == playerName)
                         {
+                            //TODO: Disconnect to Player
                             isExistingPlayer = true;
                             Debug.Log(k + " existing " + dpcconnid);
                             disconnectedPlayerControllers[k] = null;
@@ -576,6 +605,11 @@ public class NetworkManagerCustom : NetworkManager {
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
                             gamePlayer.GetComponent<PlayerController>().slot = k;
                             gamePlayer.GetComponent<PlayerController>().username = dpc.username;
+
+
+                            if(gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
+                                SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
+                            
 
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
                             Destroy(dpc.gameObject);
