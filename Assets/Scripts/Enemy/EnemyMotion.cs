@@ -37,7 +37,9 @@ public class EnemyMotion : NetworkBehaviour {
         blood -= damage;
         Debug.Log("CmdDecreaseBlood " + blood);
         if (blood <= 0)
+        {
             NetworkServer.Destroy(gameObject);
+        }
     }
 
 	void Start () {
@@ -66,12 +68,18 @@ public class EnemyMotion : NetworkBehaviour {
 
                 attack.transform.parent = enemySkillManager.transform;
 
+
+
                 EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
                 esm.setDamage(1);
-                esm.setVelocity(Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.2f, 0.3f));
+                Vector3 vel = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.2f, 0.3f);
+                esm.setVelocity(vel);
                 esm.setSpaceship(spaceship);
                 esm.setTargetPlayer(players[Random.Range(0, players.Length)]);
                 attackCount++;
+
+                attack.GetComponent<AutoMove>().startPos = transform.position;
+                attack.GetComponent<AutoMove>().velocity = vel;
 
                 NetworkServer.Spawn(attack);
 
