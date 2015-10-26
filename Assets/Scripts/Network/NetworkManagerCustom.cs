@@ -20,6 +20,7 @@ public class NetworkManagerCustom : NetworkManager {
     private ArrayList disconnectedPlayerControllers;
     private HashSet<string> userNameSet;
     private NetworkMode currentMode;
+    public GameObject serverConnect;
     static public NetworkManagerCustom SingletonNM { get; set;}
     
     #region Lobby Variable
@@ -116,7 +117,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void DisplayIsConnecting()
     {
         var _this = this;
-        infoPanel.Display("Connecting...", "Cancel", () => { _this.backDelegate(); });
+        infoPanel.DisplayWarning("Connecting...", () => { _this.backDelegate(); });
     }
 
 #region Disconnect Button
@@ -179,6 +180,14 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("ChangeToConnectPanel");
 
         ChangeTo(connectPanel);
+    }
+
+    public void ReconnectClinetClbk()
+    {
+        StopClient();
+        Application.LoadLevel("Lobby");
+        hasCreatePlayer = false;
+        connectPanel.gameObject.GetComponent<LobbyConnectPanel>().OnClickJoin();
     }
 #endregion
 
@@ -662,7 +671,8 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientError " + conn.connectionId);
 
         ChangeTo(connectPanel);
-        infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
+        infoPanel.DisplayDisconnectError("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()),
+            StopClientClbk, ReconnectClinetClbk);
         DisableGameUI();
         currentMode = NetworkMode.Level;
     }
@@ -786,7 +796,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         ErrorMessage em = msg.ReadMessage<ErrorMessage>();
         Debug.Log(em);
-        infoPanel.Display(em.errorMessage, "Close", StopClientClbk);
+        infoPanel.DisplayWarning(em.errorMessage, StopClientClbk);
     }
 #endregion
     private void ResetLobbyPlayerArray()
@@ -839,9 +849,9 @@ public class NetworkManagerCustom : NetworkManager {
         levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 
-    public void ShowWarning(string displayMessage, string buttonMessage)
+    public void ShowWarning(string displayMessage)
     {
-        infoPanel.Display(displayMessage, buttonMessage, null);
+        infoPanel.DisplayWarning(displayMessage, null);
     }
 
     public bool CheckUserNameValid(string newName) {

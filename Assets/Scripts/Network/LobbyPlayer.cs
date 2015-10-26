@@ -116,7 +116,7 @@ public class LobbyPlayer : NetworkBehaviour {
     {
         if (ownRole == PlayerRole.Unselected)
         {
-            NetworkManagerCustom.SingletonNM.ShowWarning("Please Select the Role First.", "Close");
+            NetworkManagerCustom.SingletonNM.ShowWarning("Please Select the Role First.");
             return;
         }
         foreach (Button b in rolesButtons)
@@ -222,7 +222,7 @@ public class LobbyPlayer : NetworkBehaviour {
             Debug.Log("RpcNameExist " + userName);
             NetworkManagerCustom.SingletonNM.StopClient();
             NetworkManagerCustom.SingletonNM.ChangeToConnectPanel();
-            NetworkManagerCustom.SingletonNM.ShowWarning("This Account Has Already Connected to Server.", "Close");
+            NetworkManagerCustom.SingletonNM.ShowWarning("This Account Has Already Connected to Server.");
         }
     }
 
