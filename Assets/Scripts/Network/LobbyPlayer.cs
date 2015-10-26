@@ -8,7 +8,11 @@ public enum PlayerRole { Striker, Defender, Engineer, Simoner, Unselected };
 public class LobbyPlayer : NetworkBehaviour {
 
     //OnMyName function will be invoked on clients when server change the value of playerName
-
+    [SyncVar(hook = "OnMyRole")]
+    public PlayerRole ownRole;
+    [SyncVar(hook = "OnMyName")]
+    public string userName = "";
+    [SyncVar(hook = "OnReadySet")]
     public bool isReady = false;
 
     [SyncVar]
@@ -19,21 +23,16 @@ public class LobbyPlayer : NetworkBehaviour {
     public Text nameText;
     public Button[] rolesButtons;
     public RectTransform panelPos;
-    public PlayerRole ownRole;
     public GameObject lobbySelect;
     public Sprite strikerSprite, engineerSprite, defenderSprite;
     public GameObject readyImage;
     public Text strikerLevel, engineerLevel, defenderLevel;
 
-    [SyncVar]
-    public NetworkMode currentMode;
-    [SyncVar(hook = "OnMyName")]
-    public string userName = "";
+
 
     void Start()
     {
         panelPos.localPosition = new Vector3(GetLobbyPlayerPos(slot), 85.8f, 0);
-        ownRole = PlayerRole.Unselected;
         if (!userName.Equals(""))
         {
             nameText.text = userName;
@@ -41,6 +40,7 @@ public class LobbyPlayer : NetworkBehaviour {
         if (isLocalPlayer)
         {
             CmdNameChanged(LoginController.userName);
+            ownRole = PlayerRole.Unselected;
 
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().localLobbyPlayer = this;
             Debug.Log("OnServerAddPlayer Lobby " );
@@ -56,6 +56,9 @@ public class LobbyPlayer : NetworkBehaviour {
             defenderLevel.text = "LEVEL " + PlayerPrefs.GetInt("dl");
 
         }
+        OnMyName(userName);
+        OnMyRole(ownRole);
+        OnReadySet(isReady);
     }
 
     private float GetLobbyPlayerPos(int slot)
@@ -130,36 +133,32 @@ public class LobbyPlayer : NetworkBehaviour {
 
     public void OnMyName(string newName)
     {
+        //Debug.Log("OnMyName " + newName);
         userName = newName;
         nameText.text = newName;
+    }
+
+    public void OnMyRole(PlayerRole newRole)
+    {
+        Debug.Log("OnMyRole " + newRole);
+        ownRole = newRole;
+        ChooseRole(ownRole);
+    }
+
+    public void OnReadySet(bool ready){
+        Debug.Log("OnReadySet " + ready);
+        isReady = ready;
+        readyImage.SetActive(ready);
     }
 
     [Command]
     public void CmdChooseRole(PlayerRole r)
     {
         //Debug.Log("CmdChooseRole");
-
         ownRole = r;
-        ChooseRole(r);
-        RpcChooseRole(r);
-
+        ChooseRole(ownRole);
     }
-
-    [ClientRpc]
-    public void RpcChooseRole(PlayerRole r)
-    {
-        //Debug.Log("RpcChooseRole");
-        ownRole = r;
-        ChooseRole(r);
-        //OnGUIReady();
-        if (isLocalPlayer)
-        {
-            //var lobby = GuiLobbyManager.singleton as GuiLobbyManager;
-            //lobby.ownRole = Roles.Striker;
-        }
-    }
-
-    
+  
     public void ServerToggleVisibility(bool visible)
     {
         ToggleVisibility(visible);
@@ -196,21 +195,6 @@ public class LobbyPlayer : NetworkBehaviour {
     public void CmdNameChanged(string newName)
     {
         userName = newName;
-        RpcNameChanged(newName);
-        nameText.text = newName;
-        //if (!NetworkManagerCustom.SingletonNM.CheckUserNameValid(newName))
-        //{
-        //    Debug.Log("User name exists " + newName);
-        //    RpcNameExist();
-        //    return;
-        //}
-
-    }
-
-    [ClientRpc]
-    public void RpcNameChanged(string newName)
-    {
-        Debug.Log("RpcNameChanged");
         nameText.text = newName;
     }
 
@@ -231,13 +215,7 @@ public class LobbyPlayer : NetworkBehaviour {
     {
         isReady = true;
         readyImage.SetActive(true);
-        RpcSetReady();
-    }
-
-    [ClientRpc]
-    public void RpcSetReady()
-    {
-        readyImage.SetActive(true);
+        //RpcSetReady();
     }
 
     [ClientRpc]

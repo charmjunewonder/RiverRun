@@ -583,7 +583,7 @@ public class NetworkManagerCustom : NetworkManager {
                 //create lobby object
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
-                player.GetComponent<LobbyPlayer>().currentMode = currentMode;
+                //player.GetComponent<LobbyPlayer>().currentMode = currentMode;
 
                 Debug.Log("OnServerAddPlayer Lobby ");
 
