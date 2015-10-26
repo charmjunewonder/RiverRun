@@ -35,8 +35,17 @@ public class EnemyMotion : NetworkBehaviour {
         Debug.Log("CmdDecreaseBlood " + blood);
         if (blood <= 0)
         {
+            GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
+
+            RpcCreateDieParticle();
+
             NetworkServer.Destroy(gameObject);
         }
+    }
+
+    [ClientRpc]
+    void RpcCreateDieParticle() {
+        GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
     }
 
 	void Start () {
@@ -97,9 +106,4 @@ public class EnemyMotion : NetworkBehaviour {
         }
 
 	}
-
-
-    void OnDestroy() {
-        Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity);
-    }
 }

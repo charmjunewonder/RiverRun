@@ -9,7 +9,6 @@ public class EnemyAutoDie : MonoBehaviour {
 	
 	}
 	
-	// Update is called once per frame
 	void Update () {
         dieTime -= Time.deltaTime;
 
