@@ -13,7 +13,7 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public RectTransform lobbyPanel;
 
-    public InputField ipInput;
+    //public InputField ipInput;
 
     void Start()
     {
@@ -22,11 +22,6 @@ public class LobbyConnectPanel : MonoBehaviour {
 
         panelImage = GetComponent<Image>();
 
-        string gameIp = PlayerPrefs.GetString("GameIp");
-        if (ServerUtils.CheckIpAddress(gameIp))
-        {
-            ipInput.text = gameIp;
-        }
     }
 
 
@@ -60,9 +55,6 @@ public class LobbyConnectPanel : MonoBehaviour {
     {
         networkManager.topPanel.ToggleVisibility(true);
 
-        ipInput.onEndEdit.RemoveAllListeners();
-        ipInput.onEndEdit.AddListener(onEndEditIP);
-
     }
 
     public void OnClickHost()
@@ -72,8 +64,12 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public void OnClickJoin()
     {
-
-        networkManager.networkAddress = ipInput.text;
+        string ipadd = PlayerPrefs.GetString("DataIp");
+        if (!ServerUtils.CheckIpAddress(ipadd))
+        {
+            ipadd = "127.0.0.1";
+        }
+        networkManager.networkAddress = ipadd;
         networkManager.StartClient();
 
         networkManager.backDelegate = networkManager.StopClientClbk;
