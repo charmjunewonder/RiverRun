@@ -185,7 +185,8 @@ public class NetworkManagerCustom : NetworkManager {
     public void ReconnectClinetClbk()
     {
         StopClient();
-        Application.LoadLevel("Lobby");
+        DisableGameUI();
+        //Application.LoadLevel("Lobby");
         hasCreatePlayer = false;
         connectPanel.gameObject.GetComponent<LobbyConnectPanel>().OnClickJoin();
     }
@@ -507,7 +508,7 @@ public class NetworkManagerCustom : NetworkManager {
                             hasError = false;
                             Debug.Log(i + " remove " + lpconnid);
                             lobbyPlayerArray[i] = null;
-                            userNameSet.Remove(lp.userName);
+                            userNameSet.Remove(lp.userName.ToLower());
                         }
                     }
                 }
@@ -812,6 +813,8 @@ public class NetworkManagerCustom : NetworkManager {
 
     private void DisableGameUI()
     {
+        Debug.Log("DisableGameUI");
+
         GameObject[] gameUIs = GameObject.FindGameObjectsWithTag("GameUI");
         foreach (GameObject go in gameUIs)
         {
@@ -855,13 +858,13 @@ public class NetworkManagerCustom : NetworkManager {
     }
 
     public bool CheckUserNameValid(string newName) {
-        if (userNameSet.Contains(newName))
+        if (userNameSet.Contains(newName.ToLower()))
         {
             return false;
         }
         else
         {
-            userNameSet.Add(newName);
+            userNameSet.Add(newName.ToLower());
             return true;
         }
     }
