@@ -16,7 +16,6 @@ public class EngineerController : PlayerController {
     
     }
 
-    [SyncVar]
     public SyncListTeammateInfo teammatesInfo = new SyncListTeammateInfo();
 
     public Sprite[] teammatePhotoes;
@@ -63,9 +62,13 @@ public class EngineerController : PlayerController {
 	}
 
     void Update() {
+        if(isServer){
+            Debug.Log("Update " + teammatesInfo.Count);
+        
+        }
         if (!isLocalPlayer) return;
 
-        Debug.Log("Update " + teammatesInfo.Count);
+        
 
         if (!teammateInitialized) {
             if (teammatesInfo.Count != 0) {
@@ -168,14 +171,15 @@ public class EngineerController : PlayerController {
     }
 
     public void initializeTeammate(int slot, PlayerRole role, string un) {
-        if(isServer){
+        Debug.Log("InitializeTeammates ****** " + isServer);
+        //if(isServer){
             teammateInfo info = new teammateInfo();
             info.slot = slot;
             info.role = role;
             info.un = un;
             Debug.Log(slot + " " + role + " " + un);
             teammatesInfo.Add(info);
-        }
+        //}
         
     }
 

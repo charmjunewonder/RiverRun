@@ -397,15 +397,17 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
-    private void SetUpEngineerTeammateInfo(EngineerController self) {
+    private void SetUpEngineerTeammateInfo(EngineerController ec) {
         for (int j = 0; j < maxPlayers; j++)
         {
             PlayerController jpc = (PlayerController)gameplayerControllers[j];
             if (jpc != null) {
-                self.initializeTeammate(jpc.slot, jpc.role, jpc.username);
+                ec.initializeTeammate(jpc.slot, jpc.role, jpc.username);
+                Debug.Log("*************** " + ec.teammatesInfo.Count);
             }
                 
         }
+        
     }
 
     private void SetupGameScene()
@@ -629,6 +631,7 @@ public class NetworkManagerCustom : NetworkManager {
 
                             if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer) {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
+                                Debug.Log("############# " + gamePlayer.GetComponent<EngineerController>().teammatesInfo.Count);
                             }
                                 
                             
