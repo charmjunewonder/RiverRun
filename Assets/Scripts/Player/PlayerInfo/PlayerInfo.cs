@@ -37,9 +37,25 @@ public class PlayerInfo :  NetworkBehaviour{
         health = 10;
   	}
 	public Skill[] getSkills(){ return skills; }
-	public Skill getSkill(int index) { 
-		return skills[index]; 
-	}
+	public Skill getSkill(int index) { return skills[index]; }
+
+    public float getHealth() { return health; }
+    public void setHealth(float h) {
+        health = h;
+
+        if (health < 0)
+            health = 0;
+        if (health > 10)
+            health = 10;
+
+        int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
+
+        Debug.Log("perc " + health / max_health * 10);
+
+        healthController.setHealth(perc);
+
+    }
+
 	public int getLevel(){ return level; }
 
     public void Damage(float damage) {

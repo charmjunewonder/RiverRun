@@ -23,9 +23,10 @@ public class EngineerController : PlayerController {
 
     protected GameObject ui;
 
+    private bool teammateInitialized = false;
+
     void Start()
     {
-        
         playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
 
@@ -48,13 +49,27 @@ public class EngineerController : PlayerController {
 
             skillIndex = 0;
 
-
+            if (teammatesInfo.Count == 0)
+            {
+                teammateInitialized = false;
+            }
+            else {
+                teammateInitialized = true;
+                initializeTeammateUI();
+            }
+            
         }
 	}
 
     void Update() {
-    
-    
+        if (!isLocalPlayer) return;
+
+        if (!teammateInitialized) {
+            if (teammatesInfo.Count != 0) {
+                teammateInitialized = true;
+                initializeTeammateUI();
+            }
+        }
     }
 
  
@@ -196,7 +211,8 @@ public class EngineerController : PlayerController {
             //if (level != 0)
             //ClientScene.Ready(connectionToServer);
             if (level == 0) return;
-            initializeTeammateUI();
+            //initializeTeammateUI();
+            cam.cullingMask = (1 << (slot + 8)) | 1;
         }
 
         if (level == 13)

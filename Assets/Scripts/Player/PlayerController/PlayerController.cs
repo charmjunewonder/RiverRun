@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
+
+    [SyncVar]
     public int slot;
     public string username;
 
@@ -17,7 +19,7 @@ public class PlayerController : NetworkBehaviour {
     public Sprite[] enemyIcons;
 
     [SerializeField] 
-	protected Camera cam;
+	public Camera cam;
 
 	[SyncVar]
 	protected int skillIndex;
@@ -36,9 +38,15 @@ public class PlayerController : NetworkBehaviour {
     public GameObject enemyManager;
     private Transform enemyUITarget;
 
-    private bool isInGame;
+    [SyncVar]
+    protected bool isInGame;
 
     #region StartUpdate
+    void Awake() {
+        isInGame = false;
+    }
+
+
     void Start () {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
@@ -58,7 +66,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 
 			skillIndex = 0;
-            isInGame = false;
+            
 		}
 	}
 
@@ -66,14 +74,7 @@ public class PlayerController : NetworkBehaviour {
         if (!isLocalPlayer) {
             if (enemyManager == null)
             {
-                if (role == PlayerRole.Striker)
-                {
-                    enemyManager = GameObject.Find("EnemyManager");
-                }
-                else if (role == PlayerRole.Defender)
-                {
-                    enemyManager = GameObject.Find("EnemySkills");
-                }
+                LoadEnemyObject();
             }
             return;
         }
@@ -149,9 +150,7 @@ public class PlayerController : NetworkBehaviour {
                     }
                 }
                 else {
-                    for (int i = 0; i < enemyManager.transform.childCount; i++)
-                    {
-                        
+                    for (int i = 0; i < enemyManager.transform.childCount; i++){
                         Transform enemy = enemyManager.transform.GetChild(i);
                         Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
@@ -374,6 +373,11 @@ public class PlayerController : NetworkBehaviour {
     {
         slot = s;
     }
+
+    public void setInGame() {
+        isInGame = true;
+    }
+
     private void setStrikerDefenderControllers(GameObject ui)
     {
         Debug.Log(role);
@@ -417,8 +421,10 @@ public class PlayerController : NetworkBehaviour {
         {
             //if(level != 0)
             //ClientScene.Ready(connectionToServer);
-
             isInGame = true;
+            Debug.Log("Slot " + slot);
+            if(role == PlayerRole.Striker)
+                cam.cullingMask = (1 << (slot + 8)) | 1;
         }
 
         if (level == 13)
@@ -427,25 +433,13 @@ public class PlayerController : NetworkBehaviour {
 
     void LoadEnemyObject()
     {
-        GameObject[] enemyObjects;
         if (role == PlayerRole.Striker)
         {
             enemyManager = GameObject.Find("EnemyManager");
-            enemyObjects = GameObject.FindGameObjectsWithTag("Enemy");
-            for (int i = 0; i < enemyObjects.Length; i++)
-            {
-                enemyObjects[i].transform.parent = enemyManager.transform;
-            }
-
         }
         else
         {
             enemyManager = GameObject.Find("EnemySkills");
-            enemyObjects = GameObject.FindGameObjectsWithTag("EnemySkill");
-        }
-        for (int i = 0; i < enemyObjects.Length; i++)
-        {
-            enemyObjects[i].transform.parent = enemyManager.transform;
         }
     }
     #endregion
@@ -460,4 +454,5 @@ public class PlayerController : NetworkBehaviour {
     }
     
     #endregion
+
 }

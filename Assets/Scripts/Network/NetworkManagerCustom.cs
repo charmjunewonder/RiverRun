@@ -331,6 +331,7 @@ public class NetworkManagerCustom : NetworkManager {
                     ////Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<EngineerController>().role = lp.ownRole;
                     newPlayer.GetComponent<EngineerController>().username = lp.userName;
+                    newPlayer.GetComponent<PlayerController>().cam.cullingMask = (1 << (i + 8)) | 1;
                     NetworkServer.Destroy(lp.gameObject);
 
                     ////Destroy(lp.gameObject);
@@ -347,6 +348,11 @@ public class NetworkManagerCustom : NetworkManager {
                     //Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
                     newPlayer.GetComponent<PlayerController>().username = lp.userName;
+
+                    if (lp.ownRole == PlayerRole.Striker)
+                        newPlayer.GetComponent<PlayerController>().cam.cullingMask = 1 << (8 + i);
+                    
+                    newPlayer.GetComponent<PlayerController>().setInGame();
                     NetworkServer.Destroy(lp.gameObject);
 
                     //Destroy(lp.gameObject);
@@ -520,6 +526,8 @@ public class NetworkManagerCustom : NetworkManager {
                             disconPlayer.GetComponent<DisconnectedPlayerController>().connId = conn.connectionId;
                             disconPlayer.GetComponent<DisconnectedPlayerController>().currentRole = pc.role;
                             disconPlayer.GetComponent<DisconnectedPlayerController>().username = pc.username;
+                            disconPlayer.GetComponent<DisconnectedPlayerController>().health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
+
                             NetworkServer.Destroy(pc.gameObject);
                             conn.isReady = false;
                             Debug.Log("disconnect " + conn.isReady);
@@ -605,7 +613,8 @@ public class NetworkManagerCustom : NetworkManager {
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
                             gamePlayer.GetComponent<PlayerController>().slot = k;
                             gamePlayer.GetComponent<PlayerController>().username = dpc.username;
-
+                            gamePlayer.GetComponent<PlayerController>().role = dpc.currentRole;
+                            gamePlayer.GetComponent<PlayerController>().setInGame();
 
                             if(gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
@@ -860,4 +869,16 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
     }
+
+
+    #region Feiran's Function - Never Touch!
+
+    public void AttackPlayer(int index, float damage) {
+
+        if (gameplayerControllers[index] != null)
+            ((PlayerController)gameplayerControllers[index]).RpcDamage(damage);
+
+    }
+
+    #endregion
 }

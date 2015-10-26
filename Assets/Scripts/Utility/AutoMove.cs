@@ -15,6 +15,7 @@ public class AutoMove : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.position = transform.position + velocity;
+        if(!isServer)
+            transform.position = transform.position + velocity * Time.deltaTime;
 	}
 }

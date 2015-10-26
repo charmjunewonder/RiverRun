@@ -8,4 +8,5 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public int connId;
     public PlayerRole currentRole;
     public string username;
+    public float health;
 }

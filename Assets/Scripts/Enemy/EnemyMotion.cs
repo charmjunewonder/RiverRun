@@ -19,10 +19,6 @@ public class EnemyMotion : NetworkBehaviour {
     [SyncVar]
     private float max_blood;
 
-    private int attackCount;
-
-    private GameObject[] players;
-
 
     public void setSpaceship(GameObject ss) { spaceship = ss; }
     public void setEnemySkills(GameObject es) { enemySkillManager = es; }
@@ -31,7 +27,6 @@ public class EnemyMotion : NetworkBehaviour {
     public void setMaxBlood(float b) { max_blood = b; }
     public float getMaxBlood() { return max_blood; }
     public void setIndex(int ind) { index = ind; }
-    public void setPlayers(GameObject[] p) { players = p; }
 
     public void DecreaseBlood(float damage) {
         blood -= damage;
@@ -50,20 +45,22 @@ public class EnemyMotion : NetworkBehaviour {
 
             skillTimer = Random.Range(3.0f, 15f);
 
-            attackCount = 0;
         }
 
 	}
 	
 	void Update () {
-        if (isServer) {
-            if (Vector3.Distance(spaceship.transform.position, transform.position) > 300){
+        if (isServer)
+        {
+            if (Vector3.Distance(spaceship.transform.position, transform.position) > 300)
+            {
                 transform.position += velocity;
             }
 
             skillTimer -= Time.deltaTime;
 
-            if (skillTimer <= 0) {
+            if (skillTimer <= 0)
+            {
                 GameObject attack = GameObject.Instantiate(bullet, transform.position, Quaternion.identity) as GameObject;
 
                 attack.transform.parent = enemySkillManager.transform;
@@ -72,11 +69,16 @@ public class EnemyMotion : NetworkBehaviour {
 
                 EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
                 esm.setDamage(1);
-                Vector3 vel = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.2f, 0.3f);
+                Vector3 vel = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(20f, 30f);
                 esm.setVelocity(vel);
                 esm.setSpaceship(spaceship);
-                esm.setTargetPlayer(players[Random.Range(0, players.Length)]);
-                attackCount++;
+
+                int target = Random.Range(0, 4);
+                Debug.Log("Attack Layer " + target);
+                esm.setIndex(target);
+                
+                attack.layer = 8 + target;
+
 
                 attack.GetComponent<AutoMove>().startPos = transform.position;
                 attack.GetComponent<AutoMove>().velocity = vel;
@@ -85,7 +87,12 @@ public class EnemyMotion : NetworkBehaviour {
 
                 skillTimer = Random.Range(5.0f, 20.0f);
             }
-
+        }
+        else {
+            if (transform.parent == null)
+            {
+                transform.parent = GameObject.Find("EnemyManager").transform;
+            }
         }
 
 	}
