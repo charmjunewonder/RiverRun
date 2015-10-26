@@ -48,7 +48,6 @@ public class NetworkManagerCustom : NetworkManager {
     private bool hasCreatePlayer = false;
     void Start()
     {
-        Debug.Log("Start");
 
 #if UNITY_IOS
         serverConnect.SetActive(false);
@@ -402,8 +401,10 @@ public class NetworkManagerCustom : NetworkManager {
         for (int j = 0; j < maxPlayers; j++)
         {
             PlayerController jpc = (PlayerController)gameplayerControllers[j];
-            if(jpc != null)
+            if (jpc != null) {
                 self.initializeTeammate(jpc.slot, jpc.role, jpc.username);
+            }
+                
         }
     }
 
@@ -626,8 +627,10 @@ public class NetworkManagerCustom : NetworkManager {
                             gamePlayer.GetComponent<PlayerController>().role = dpc.currentRole;
                             gamePlayer.GetComponent<PlayerController>().setInGame();
 
-                            if(gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
+                            if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer) {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
+                            }
+                                
                             
 
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);

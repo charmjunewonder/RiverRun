@@ -74,7 +74,6 @@ public class EnemyMotion : NetworkBehaviour {
                 esm.setSpaceship(spaceship);
 
                 int target = Random.Range(0, 4);
-                Debug.Log("Attack Layer " + target);
                 esm.setIndex(target);
                 
                 attack.layer = 8 + target;

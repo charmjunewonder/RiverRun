@@ -49,6 +49,7 @@ public class EngineerController : PlayerController {
 
             skillIndex = 0;
 
+            Debug.Log("Start " + teammatesInfo.Count);
             if (teammatesInfo.Count == 0)
             {
                 teammateInitialized = false;
@@ -63,6 +64,8 @@ public class EngineerController : PlayerController {
 
     void Update() {
         if (!isLocalPlayer) return;
+
+        Debug.Log("Update " + teammatesInfo.Count);
 
         if (!teammateInitialized) {
             if (teammatesInfo.Count != 0) {
@@ -170,6 +173,7 @@ public class EngineerController : PlayerController {
             info.slot = slot;
             info.role = role;
             info.un = un;
+            Debug.Log(slot + " " + role + " " + un);
             teammatesInfo.Add(info);
         }
         
