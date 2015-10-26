@@ -4,13 +4,24 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 
 public class LoginController : MonoBehaviour {
-		
+    public bool isServerReady = true;
+
 	public InputField uName;
     public Button loginButton;
     public Image loginImage;
 	public Text displayMessage;
     public LobbyConnectPanel lcp;
     public static string userName = "Player";
+
+    void Start()
+    {
+        string un = PlayerPrefs.GetString("name");
+        if (ServerUtils.CheckUsername(name))
+        {
+            uName.text = un;
+            userName = un;
+        }
+    }
     public void OnLoginShowUp()
     {
         if (loginImage.fillAmount == 0.9f) return;
@@ -46,8 +57,16 @@ public class LoginController : MonoBehaviour {
 			isValid = false;
 		}
 		
-		if(isValid){			
-			StartCoroutine (LoginData (name, serverUrl));
+		if(isValid){
+            if (isServerReady)
+			    StartCoroutine (LoginData (name, serverUrl));
+            else
+            {
+                userName = name;
+                PlayerPrefs.SetString("name", userName);
+                lcp.OnClickJoin();
+            }
+                
 		}
 	}
 
