@@ -52,7 +52,7 @@ public class NetworkManagerCustom : NetworkManager {
 #if UNITY_IOS
         serverConnect.SetActive(false);
 #endif
-
+        //logLevel = LogFilter.FilterLevel.Debug;
         GameObject es = GameObject.Find("EventSystem");
         GameObject.DontDestroyOnLoad(es);
 
