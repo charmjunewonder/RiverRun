@@ -53,11 +53,11 @@ public class UltiCrystalController : MonoBehaviour {
     }
 
     private void GenerateUltiCrystalHelper() {
-        int len = (int)Random.Range(3.0f, 5.99f);
+        int len = Random.Range(3, 6);
         crystals = new int[len];
         for (int i = 0; i < len; i++)
         {
-            crystals[i] = (int)Random.Range(0.0f, 3.99f);
+            crystals[i] = Random.Range(0, 4);
             crystalImages[i].sprite = crystalSprites[crystals[i]];
             crystalImages[i].color = new Color(1, 1, 1, 1);
         }

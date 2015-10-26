@@ -48,7 +48,7 @@ public class CrystalProductionController : MonoBehaviour {
         Debug.Log("Coroutine");
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
-            arrows.GetComponent<Image>().fillAmount += 0.02f;
+            arrows.GetComponent<Image>().fillAmount += 0.08f;
             yield return new WaitForSeconds(0.01f);
         }
         StartCoroutine("StartBar");
@@ -58,7 +58,7 @@ public class CrystalProductionController : MonoBehaviour {
     {
         while (GetComponent<Image>().fillAmount < 1)
         {
-            GetComponent<Image>().fillAmount += 0.01f;
+            GetComponent<Image>().fillAmount += 0.04f;
             yield return new WaitForSeconds(0.01f);
         }
 
