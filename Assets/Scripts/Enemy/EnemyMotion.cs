@@ -4,7 +4,9 @@ using System.Collections;
 
 public class EnemyMotion : NetworkBehaviour {
 
-    public GameObject bullet;
+    public GameObject bulletPref;
+    public GameObject dieParticlePref;
+
     [SyncVar]
     public int index;
 
@@ -61,7 +63,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             if (skillTimer <= 0)
             {
-                GameObject attack = GameObject.Instantiate(bullet, transform.position, Quaternion.identity) as GameObject;
+                GameObject attack = GameObject.Instantiate(bulletPref, transform.position, Quaternion.identity) as GameObject;
 
                 attack.transform.parent = enemySkillManager.transform;
 
@@ -95,4 +97,9 @@ public class EnemyMotion : NetworkBehaviour {
         }
 
 	}
+
+
+    void OnDestroy() {
+        Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity);
+    }
 }
