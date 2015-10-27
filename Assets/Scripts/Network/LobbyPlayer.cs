@@ -139,13 +139,13 @@ public class LobbyPlayer : NetworkBehaviour {
 
     public void OnMyRole(PlayerRole newRole)
     {
-        Debug.Log("OnMyRole " + newRole);
+        Debug.Log("OnMyRole " + userName + " " + newRole);
         ownRole = newRole;
         ChooseRole(ownRole);
     }
 
     public void OnReadySet(bool ready){
-        Debug.Log("OnReadySet " + ready);
+        //Debug.Log("OnReadySet " + ready);
         isReady = ready;
         readyImage.SetActive(ready);
     }

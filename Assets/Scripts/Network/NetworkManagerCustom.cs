@@ -107,8 +107,9 @@ public class NetworkManagerCustom : NetworkManager {
 
         currentPanel = newPanel;
 
-        if (currentPanel == connectPanel)
+        if (currentPanel == levelPanel)
         {
+            levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
             //SetServerInfo("Offline", "None");
         }
     }
@@ -204,7 +205,7 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("CheckLobbyReady");
         while (true)
         {
-            Debug.Log("CheckLobbyReady inside");
+            //Debug.Log("CheckLobbyReady inside");
 
             int count = 0;
             bool isAllReady = true;
@@ -231,7 +232,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         while (true)
         {
-            Debug.Log("CheckLevelSelect");
+            //Debug.Log("CheckLevelSelect");
             string debuglog = "CheckLevelSelect ";
             //TODO: bug
             LevelEnum firstLevel = LevelEnum.Easy;
@@ -250,7 +251,7 @@ public class NetworkManagerCustom : NetworkManager {
                         isAllSame = true;
                         isAllSelected = true;
                         firstLevel = curr;
-                        Debug.Log("Level Select Same  " + firstLevel.ToString());
+                        //Debug.Log("Level Select Same  " + firstLevel.ToString());
                         isFirst = false;
                         isAllSame &= (firstLevel != LevelEnum.Unselected);
                         isAllSelected &= (firstLevel != LevelEnum.Unselected);
@@ -584,6 +585,8 @@ public class NetworkManagerCustom : NetworkManager {
                 //create lobby object
                 var player = (GameObject)GameObject.Instantiate(LobbyPlayerPrefab, Vector3.zero, Quaternion.identity);
                 player.GetComponent<LobbyPlayer>().slot = i;
+                player.GetComponent<LobbyPlayer>().ownRole = PlayerRole.Unselected;
+
                 //player.GetComponent<LobbyPlayer>().currentMode = currentMode;
 
                 Debug.Log("OnServerAddPlayer Lobby ");
