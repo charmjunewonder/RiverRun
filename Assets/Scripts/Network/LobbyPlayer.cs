@@ -24,10 +24,9 @@ public class LobbyPlayer : NetworkBehaviour {
     public Button[] rolesButtons;
     public RectTransform panelPos;
     public GameObject lobbySelect;
-    public Sprite strikerSprite, engineerSprite, defenderSprite;
+    public Sprite strikerSprite, engineerSprite, defenderSprite, unclickedSprite;
     public GameObject readyImage;
     public Text strikerLevel, engineerLevel, defenderLevel;
-
 
 
     void Start()
@@ -51,9 +50,9 @@ public class LobbyPlayer : NetworkBehaviour {
             //    NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
             //    CmdChangeToLobbyPanel();
             //}
-            strikerLevel.text = "LEVEL " + PlayerPrefs.GetInt("sl");
-            engineerLevel.text = "LEVEL " + PlayerPrefs.GetInt("el");
-            defenderLevel.text = "LEVEL " + PlayerPrefs.GetInt("dl");
+            strikerLevel.text = "RANK " + PlayerPrefs.GetInt("sl");
+            engineerLevel.text = "RANK " + PlayerPrefs.GetInt("el");
+            defenderLevel.text = "RANK " + PlayerPrefs.GetInt("dl");
 
         }
         OnMyName(userName);
@@ -224,6 +223,14 @@ public class LobbyPlayer : NetworkBehaviour {
         if (isLocalPlayer)
         {
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().LevelSelectNotSame();
+        }
+    }
+
+    public void ResetUI()
+    {
+        foreach (Button b in rolesButtons)
+        {
+            b.image.sprite = unclickedSprite;
         }
     }
 }

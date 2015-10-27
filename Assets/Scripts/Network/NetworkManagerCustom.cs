@@ -307,7 +307,7 @@ public class NetworkManagerCustom : NetworkManager {
         //backDelegate = OnLobbyBackToLevelClbk;
         ChangeTo(lobbyPanel);
         currentMode = NetworkMode.Lobby;
-
+        ResetLevelSelectUI();
         ChangeVisibilityOfLobbyPlayerEverywhere(true);
         //ask client to change panel
         ServerMessage sm = new ServerMessage();
@@ -326,6 +326,7 @@ public class NetworkManagerCustom : NetworkManager {
             if (lobbyPlayerArray[i] != null)
             {
                 LobbyPlayer lp = (LobbyPlayer)lobbyPlayerArray[i];
+                lp.ResetUI();
                 NetworkConnection conn = lp.connectionToClient;
                 if (lp.ownRole == PlayerRole.Engineer){
 
@@ -887,6 +888,11 @@ public class NetworkManagerCustom : NetworkManager {
             StopServer();
         }
 
+    }
+
+    void ResetLevelSelectUI()
+    {
+        levelPanel.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 
 
