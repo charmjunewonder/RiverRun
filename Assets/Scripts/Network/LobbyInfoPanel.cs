@@ -12,6 +12,7 @@ namespace UnityStandardAssets.Network
 
         public void DisplayWarning(string info, UnityEngine.Events.UnityAction buttonClbk)
         {
+            secondButton.gameObject.SetActive(false);
             Display(info, buttonClbk);
         }
 
