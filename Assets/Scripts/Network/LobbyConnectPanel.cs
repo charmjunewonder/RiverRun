@@ -64,7 +64,8 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public void OnClickJoin()
     {
-        string ipadd = PlayerPrefs.GetString("DataIp");
+        string ipadd = PlayerPrefs.GetString("GameIp");
+        Debug.Log("OnClickJoin " + ipadd);
         if (!ServerUtils.CheckIpAddress(ipadd))
         {
             ipadd = "127.0.0.1";
