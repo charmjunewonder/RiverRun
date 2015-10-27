@@ -116,7 +116,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void DisplayIsConnecting()
     {
         var _this = this;
-        infoPanel.DisplayWarning("Connecting...", () => { _this.backDelegate(); });
+        infoPanel.DisplayWarning("Connecting to " + networkAddress, () => { _this.backDelegate(); });
     }
 
 #region Disconnect Button
