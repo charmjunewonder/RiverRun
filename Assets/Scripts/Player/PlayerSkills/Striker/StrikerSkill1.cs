@@ -8,6 +8,6 @@ public class StrikerSkill1 : Skill {
 		int level = gameObject.GetComponent<PlayerInfo>().getLevel();
 		damage = level * 5;
 		heal = 0;
-		coolDown = 1;
+		coolDown = 0.5f;
 	}
 }
