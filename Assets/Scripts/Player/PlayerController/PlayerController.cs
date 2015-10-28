@@ -425,7 +425,7 @@ public class PlayerController : NetworkBehaviour {
             isInGame = true;
             Debug.Log("Slot " + slot);
             if(role == PlayerRole.Striker)
-                cam.cullingMask = (1 << (slot + 8)) | 1;
+                cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
             mainCrystalController.AcceptCrystal(Random.Range(0, 4));
             mainCrystalController.AcceptCrystal(Random.Range(0, 4));
         

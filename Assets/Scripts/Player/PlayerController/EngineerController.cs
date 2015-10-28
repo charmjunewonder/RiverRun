@@ -220,7 +220,7 @@ public class EngineerController : PlayerController {
             //ClientScene.Ready(connectionToServer);
             if (level == 0) return;
             //initializeTeammateUI();
-            cam.cullingMask = (1 << (slot + 8)) | 1;
+            cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
 
             mainCrystalController.AcceptCrystal(Random.Range(0, 4));
             mainCrystalController.AcceptCrystal(Random.Range(0, 4));
