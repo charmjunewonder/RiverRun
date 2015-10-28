@@ -34,6 +34,7 @@ public class PlayerController : NetworkBehaviour {
     protected UltiCrystalController ultiCrystalController;
     protected MainCrystalController mainCrystalController;
     protected ReminderController reminderController;
+    protected WarningController warningController;
 
     public GameObject enemyManager;
     private Transform enemyUITarget;
@@ -410,6 +411,8 @@ public class PlayerController : NetworkBehaviour {
             }
         }
 
+        warningController = ui.transform.GetChild(7).GetComponent<WarningController>();
+
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
         //GameObject.DontDestroyOnLoad(e);
@@ -453,8 +456,10 @@ public class PlayerController : NetworkBehaviour {
     [ClientRpc]
     public void RpcDamage(float damage)
     {
-        if(isLocalPlayer)
+        if (isLocalPlayer) {
+            warningController.TriggerWarning();
             GetComponent<PlayerInfo>().Damage(damage);
+        }
     }
     
     #endregion
