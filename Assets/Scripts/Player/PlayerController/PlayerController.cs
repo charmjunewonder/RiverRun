@@ -411,6 +411,7 @@ public class PlayerController : NetworkBehaviour {
         }
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+
         //GameObject.DontDestroyOnLoad(e);
     }
 
@@ -425,6 +426,9 @@ public class PlayerController : NetworkBehaviour {
             Debug.Log("Slot " + slot);
             if(role == PlayerRole.Striker)
                 cam.cullingMask = (1 << (slot + 8)) | 1;
+            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+        
         }
 
         if (level == 13)

@@ -1,0 +1,173 @@
+fileFormatVersion: 2
+guid: 7dcda3fadff75a343bd9d5ba7eca2f56
+timeCreated: 1445997093
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: backBevel
+    100002: backPiece
+    100004: backVent
+    100006: backVent_main
+    100008: //RootNode
+    100010: exhaust
+    100012: exhaust_lf
+    100014: exhaust_plane_lf
+    100016: exhaust_plane_rt
+    100018: exhaust_rt
+    100020: fuelport
+    100022: grp_l_turret_01
+    100024: grp_r_turret_01
+    100026: gun_lf
+    100028: gun_lf_1
+    100030: gun_lf_body
+    100032: gun_rt
+    100034: gun_rt_11
+    100036: gun_rt_body
+    100038: loc_l_turretORI_01
+    100040: loc_r_turretORI_01
+    100042: misc
+    100044: misc_1
+    100046: misc_2
+    100048: misc_3
+    100050: misc_4
+    100052: misc_5
+    100054: ship
+    100056: ship1
+    100058: ship_body
+    100060: ship_canopy
+    100062: transform1
+    100064: transform10
+    100066: transform11
+    100068: transform12
+    100070: transform13
+    100072: transform14
+    100074: transform15
+    100076: transform16
+    100078: transform17
+    100080: transform18
+    100082: transform19
+    100084: transform2
+    100086: transform3
+    100088: transform4
+    100090: transform5
+    100092: transform6
+    100094: transform7
+    100096: transform8
+    100098: transform9
+    400000: backBevel
+    400002: backPiece
+    400004: backVent
+    400006: backVent_main
+    400008: //RootNode
+    400010: exhaust
+    400012: exhaust_lf
+    400014: exhaust_plane_lf
+    400016: exhaust_plane_rt
+    400018: exhaust_rt
+    400020: fuelport
+    400022: grp_l_turret_01
+    400024: grp_r_turret_01
+    400026: gun_lf
+    400028: gun_lf_1
+    400030: gun_lf_body
+    400032: gun_rt
+    400034: gun_rt_11
+    400036: gun_rt_body
+    400038: loc_l_turretORI_01
+    400040: loc_r_turretORI_01
+    400042: misc
+    400044: misc_1
+    400046: misc_2
+    400048: misc_3
+    400050: misc_4
+    400052: misc_5
+    400054: ship
+    400056: ship1
+    400058: ship_body
+    400060: ship_canopy
+    400062: transform1
+    400064: transform10
+    400066: transform11
+    400068: transform12
+    400070: transform13
+    400072: transform14
+    400074: transform15
+    400076: transform16
+    400078: transform17
+    400080: transform18
+    400082: transform19
+    400084: transform2
+    400086: transform3
+    400088: transform4
+    400090: transform5
+    400092: transform6
+    400094: transform7
+    400096: transform8
+    400098: transform9
+    2300000: ship1
+    3300000: ship1
+    4300000: ship1
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

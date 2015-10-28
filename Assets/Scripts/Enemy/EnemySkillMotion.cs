@@ -26,7 +26,7 @@ public class EnemySkillMotion : NetworkBehaviour {
 	void Update () {
         if (isServer)
         {
-            if (Vector3.Distance(spaceship.transform.position, transform.position) > 10)
+            if ( transform.position.z > 5)
             {
                 transform.position += velocity * Time.deltaTime;
             }

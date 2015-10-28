@@ -10,7 +10,9 @@ public class EnemyMotion : NetworkBehaviour {
     [SyncVar]
     public int index;
 
-    private Vector3 velocity;
+    public Vector3 velocity;
+    public Vector3 destination;
+
     private GameObject spaceship;
     private GameObject enemySkillManager;
 
@@ -52,7 +54,11 @@ public class EnemyMotion : NetworkBehaviour {
         if (isServer) {
             spaceship = transform.parent.GetComponent<EnemySpawnManager>().GetSpaceShip();
 
-            velocity = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(0.1f, 0.15f);
+            destination = spaceship.transform.position + new Vector3(0, 30, -30);
+
+            transform.LookAt(destination);
+
+            velocity = Vector3.Normalize(destination - transform.position) * Random.Range(0.1f, 0.2f);
 
             skillTimer = Random.Range(3.0f, 15f);
 
@@ -63,14 +69,16 @@ public class EnemyMotion : NetworkBehaviour {
 	void Update () {
         if (isServer)
         {
-            if (Vector3.Distance(spaceship.transform.position, transform.position) > 300)
+            if (Vector3.Distance(destination, transform.position) < 5)
             {
-                transform.position += velocity;
+                NetworkServer.Destroy(gameObject);
             }
+
+            transform.position += velocity;
 
             skillTimer -= Time.deltaTime;
 
-            if (skillTimer <= 0)
+            if (skillTimer <= 0 && transform.position.z > spaceship.transform.position.z  + 50)
             {
                 GameObject attack = GameObject.Instantiate(bulletPref, transform.position, Quaternion.identity) as GameObject;
 
@@ -80,7 +88,10 @@ public class EnemyMotion : NetworkBehaviour {
 
                 EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
                 esm.setDamage(1);
-                Vector3 vel = Vector3.Normalize(spaceship.transform.position - transform.position) * Random.Range(20f, 30f);
+
+                Vector3 ran = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+
+                Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(20f, 30f);
                 esm.setVelocity(vel);
                 esm.setSpaceship(spaceship);
 
@@ -104,6 +115,6 @@ public class EnemyMotion : NetworkBehaviour {
                 transform.parent = GameObject.Find("EnemyManager").transform;
             }
         }
-
 	}
+
 }

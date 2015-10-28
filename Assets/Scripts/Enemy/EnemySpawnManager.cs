@@ -33,7 +33,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             Vector3 spaceshipPos = spaceship.transform.position;
 
-            float randomZ = Random.Range(300.0f, 600.0f);
+            float randomZ = Random.Range(550.0f, 600.0f);
             float randomX = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
             float randomY = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
 
@@ -41,7 +41,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             GameObject enemy = GameObject.Instantiate(enemyPrefab[enemyNum], pos, Quaternion.identity) as GameObject;
 
-            enemy.transform.LookAt(spaceship.transform);
+            enemy.transform.LookAt(new Vector3(0, 0, 1));
             enemy.transform.parent = transform;
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();

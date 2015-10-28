@@ -18,7 +18,7 @@ public class SpaceshipSpawner : NetworkBehaviour {
 	
 	void Spawn(){
 		if(isServer){
-			GameObject ss = Instantiate(spaceshipPrefab);
+			GameObject ss = Instantiate(spaceshipPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 			NetworkServer.Spawn(ss);
             Instantiate(ultiController);
 		}

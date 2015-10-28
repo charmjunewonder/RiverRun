@@ -221,6 +221,9 @@ public class EngineerController : PlayerController {
             if (level == 0) return;
             //initializeTeammateUI();
             cam.cullingMask = (1 << (slot + 8)) | 1;
+
+            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
         }
 
         if (level == 13)
