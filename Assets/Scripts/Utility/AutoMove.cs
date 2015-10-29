@@ -10,7 +10,7 @@ public class AutoMove : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Debug.Log("start auto move");
+        //Debug.Log("start auto move");
         transform.position = startPos;
         //CmdGetStartPos();
 	}

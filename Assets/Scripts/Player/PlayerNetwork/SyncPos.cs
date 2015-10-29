@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 
+[NetworkSettings(channel = 1, sendInterval = 0.1f)]
 public class SyncPos : NetworkBehaviour {
 	[SyncVar]
 	private Vector3 syncPos;
