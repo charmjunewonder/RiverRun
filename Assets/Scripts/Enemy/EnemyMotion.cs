@@ -54,7 +54,7 @@ public class EnemyMotion : NetworkBehaviour {
         if (isServer) {
             spaceship = transform.parent.GetComponent<EnemySpawnManager>().GetSpaceShip();
 
-            destination = spaceship.transform.position + new Vector3(0, 30, -30);
+            destination = spaceship.transform.position + new Vector3(0, 20, -30);
 
             transform.LookAt(destination);
 
@@ -97,8 +97,7 @@ public class EnemyMotion : NetworkBehaviour {
 
                 int target = Random.Range(0, 4);
                 esm.setIndex(target);
-                
-                attack.layer = 8 + target;
+               
 
 
                 attack.GetComponent<AutoMove>().startPos = transform.position;

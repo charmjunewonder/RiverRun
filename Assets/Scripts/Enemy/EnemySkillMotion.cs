@@ -41,6 +41,7 @@ public class EnemySkillMotion : NetworkBehaviour {
                 transform.parent = GameObject.FindWithTag("EnemySkillController").transform;
                 
                 gameObject.layer = target + 8;
+                transform.GetChild(0).gameObject.layer = target + 8;
             }
         }
 	}

@@ -35,7 +35,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             float randomZ = Random.Range(550.0f, 600.0f);
             float randomX = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
-            float randomY = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
+            float randomY = Random.Range(-randomZ * 0.4f, randomZ * 0.3f);
 
             Vector3 pos = new Vector3(randomX, randomY, spaceshipPos.z + randomZ);
 
