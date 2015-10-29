@@ -91,7 +91,7 @@ public class EnemyMotion : NetworkBehaviour {
 
                 Vector3 ran = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
 
-                Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(20f, 30f);
+                Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(30f, 40f);
                 esm.setVelocity(vel);
                 esm.setSpaceship(spaceship);
 
