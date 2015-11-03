@@ -7,7 +7,7 @@ public enum LevelEnum { Unselected, Easy, Medium, Hard };
 public class LobbyLevelPanel : MonoBehaviour {
 
     public Button[] levelButtons;
-    public Text infoText;
+    public Text warningText;
     public LobbyPlayer localLobbyPlayer;
     public Sprite unclickedSprite;
 
@@ -24,20 +24,20 @@ public class LobbyLevelPanel : MonoBehaviour {
     public void OnSelectEasyLevel()
     {
         SendLevelInfo(LevelEnum.Easy);
-        infoText.text = "";
+        warningText.gameObject.SetActive(false);
     }
 
     public void OnSelectMediumLevel()
     {
         SendLevelInfo(LevelEnum.Medium);
-        infoText.text = "";
+        warningText.gameObject.SetActive(false);
 
     }
 
     public void OnSelectHardLevel()
     {
         SendLevelInfo(LevelEnum.Hard);
-        infoText.text = "";
+        warningText.gameObject.SetActive(false);
 
     }
 
@@ -52,13 +52,13 @@ public class LobbyLevelPanel : MonoBehaviour {
 
     public void SetLevelInfo(LevelEnum le)
     {
-        infoText.text = "You have selected Level " + le.ToString();
+        warningText.text = "You have selected Level " + le.ToString();
     }
 
     public void LevelSelectNotSame()
     {
         ResetButtons();
-        infoText.text = "Please select the same level with your teammates!";
+        warningText.gameObject.SetActive(true);
     }
 
     public void ResetButtons()

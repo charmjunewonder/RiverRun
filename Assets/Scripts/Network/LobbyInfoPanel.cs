@@ -7,26 +7,26 @@ namespace UnityStandardAssets.Network
     public class LobbyInfoPanel : MonoBehaviour
     {
         public Text infoText;
-        public Button singleButton;
-        public Button secondButton;
+        public Button reconnectButton;
+        public Button closeButton;
 
         public void DisplayWarning(string info, UnityEngine.Events.UnityAction buttonClbk)
         {
-            secondButton.gameObject.SetActive(false);
+            reconnectButton.gameObject.SetActive(false);
             Display(info, buttonClbk);
         }
 
         public void DisplayDisconnectError(string info, UnityEngine.Events.UnityAction firstButtonClbk,
             UnityEngine.Events.UnityAction secondButtonClbk)
         {
-            secondButton.onClick.RemoveAllListeners();
+            reconnectButton.onClick.RemoveAllListeners();
 
             if (secondButtonClbk != null)
             {
-                secondButton.gameObject.SetActive(true);
-                secondButton.onClick.AddListener(secondButtonClbk);
+                reconnectButton.gameObject.SetActive(true);
+                reconnectButton.onClick.AddListener(secondButtonClbk);
             }
-            secondButton.onClick.AddListener(() => { gameObject.SetActive(false); });
+            reconnectButton.onClick.AddListener(() => { gameObject.SetActive(false); });
 
             Display(info, firstButtonClbk);
         }
@@ -35,14 +35,14 @@ namespace UnityStandardAssets.Network
         {
             infoText.text = info;
 
-            singleButton.onClick.RemoveAllListeners();
+            closeButton.onClick.RemoveAllListeners();
 
             if (buttonClbk != null)
             {
-                singleButton.onClick.AddListener(buttonClbk);
+                closeButton.onClick.AddListener(buttonClbk);
             }
 
-            singleButton.onClick.AddListener(() => { gameObject.SetActive(false); });
+            closeButton.onClick.AddListener(() => { gameObject.SetActive(false); });
 
             gameObject.SetActive(true);
         }
