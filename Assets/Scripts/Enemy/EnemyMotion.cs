@@ -58,7 +58,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             transform.LookAt(destination);
 
-            velocity = Vector3.Normalize(destination - transform.position) * Random.Range(0.1f, 0.2f);
+            velocity = 3*Vector3.Normalize(destination - transform.position) * Random.Range(0.1f, 0.2f);
 
             skillTimer = Random.Range(3.0f, 15f);
 
