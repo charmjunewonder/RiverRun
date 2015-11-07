@@ -12,11 +12,12 @@ public class EngineerController : PlayerController {
         public string un;
     }
 
-    public class SyncListTeammateInfo : SyncListStruct<teammateInfo>{
-    
-    }
+    public class SyncListTeammateInfo : SyncListStruct<teammateInfo>{}
 
     public SyncListTeammateInfo teammatesInfo = new SyncListTeammateInfo();
+
+
+
 
     public Sprite[] teammatePhotoes;
 
@@ -39,8 +40,8 @@ public class EngineerController : PlayerController {
 
             cam.enabled = true;
 
-            skillControllers = new SkillController[3];
-            for (int i = 0; i <= 2; i++)
+            skillControllers = new SkillController[2];
+            for (int i = 0; i <= 1; i++)
             {
                 skillControllers[i] = GameObject.Find("Skill" + i + "_Image").GetComponent<SkillController>();
                 skillControllers[i].setSkill(playerInfo.getSkill(i));
@@ -57,7 +58,13 @@ public class EngineerController : PlayerController {
                 teammateInitialized = true;
                 initializeTeammateUI();
             }
-            
+
+
+            Debug.Log("crystalInfoList count " + crystalInfoList.Count);
+            //foreach (DCCrystalInfo ci in crystalInfoList)
+            //{
+                //mainCrystalController.SetCrystal(ci.key, ci.value);
+            //}
         }
 	}
 
@@ -182,35 +189,6 @@ public class EngineerController : PlayerController {
         //}
         
     }
-
-
-    private void OnVar(ArrayList info) {
-        if (isLocalPlayer) { 
-
-            Debug.Log("Client OnVar");
-            /*
-            for (int i = 0; i < info.Count; i++) {
-                Transform child = ui.transform.GetChild(5).GetChild(((teammateInfo)info[i]).slot);
-                PlayerRole r = ((teammateInfo)info[i]).role;
-                if (r == PlayerRole.Striker)
-                {
-                    child.GetComponent<Image>().sprite = teammatePhotoes[0];
-                }
-                else if (r == PlayerRole.Defender)
-                {
-                    child.GetComponent<Image>().sprite = teammatePhotoes[1];
-                }
-                else
-                {
-                    child.GetComponent<Image>().sprite = teammatePhotoes[2];
-                }
-                child.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-                child.GetChild(1).GetComponent<Text>().text = ((teammateInfo)info[i]).un;
-            }
-            teammatesInfo = info;*/
-        }
-    }
-
 
     void OnLevelWasLoaded(int level)
     {

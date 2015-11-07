@@ -21,6 +21,7 @@ public class MainCrystalController : MonoBehaviour {
         for (int i = 0; i < 4; i++) {
             if (crystals[i] == -1) {
                 crystals[i] = crys_num;
+                //playerController.AddCrystalToList(i, crys_num);
 
                 Image image = transform.GetChild(i).GetChild(0).GetComponent<Image>();
                 image.sprite = crystalSprites[crys_num];
@@ -34,6 +35,7 @@ public class MainCrystalController : MonoBehaviour {
     public void SupportCrystal(int slot_num) {
         if (crystals[slot_num] != -1) {
             playerController.CmdSupport(crystals[slot_num]);
+            //playerController.RemoveCrystalFromList(slot_num);
 
             Image image = transform.GetChild(slot_num).GetChild(0).GetComponent<Image>();
             crystals[slot_num] = -1;
@@ -41,5 +43,12 @@ public class MainCrystalController : MonoBehaviour {
         }
     }
 
+    public void SetCrystal(int slot_num, int crys_num) {
+        crystals[slot_num] = crys_num;
+
+        Image image = transform.GetChild(slot_num).GetChild(0).GetComponent<Image>();
+        image.sprite = crystalSprites[crys_num];
+        image.color = new Color(1, 1, 1, 1);
+    }
 
 }

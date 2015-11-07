@@ -5,6 +5,18 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour {
+    /*
+    public struct DCCrystalInfo
+    {
+        public DCCrystalInfo(int k, int v) { key = k; value = v; }
+        public int key;
+        public int value;
+    }
+    public class SyncListDCCrystalInfo : SyncListStruct<DCCrystalInfo> { }
+    public SyncListDCCrystalInfo crystalInfoList = new SyncListDCCrystalInfo();
+    
+    */
+    public SyncListInt crystalInfoList = new SyncListInt();
 
 	public GameObject uiPrefab;
 
@@ -42,6 +54,11 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     protected bool isInGame;
 
+    
+
+
+
+
     #region StartUpdate
     void Awake() {
         isInGame = false;
@@ -67,7 +84,13 @@ public class PlayerController : NetworkBehaviour {
 			}
 
 			skillIndex = 0;
+
             
+            Debug.Log("crystalInfoList count " + crystalInfoList.Count);
+            /*foreach(DCCrystalInfo ci in crystalInfoList) {
+                mainCrystalController.SetCrystal(ci.key, ci.value);
+            }
+            */
 		}
 	}
 
@@ -367,6 +390,20 @@ public class PlayerController : NetworkBehaviour {
             GetComponent<PlayerInfo>().Damage(-amount);
     }
 
+    /*
+    public void AddCrystalToList(int key, int value) {
+        crystalInfoList.Add(new DCCrystalInfo(key, value));
+    }
+
+    public void RemoveCrystalFromList(int k) {
+        for(int i = 0; i < crystalInfoList.Count; i++){
+            if(crystalInfoList[i].key == k){
+                crystalInfoList.RemoveAt(i);
+                return;
+            }
+        }
+    }
+    */
     #endregion
     
     #region Initialization Setup
@@ -377,6 +414,12 @@ public class PlayerController : NetworkBehaviour {
 
     public void setInGame() {
         isInGame = true;
+    }
+
+    public void setCrystalList(ArrayList al) {
+        for (int i = 0; i < al.Count; i++) {
+            //crystalInfoList.Add((DCCrystalInfo)al[i]);
+        }
     }
 
     private void setStrikerDefenderControllers(GameObject ui)
@@ -429,16 +472,14 @@ public class PlayerController : NetworkBehaviour {
             Debug.Log("Slot " + slot);
             if(role == PlayerRole.Striker)
                 cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
-            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
-            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
-        
+            InitializeCrystal();
         }
 
         if (level == 13)
             print("Woohoo");
     }
 
-    void LoadEnemyObject()
+    private void LoadEnemyObject()
     {
         if (role == PlayerRole.Striker)
         {
@@ -449,6 +490,20 @@ public class PlayerController : NetworkBehaviour {
             enemyManager = GameObject.Find("EnemySkills");
         }
     }
+
+    private void InitializeCrystal() {
+
+        Debug.Log("InitializeSetCrystal");
+        int ran = Random.Range(0, 4);
+        //crystalInfoList.Add(new DCCrystalInfo(0, ran));
+        mainCrystalController.AcceptCrystal(ran);
+
+        ran = Random.Range(0, 4);
+        //crystalInfoList.Add(new DCCrystalInfo(1, ran));
+        mainCrystalController.AcceptCrystal(ran);
+        
+    }
+
     #endregion
 
     #region Utility
@@ -462,6 +517,7 @@ public class PlayerController : NetworkBehaviour {
         }
     }
     
+
     #endregion
 
 }

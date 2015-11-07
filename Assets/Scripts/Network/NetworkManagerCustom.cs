@@ -361,7 +361,7 @@ public class NetworkManagerCustom : NetworkManager {
                     newPlayer.GetComponent<PlayerController>().username = lp.userName;
 
                     if (lp.ownRole == PlayerRole.Striker)
-                        newPlayer.GetComponent<PlayerController>().cam.cullingMask = 1 << (8 + i);
+                        newPlayer.GetComponent<PlayerController>().cam.cullingMask = (1 << (8 + i)) | 1;
                     
                     newPlayer.GetComponent<PlayerController>().setInGame();
                     NetworkServer.Destroy(lp.gameObject);
@@ -405,7 +405,6 @@ public class NetworkManagerCustom : NetworkManager {
             PlayerController jpc = (PlayerController)gameplayerControllers[j];
             if (jpc != null) {
                 ec.initializeTeammate(jpc.slot, jpc.role, jpc.username);
-                Debug.Log("*************** " + ec.teammatesInfo.Count);
             }
                 
         }
@@ -537,13 +536,18 @@ public class NetworkManagerCustom : NetworkManager {
                             gameplayerControllers[i] = null;
                             GameObject disconPlayer = (GameObject)Instantiate(DisconnectedPlayerPrefab, Vector3.zero, Quaternion.identity);
                             disconnectedPlayerControllers[i] = disconPlayer.GetComponent<DisconnectedPlayerController>();
-                            disconPlayer.GetComponent<DisconnectedPlayerController>().slot = i;
-                            disconPlayer.GetComponent<DisconnectedPlayerController>().connId = conn.connectionId;
-                            disconPlayer.GetComponent<DisconnectedPlayerController>().currentRole = pc.role;
-                            disconPlayer.GetComponent<DisconnectedPlayerController>().username = pc.username;
-                            disconPlayer.GetComponent<DisconnectedPlayerController>().health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
+                            DisconnectedPlayerController dpc = disconPlayer.GetComponent<DisconnectedPlayerController>();
+                            dpc.slot = i;
+                            dpc.connId = conn.connectionId;
+                            dpc.currentRole = pc.role;
+                            dpc.username = pc.username;
+                            dpc.health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
+                            /*
+                            for (int j = 0; j < pc.crystalInfoList.Count; i++) {
+                                dpc.crystals.Add(pc.crystalInfoList[i]);
+                            }*/
 
-                            NetworkServer.Destroy(pc.gameObject);
+                                NetworkServer.Destroy(pc.gameObject);
                             conn.isReady = false;
                             Debug.Log("disconnect " + conn.isReady);
                         }
@@ -628,14 +632,17 @@ public class NetworkManagerCustom : NetworkManager {
 
                             GameObject gamePlayer = (GameObject)Instantiate(selectedprefab, Vector3.zero, Quaternion.identity);
                             gameplayerControllers[k] = gamePlayer.GetComponent<PlayerController>();
-                            gamePlayer.GetComponent<PlayerController>().slot = k;
-                            gamePlayer.GetComponent<PlayerController>().username = dpc.username;
-                            gamePlayer.GetComponent<PlayerController>().role = dpc.currentRole;
-                            gamePlayer.GetComponent<PlayerController>().setInGame();
+                            PlayerController pc = gamePlayer.GetComponent<PlayerController>();
+                            pc.slot = k;
+                            pc.username = dpc.username;
+                            pc.role = dpc.currentRole;
+                            pc.setInGame();
+                            pc.setCrystalList(dpc.crystals);
 
-                            if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer) {
+
+                            if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
+                            {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
-                                Debug.Log("############# " + gamePlayer.GetComponent<EngineerController>().teammatesInfo.Count);
                             }
                                 
                             

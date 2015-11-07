@@ -40,16 +40,20 @@ public class UltiCrystalController : MonoBehaviour {
             crystalImages[i].color = new Color(0, 0, 0, 0);
         }
         crystals = null;
-        StartCoroutine("CloseBar");
+        GetComponent<Image>().fillAmount = 0;
+        cancelButton.SetActive(false);
     }
 
     public void Revoke() {
-        Clear();
         playerController.RevokeUlti();
+        Clear();
+        
     }
 
     public void GenerateUltiCrystals(){
-        StartCoroutine("StartArrow");
+        GetComponent<Image>().fillAmount = 1;
+        cancelButton.SetActive(true);
+        GenerateUltiCrystalHelper();
     }
 
     private void GenerateUltiCrystalHelper() {
@@ -72,6 +76,7 @@ public class UltiCrystalController : MonoBehaviour {
         return true;
     }
 
+    /*
     IEnumerator StartArrow(){
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
@@ -106,4 +111,5 @@ public class UltiCrystalController : MonoBehaviour {
             yield return new WaitForSeconds(0.01f);
         }
     }
+    */
 }

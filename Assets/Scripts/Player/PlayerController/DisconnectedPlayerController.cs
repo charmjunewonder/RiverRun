@@ -9,4 +9,8 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public PlayerRole currentRole;
     public string username;
     public float health;
+
+    public ArrayList crystals;
+
+
 }
