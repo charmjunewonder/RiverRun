@@ -64,11 +64,11 @@ public class SignupController : MonoBehaviour {
 		
 		// Create a download object
 		WWW download = new WWW (serverUrl, form);
-		
+        Debug.Log(serverUrl);
 		// Wait until the download is done
 		yield return download;
 		
-		Debug.Log (serverUrl);
+		
 		
 		if (download.error != null)
 			Debug.Log("fail to request..." + download.error);
