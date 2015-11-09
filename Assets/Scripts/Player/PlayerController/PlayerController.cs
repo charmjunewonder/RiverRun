@@ -44,7 +44,6 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     protected bool isInGame;
 
-
     private Vector3 shieldPoint;
     private bool shieldExist;
 
@@ -304,6 +303,11 @@ public class PlayerController : NetworkBehaviour {
 
         shield.GetComponent<SyncTransform>().setTransform(shield.transform);
 
+        shield.GetComponent<ShieldCollisionBehaviour>().setMaximumDefendNumber(5);
+
+        shield.GetComponent<ShieldCollisionBehaviour>().playerController = this;
+        shield.GetComponent<ShieldCollisionBehaviour>().setCountDown(8.0f);
+
         NetworkServer.Spawn(shield);
 
         shieldExist = true;
@@ -317,6 +321,10 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+
+    public void CloseShield() {
+        shieldExist = false;
+    }
     #endregion
 
     #region UltiActivation

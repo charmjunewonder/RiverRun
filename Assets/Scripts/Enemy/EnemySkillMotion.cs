@@ -51,9 +51,7 @@ public class EnemySkillMotion : NetworkBehaviour {
     }
 
     void OnTriggerEnter(Collider collider) {
-        Debug.Log("Attack On Trigger Enter!!!");
-        if (isServer) {
-            Debug.Log("Attack Server On Trigger Enter!!!");    
+        if (isServer) { 
             Defended();
         }
     }
