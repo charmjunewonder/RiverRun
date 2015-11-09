@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bezier : System.Object{
+public class Bezier : MonoBehaviour{
 
     Vector3 p0;
     Vector3 p1;
@@ -67,4 +67,6 @@ public class Bezier : System.Object{
         Bz = 3 * ((p3.z + p2.z) - (p0.z + p1.z)) - Cz;
         Az = p3.z - p0.z - Cz - Bz;
     }
+
+    public Vector3 getDestination() { return p3; }
 }

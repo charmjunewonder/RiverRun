@@ -17,6 +17,8 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     void Start() {
         if (isServer) {
+            transform.rotation = Quaternion.identity;
+            transform.position = new Vector3(0, 0, 0);
             spaceship = GameObject.FindGameObjectWithTag("Spaceship");
             players = GameObject.FindGameObjectsWithTag("Player");
             GenerateEnemies();

@@ -5,20 +5,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour {
-    /*
-    public struct DCCrystalInfo
-    {
-        public DCCrystalInfo(int k, int v) { key = k; value = v; }
-        public int key;
-        public int value;
-    }
-    public class SyncListDCCrystalInfo : SyncListStruct<DCCrystalInfo> { }
-    public SyncListDCCrystalInfo crystalInfoList = new SyncListDCCrystalInfo();
-    
-    */
+
     public SyncListInt crystalInfoList = new SyncListInt();
 
 	public GameObject uiPrefab;
+    public GameObject shieldPrefab;
 
     [SyncVar]
     public int slot;
@@ -39,7 +30,6 @@ public class PlayerController : NetworkBehaviour {
 
     protected EventSystem e;
     
-    
     protected int[] crystals;
     protected SkillController[] skillControllers;
     protected PlayerInfo playerInfo;
@@ -54,9 +44,9 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     protected bool isInGame;
 
-    
 
-
+    private Vector3 shieldPoint;
+    private bool shieldExist;
 
 
     #region StartUpdate
@@ -91,6 +81,10 @@ public class PlayerController : NetworkBehaviour {
                 mainCrystalController.SetCrystal(ci.key, ci.value);
             }
             */
+
+            shieldPoint = Vector3.zero;
+            shieldExist = false;
+
 		}
 	}
 
@@ -142,7 +136,7 @@ public class PlayerController : NetworkBehaviour {
         {
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-
+                shieldPoint = Input.mousePosition;
             }
         }
         if (Input.GetMouseButton(0))
@@ -152,10 +146,7 @@ public class PlayerController : NetworkBehaviour {
         if(Input.GetMouseButtonUp(0)){
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-
                 skillControllers[skillIndex].StartCoolDown();
-
-                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
                 if (role == PlayerRole.Striker)
                 {
@@ -169,24 +160,40 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
-                            CmdDoFire(skillIndex, ray, i);
+                            CmdDoFire(skillIndex, i);
                         }
                     }
                 }
                 else {
-                    for (int i = 0; i < enemyManager.transform.childCount; i++){
-                        Transform enemy = enemyManager.transform.GetChild(i);
-                        Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
-                        Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
-                        Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    if (Vector3.Distance(Input.mousePosition, shieldPoint) > 30)
+                    {
+                        Vector3 shieldCenter = (shieldPoint + Input.mousePosition) / 2;
+                        float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
 
-                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
-                        {
-                            CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
-                        }
+                        Ray ray = cam.ScreenPointToRay(shieldCenter);
+
+                        Vector3 shieldPos = ray.direction.normalized * 10;
+
+                        CmdCreateShield(shieldPos, radius / 30);
+
                         
+
                     }
-                
+                    else {
+                        for (int i = 0; i < enemyManager.transform.childCount; i++)
+                        {
+                            Transform enemy = enemyManager.transform.GetChild(i);
+                            Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
+                            Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
+                            Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+                            if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
+                            {
+                                CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
+                            }
+
+                        }
+                    }
                 }
                 
             }
@@ -249,7 +256,7 @@ public class PlayerController : NetworkBehaviour {
 
     #region Operation
     [Command]
-	void CmdDoFire(int skillIndex, Ray ray, int enemyIndex)
+	void CmdDoFire(int skillIndex, int enemyIndex)
 	{
         Debug.Log("CmdDoFire " + skillIndex + enemyIndex);
 
@@ -281,6 +288,34 @@ public class PlayerController : NetworkBehaviour {
         NetworkServer.Destroy(obj);
     }
 
+    [Command]
+    void CmdCreateShield(Vector3 pos, float scale) {
+
+        if (shieldExist) {
+            RpcDeclineShieldCreation();
+            return;
+        }
+
+        GameObject shield = Instantiate(shieldPrefab, pos, Quaternion.identity) as GameObject;
+
+        shield.transform.localScale *= scale;
+
+        shield.transform.LookAt(Vector3.forward);
+
+        shield.GetComponent<SyncTransform>().setTransform(shield.transform);
+
+        NetworkServer.Spawn(shield);
+
+        shieldExist = true;
+
+    }
+
+    [ClientRpc]
+    void RpcDeclineShieldCreation() {
+        if (isLocalPlayer) {
+            reminderController.setReminder("Shield alreayd exists.", 1.0f);
+        }
+    }
 
     #endregion
 
@@ -324,9 +359,8 @@ public class PlayerController : NetworkBehaviour {
 
     public void ActivateUlti() {
         Debug.Log("Player Controller: Activate Ulti Success");
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
-        CmdDoFire(ulti_index, ray, -1);
+        CmdDoFire(ulti_index, -1);
         ultiCrystalController.Clear();
         UltiController.setUltiEnchanting(false);
     }

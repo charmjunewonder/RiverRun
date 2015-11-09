@@ -68,13 +68,7 @@ public class PlayerInfo :  NetworkBehaviour{
 
         int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
-        Debug.Log("perc " + health / max_health * 10);
-
         healthController.setHealth(perc);
 
-        /*for (int i = 0; i < skills.Length; i++) {
-            skills[i].damage *= (health / max_health);
-            skills[i].heal *= (health / max_health);
-        }*/
     }
 }
