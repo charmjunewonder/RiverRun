@@ -10,6 +10,7 @@ public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
     public GameObject shieldPrefab;
+    public GameObject lighteningPrefab;
 
     [SyncVar]
     public int slot;
@@ -103,6 +104,7 @@ public class PlayerController : NetworkBehaviour {
                 for (int i = 0; i < 20; i++){
                     if (i < enemyManager.transform.childCount){
                         Transform enemy = enemyManager.transform.GetChild(i);
+                        if(enemy.position.z < 10) continue;
                         Vector3 screenPoint = cam.WorldToScreenPoint(enemy.position);
                         Transform target = enemyUITarget.GetChild(i);
                         target.position = screenPoint;
@@ -266,7 +268,18 @@ public class PlayerController : NetworkBehaviour {
             }
         }
         else {
-            enemyManager.transform.GetChild(enemyIndex).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+            Transform enemy = enemyManager.transform.GetChild(enemyIndex);
+
+            enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+
+            GameObject lightening = Instantiate(lighteningPrefab, transform.position, Quaternion.identity) as GameObject;
+
+            lightening.transform.GetChild(0).position = enemy.position;
+            lightening.transform.GetChild(1).position = transform.GetChild(Random.Range(1, 3)).position;
+
+            lightening.GetComponent<SyncTransformLightening>().setTransform(lightening.transform.GetChild(0), lightening.transform.GetChild(1));
+
+            NetworkServer.Spawn (lightening);
         }
 
 

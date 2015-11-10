@@ -93,6 +93,13 @@ public class EnemyMotion : NetworkBehaviour {
            launchMissle();
         }
         else {
+            if (transform.parent == null)
+            {
+                transform.parent = GameObject.Find("EnemyManager").transform;
+            }
+        }
+            /*
+        else {
             if (flyStatus == 1) {
                 transform.parent = null;
             }
@@ -106,6 +113,7 @@ public class EnemyMotion : NetworkBehaviour {
 
 
         }
+             */
 	}
 
     private void autoFly() {

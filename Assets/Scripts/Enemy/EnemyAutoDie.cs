@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyAutoDie : MonoBehaviour {
 
-    public float dieTime = 3.0f;
+    public float dieTime;
 
 	void Start () {
 	
