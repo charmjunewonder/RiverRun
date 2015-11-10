@@ -41,12 +41,16 @@ public class PlayerController : NetworkBehaviour {
 
     public GameObject enemyManager;
     private Transform enemyUITarget;
+    private Transform skillPanel;
 
     [SyncVar]
     protected bool isInGame;
 
-    private Vector3 shieldPoint;
+    protected bool isDraggingCrystal;
+
+    private Vector3 shieldPoint1, shieldPoint2;
     private bool shieldExist;
+    //private Transform draggedCrystal;
 
 
     #region StartUpdate
@@ -82,8 +86,10 @@ public class PlayerController : NetworkBehaviour {
             }
             */
 
-            shieldPoint = Vector3.zero;
+            shieldPoint1 = Vector3.zero;
             shieldExist = false;
+            isDraggingCrystal = false;
+
 
 		}
 	}
@@ -137,21 +143,25 @@ public class PlayerController : NetworkBehaviour {
         {
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-                shieldPoint = Input.mousePosition;
+                shieldPoint1 = Input.mousePosition;
             }
         }
         if (Input.GetMouseButton(0))
         {
-        
+
         }
         if(Input.GetMouseButtonUp(0)){
+            if (isDraggingCrystal) {
+                isDraggingCrystal = false;
+                return;
+            }
+
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
                 skillControllers[skillIndex].StartCoolDown();
 
                 if (role == PlayerRole.Striker)
                 {
-                    Debug.Log("children number " + enemyManager.transform.childCount);
                     for (int i = 0; i < enemyManager.transform.childCount; i++)
                     {
                         Transform enemy = enemyManager.transform.GetChild(i);
@@ -166,9 +176,9 @@ public class PlayerController : NetworkBehaviour {
                     }
                 }
                 else {
-                    if (Vector3.Distance(Input.mousePosition, shieldPoint) > 30)
+                    if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 30)
                     {
-                        Vector3 shieldCenter = (shieldPoint + Input.mousePosition) / 2;
+                        Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
                         float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
 
                         Ray ray = cam.ScreenPointToRay(shieldCenter);
@@ -192,7 +202,6 @@ public class PlayerController : NetworkBehaviour {
                             {
                                 CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             }
-
                         }
                     }
                 }
@@ -202,17 +211,45 @@ public class PlayerController : NetworkBehaviour {
             {
                 reminderController.setReminder("Skill is Cooling Down", 1);
             }
+            
         }
 #endif
 #if UNITY_IOS
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
+        if(Input.touchCount == 0)
+            return;
+
+        if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Move){
+            shieldPoint1 = Input.GetTouch(0).position;
+        }
+
+        if(Input.touchCount > 1 && (Input.GetTouch(1).phase == TouchPhase.Began || Input.GetTouch(1).phase == TouchPhase.Move)){
+            shieldPoint2 = Input.GetTouch(1).position;
+        }
+
+        if(Input.touchCount > 1 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(1).phase == TouchPhase.Ended)){
+            if (role == PlayerRole.Defender && Vector3.Distance(shieldPoint1, shieldPoint2) > 30){
+                    Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
+                    float radius = Vector3.Distance(shieldPoint2, shieldCenter);
+
+                    Ray ray = cam.ScreenPointToRay(shieldCenter);
+
+                    Vector3 shieldPos = ray.direction.normalized * 10;
+
+                    CmdCreateShield(shieldPos, radius / 30);
+
+                    return;
+                }
+        } else if(Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended){
+
+            if (isDraggingCrystal) {
+                isDraggingCrystal = false;
+                return;
+            }
+
             if (!e.IsPointerOverGameObject() && !skillControllers[skillIndex].getCoolDownStatus())
             {
-
+                
                 skillControllers[skillIndex].StartCoolDown();
-
-                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
                 if (role == PlayerRole.Striker)
                 {
@@ -225,14 +262,13 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
-                            CmdDoFire(skillIndex, ray, i);
+                            CmdDoFire(skillIndex, i);
                         }
                     }
                 }
                 else {
                     for (int i = 0; i < enemyManager.transform.childCount; i++)
                     {
-                        
                         Transform enemy = enemyManager.transform.GetChild(i);
                         Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
@@ -250,6 +286,8 @@ public class PlayerController : NetworkBehaviour {
                 reminderController.setReminder("Skill is Cooling Down", 1);
             }
         }
+
+           
 #endif
     }
 
@@ -295,13 +333,15 @@ public class PlayerController : NetworkBehaviour {
 	}
 
     [Command]
-    void CmdDefendAttack(NetworkInstanceId netID) {
+    protected void CmdDefendAttack(NetworkInstanceId netID)
+    {
         GameObject obj = NetworkServer.FindLocalObject(netID);
         NetworkServer.Destroy(obj);
     }
 
     [Command]
-    void CmdCreateShield(Vector3 pos, float scale) {
+    protected void CmdCreateShield(Vector3 pos, float scale)
+    {
 
         if (shieldExist) {
             RpcDeclineShieldCreation();
@@ -328,7 +368,8 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [ClientRpc]
-    void RpcDeclineShieldCreation() {
+    protected void RpcDeclineShieldCreation()
+    {
         if (isLocalPlayer) {
             reminderController.setReminder("Shield alreayd exists.", 1.0f);
         }
@@ -345,7 +386,6 @@ public class PlayerController : NetworkBehaviour {
     public void SetSkillIndex(int index) { skillIndex = index; }
 
     public void RequestUlti(){
-        Debug.Log("Player Controller: Ulti Request");
         CmdRequestUlti();
     }
 
@@ -358,6 +398,12 @@ public class PlayerController : NetworkBehaviour {
             UltiController.setUltiPlayerNumber(slot);
             
             RpcUltiActivationStatusUpdate(true);
+            for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++) {
+                if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+                {
+                    ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcLockUlti(username);
+                }
+            }
         }
         else {
             RpcUltiActivationStatusUpdate(false);
@@ -368,8 +414,6 @@ public class PlayerController : NetworkBehaviour {
     protected void RpcUltiActivationStatusUpdate(bool status)
     {
         if (isLocalPlayer){
-            Debug.Log("Player Controller: Start Cooling Down");
-            Debug.Log("skillIndex " + skillIndex);
             if (status){
                 ultiCrystalController.GenerateUltiCrystals();
                 int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
@@ -378,19 +422,52 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+    [ClientRpc]
+    public void RpcLockUlti(string n) {
+        if (isLocalPlayer) {
+            mainCrystalController.OpenCrystalPortal(n);
+            if(role != PlayerRole.Engineer)
+                skillPanel.GetChild(1).GetChild(2).GetComponent<Image>().color = new Color(1, 1, 1, 1);
+        }
+    }
+
+    [Command]
+    protected void CmdDoneUlti()
+    {
+        for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
+        {
+            if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+            {
+                ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcUnlockUlti();
+            }
+        }
+    }
+
+    [ClientRpc]
+    protected void RpcUnlockUlti(){
+        if (isLocalPlayer) {
+            mainCrystalController.CloseCrystalPortal();
+            if (role != PlayerRole.Engineer)
+                skillPanel.GetChild(1).GetChild(2).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+        }
+    }
+
     public void ActivateUlti() {
         Debug.Log("Player Controller: Activate Ulti Success");
-        int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+        int ulti_index = 1;
         CmdDoFire(ulti_index, -1);
+        CmdDoneUlti();
         ultiCrystalController.Clear();
         UltiController.setUltiEnchanting(false);
     }
 
     public void RevokeUlti() {
         Debug.Log("PlayerController RevokeUlti");
-        int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+        int ulti_index = 1;
         skillControllers[ulti_index].RevokeCoolDown();
+        CmdDoneUlti();
     }
+
     #endregion
 
     #region SupportSkill
@@ -417,8 +494,9 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("Player Controller: Failed to Activate Ulti");
 
         CmdUltiFailureHandling();
+        CmdDoneUlti();
 
-        reminderController.setReminder("Ultimate Skill Cannot be Activated.", 3);
+        reminderController.setReminder("Ultimate Skill Activation Fails.", 3);
     }
 
     [Command]
@@ -426,6 +504,10 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("Player Controller Server: Unlock Ulti Slot");
 
         UltiController.setUltiEnchanting(false);
+    }
+
+    public void setDraggingCrystal(bool f) {
+        isDraggingCrystal = f;
     }
 
 
@@ -483,7 +565,7 @@ public class PlayerController : NetworkBehaviour {
 
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
 
-        Transform skillPanel = ui.transform.GetChild(1);
+        skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
         skillPanel.GetChild(0).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[0] : skillIcons[2];
         skillPanel.GetChild(1).GetComponent<SkillController>().setPlayerController(this);
@@ -512,6 +594,8 @@ public class PlayerController : NetworkBehaviour {
         warningController = ui.transform.GetChild(7).GetComponent<WarningController>();
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+
+
 
         //GameObject.DontDestroyOnLoad(e);
     }
@@ -571,7 +655,6 @@ public class PlayerController : NetworkBehaviour {
             GetComponent<PlayerInfo>().Damage(damage);
         }
     }
-    
 
     #endregion
 

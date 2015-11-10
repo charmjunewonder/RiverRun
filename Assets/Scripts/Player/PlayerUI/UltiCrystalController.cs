@@ -34,7 +34,7 @@ public class UltiCrystalController : MonoBehaviour {
     }
 
     public void Clear() {
-        playerController.CmdUltiFailureHandling();
+        playerController.UltiFailureHandling();
         for (int i = 0; i < crystals.Length; i++) {
             crystalImages[i].sprite = transparent;
             crystalImages[i].color = new Color(0, 0, 0, 0);

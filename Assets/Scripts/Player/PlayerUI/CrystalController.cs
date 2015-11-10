@@ -7,7 +7,7 @@ public class CrystalController : MonoBehaviour {
     public int crystal_slot_num;
 
     public void Clicked() {
-        transform.parent.GetComponent<MainCrystalController>().SupportCrystal(crystal_slot_num);
+        transform.parent.GetComponent<MainCrystalController>().SelectCrystal(crystal_slot_num);
     }
 
 }
