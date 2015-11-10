@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bezier : MonoBehaviour{
+public class Bezier : Object{
 
     Vector3 p0;
     Vector3 p1;

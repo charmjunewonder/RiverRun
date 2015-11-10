@@ -199,7 +199,7 @@ public class EnemyMotion : NetworkBehaviour {
         while (turnAngleZ <= 60f) {
             transform.Rotate(0, 0, turnDirection * 0.6f);
             turnAngleZ += 0.6f;
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.02f);
         }
         turnAngleZ = 60f;
     }
@@ -209,7 +209,7 @@ public class EnemyMotion : NetworkBehaviour {
         {
             transform.Rotate(0, 0, -turnDirection * 0.6f);
             turnAngleZ -= 0.6f;
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.02f);
         }
         turnAngleZ = 0;
         transform.LookAt(toLookAt);
