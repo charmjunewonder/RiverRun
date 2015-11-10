@@ -12,13 +12,9 @@ public class AsteroidSpawnManager : MonoBehaviour {
 
             Vector3 pos = new Vector3(Random.Range(-50, 50), Random.Range(-50, 50), Random.Range(0, 200));
 
-            GameObject ast = GameObject.Instantiate(asteroids[Random.Range(0,15)], pos, Quaternion.identity) as GameObject;
+            GameObject ast = GameObject.Instantiate(asteroids[Random.Range(0,asteroids.Length)], pos, Quaternion.identity) as GameObject;
 
             ast.transform.parent = transform;
         }
-	}
-	
-	void Update () {
-	
 	}
 }

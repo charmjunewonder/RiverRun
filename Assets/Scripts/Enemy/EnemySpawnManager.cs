@@ -9,19 +9,31 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     public GameObject enemySkills;
 
-    private GameObject[] enemies;
-
     private GameObject spaceship;
 
-    private GameObject[] players;
+    private int waves;
+
+    private float countDown;
 
     void Start() {
         if (isServer) {
             transform.rotation = Quaternion.identity;
             transform.position = new Vector3(0, 0, 0);
             spaceship = GameObject.FindGameObjectWithTag("Spaceship");
-            players = GameObject.FindGameObjectsWithTag("Player");
+            waves = 5;
+            countDown = 60.0f;
             GenerateEnemies();
+        }
+    }
+
+    void Update() {
+        if(waves < 0) return;
+        countDown -= Time.deltaTime;
+
+        if (countDown <= 0) {
+            waves--;
+            GenerateEnemies();
+            countDown = 60.0f;
         }
     }
 
