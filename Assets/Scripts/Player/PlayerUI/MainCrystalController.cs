@@ -28,12 +28,20 @@ public class MainCrystalController : MonoBehaviour {
 
     void Update() {
         if (current_slot != -1) {
+			#if UNITY_STANDALONE_WIN
             if(Input.GetMouseButton(0))
                 draggedImage.transform.position = Input.mousePosition;
             if (Input.GetMouseButtonUp(0)) {
                 Invoke("checkValidation", 0.1f);
             }
-
+			#endif
+			#if UNITY_IOS
+			if(Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Moved) || (Input.GetTouch(0).phase == TouchPhase.Stationary))
+				draggedImage.transform.position = Input.mousePosition;
+			if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended) {
+				Invoke("checkValidation", 0.1f);
+			}
+			#endif
         }
     }
 

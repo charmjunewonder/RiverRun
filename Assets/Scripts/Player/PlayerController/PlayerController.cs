@@ -218,11 +218,11 @@ public class PlayerController : NetworkBehaviour {
         if(Input.touchCount == 0)
             return;
 
-        if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Move){
+        if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved){
             shieldPoint1 = Input.GetTouch(0).position;
         }
 
-        if(Input.touchCount > 1 && (Input.GetTouch(1).phase == TouchPhase.Began || Input.GetTouch(1).phase == TouchPhase.Move)){
+        if(Input.touchCount > 1 && (Input.GetTouch(1).phase == TouchPhase.Began || Input.GetTouch(1).phase == TouchPhase.Moved)){
             shieldPoint2 = Input.GetTouch(1).position;
         }
 
