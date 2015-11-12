@@ -8,6 +8,7 @@ public class UltiCrystalController : MonoBehaviour {
     public GameObject cancelButton;
     public Sprite[] crystalSprites;
     public Sprite[] highlightedCrystalSprites;
+    public Material highlightedMaterial;
     public Sprite transparent;
 
     private int[] crystals;
@@ -23,6 +24,7 @@ public class UltiCrystalController : MonoBehaviour {
         for (int i = 0; i < crystals.Length; i++) {
             if (crystals[i] == index) {
                 crystalImages[i].sprite = highlightedCrystalSprites[index];
+                crystalImages[i].material = highlightedMaterial;
                 crystals[i] = -i - 1;
                 if (CheckComplete()) {
                     playerController.ActivateUlti();

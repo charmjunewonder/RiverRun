@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 public class EnemySpawnManager : NetworkBehaviour {
 	[SerializeField] GameObject[] enemyPrefab;
 
+    public GameObject portalPrefab;
+
     public int enemiesMin, enemiesMax;
 
     public GameObject enemySkills;

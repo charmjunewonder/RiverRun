@@ -5,156 +5,59 @@ public enum League { Alliance, Enemy };
 
 public class AllianceAI : MonoBehaviour {
 
-    public GameObject spaceship;
-    public GameObject parentObject;
-    public GameObject disintegrationPrefab;
-    public GameObject attackPrefab;
-    public GameObject chasee;
+    public GameObject parentObj;
+    public float speed;
+    public float turnAngle;
+    public int turnDirection;
+    public float turnTime;
 
-    
-    Bezier myBezier;
+    private bool beingDestroyed;
 
-    enum FlyMode { stright, bezier };
+    void Start() {
+        turnTime = Random.Range(1.0f, 5.0f);
+        int t = Random.Range(0, 2);
+        turnDirection = t == 0 ? -1 : 1;
+        beingDestroyed = false;
+    }
 
-    private float t;
-    private League league;
-    private bool go;
-    private FlyMode mode;
-
-    private bool missileLaunched;
-    private Vector3 destination;
-
-	void Start () {
-        t = 0.0f;
-        go = go | false;
-        missileLaunched = false;
-        mode = FlyMode.bezier;
-	}
-	
-	void Update () {
-
-        if (!go) return;
-
-        t += 0.001f;
-
-        if (chasee != null){
-            if (!missileLaunched){
-                if (t >= 0.35f){
-                    missileLaunched = true;
-                    GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity) as GameObject;
-                    attack.GetComponent<AISkillTracingController>().speed = 3f;
-                    attack.GetComponent<AISkillTracingController>().chasee = chasee;
-                   
-                }
-            }
-            else {
-                float angle = Vector3.Angle(transform.TransformDirection(Vector3.forward), chasee.transform.position - transform.position);
-                if (angle > -30 && angle < 30) {
-                    Vector3 velocity = (chasee.transform.position - transform.position).normalized * 1.2f;
-                    transform.position += velocity;
-                    transform.LookAt(chasee.transform.position);
-
-                    if (Vector3.Distance(transform.position, chasee.transform.position) < 100) {
-                        GameObject attack = Instantiate(attackPrefab, transform.position, Quaternion.identity) as GameObject;
-                        attack.GetComponent<AISkillTracingController>().speed = 3f;
-                        attack.GetComponent<AISkillTracingController>().chasee = chasee;
-                        FindNextTarget();
-                    }
-                    return;
-                }
-            }
+    void Update() {
+        if (beingDestroyed) {
+            return;
         }
-        else{
-            if(t >0.3f)
-                FindNextTarget();
-
-        }
-
-        transform.position = myBezier.getPosition(t);
-
-        Vector3 nextPos = myBezier.getPosition(t + 0.001f);
-
-        transform.LookAt(nextPos);
-
-        if (t >= 0.96f) {
-            FindNextTarget();
-        }
-	}
-
-    private void FindNextTarget() {
-
-        if (transform.parent.gameObject.name.Equals("AllianceSpaceshipObject"))
+        if (turnAngle < 0 && !beingDestroyed)
         {
-            if (league == League.Alliance)
-                transform.parent = transform.parent.GetChild(1);
-            else
-                transform.parent = transform.parent.GetChild(0);
+            if (transform.position.z > 600 || Mathf.Abs(transform.position.x) > Mathf.Abs(transform.position.z)
+            || transform.position.z < 0)
+            {
+                beingDestroyed = true;
+                DestroySelf();
+            }
         }
 
-        if (league == League.Alliance){
-            Transform opponentParent = transform.parent.parent.GetChild(0);
-            chasee = opponentParent.GetChild(Random.Range(0, opponentParent.childCount)).gameObject;
+
+        Vector3 direction = transform.TransformDirection(Vector3.forward);
+        GetComponent<Rigidbody>().velocity = direction * speed;
+
+        if (turnTime > 0)
+        {
+            turnTime -= Time.deltaTime;
+            return;
         }
-        else {
-            Transform opponentParent = transform.parent.parent.GetChild(1);
-            chasee = opponentParent.GetChild(Random.Range(0, opponentParent.childCount)).gameObject;
+
+        if (turnAngle >= 0) {
+            turnAngle -= Time.deltaTime * 20;
+            transform.Rotate(0, -turnDirection * Time.deltaTime * 20, 0, Space.World);
         }
-
-        destination = chasee.transform.position;
-
-        myBezier = new Bezier(transform.position, transform.TransformDirection(transform.forward).normalized * 300, 
-                                (destination - transform.position).normalized * 10, destination);
-        t = 0.0f;
     }
 
-    public void setBezier(Bezier mb) {
-        myBezier = mb;
-        go = true;
-
-        destination = mb.getDestination();
-
-        Vector3 nextPos = myBezier.getPosition(t + 0.001f);
-
-        transform.LookAt(nextPos);
-    }
-
-    public void setLeague(League l) {
-        league = l;
-    }
-
-    public void Explode() {
-        
-        if(!go) return;
-        
-        go = false;
-
+    private void DestroySelf() {
+        parentObj.GetComponent<AllianceSpaceshipSpawnController>().decreaseNumber();
         transform.GetChild(0).gameObject.SetActive(false);
-        Instantiate(disintegrationPrefab, transform.position, Quaternion.identity);
-        Invoke("InvokeDestroy", 3.0f);
+        Invoke("goDestroy", 3.0f);
     }
 
-    public void Disappear() {
-        go = false;
-
-        transform.GetChild(0).gameObject.SetActive(false);
-        Invoke("InvokeDestroy", 3.0f);
-    }
-
-    public Vector3 getDestination() {
-        if (mode == FlyMode.bezier)
-            return destination;
-        else
-            return transform.position + transform.TransformDirection(transform.forward).normalized * 150;
-    }
-
-    private void InvokeDestroy(){
+    private void goDestroy() {
         Destroy(gameObject);
-    }
-
-    private Vector3 RandomizeFactorVector3(float low, float high)
-    {
-        float ax = Random.Range(low, high), ay = Random.Range(low, high), az = Random.Range(low, high);
-        return new Vector3(ax, ay, az);
     }
 
 }

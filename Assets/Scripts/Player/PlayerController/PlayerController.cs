@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour {
 
-    public SyncListInt crystalInfoList = new SyncListInt();
-
 	public GameObject uiPrefab;
     public GameObject shieldPrefab;
     public GameObject lighteningPrefab;
@@ -15,6 +13,10 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     public int slot;
     public string username;
+
+
+    [SyncVar]
+    protected int disconnectCrystal;
 
     [SyncVar]
     public PlayerRole role;
@@ -78,9 +80,7 @@ public class PlayerController : NetworkBehaviour {
 			}
 
 			skillIndex = 0;
-
             
-            Debug.Log("crystalInfoList count " + crystalInfoList.Count);
             /*foreach(DCCrystalInfo ci in crystalInfoList) {
                 mainCrystalController.SetCrystal(ci.key, ci.value);
             }

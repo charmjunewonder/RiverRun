@@ -80,6 +80,7 @@ public class MainCrystalController : MonoBehaviour {
             current_type = crystals[slot_num];
 
             draggedImage.sprite = crystalSprites[current_type];
+            draggedImage.transform.position = Input.mousePosition;
             draggedImage.color = new Color(1, 1, 1, 1);
 
             crystals[slot_num] = -1;
