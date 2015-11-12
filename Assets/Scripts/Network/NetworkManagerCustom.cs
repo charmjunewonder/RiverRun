@@ -459,7 +459,6 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnStopServer");
         base.OnStopServer();
         currentMode = NetworkMode.Level;
-        StopCoroutine("CheckLobbyReady");
         ResetLobbyPlayerArray();
         ResetAfterStopServer();
     }
@@ -839,6 +838,17 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
+    private void DestroyLobbyPlayerUI()
+    {
+        Debug.Log("DisableLobbyUI");
+
+        GameObject[] lobbyUIs = GameObject.FindGameObjectsWithTag("LobbyPlayerUI");
+        foreach (GameObject lo in lobbyUIs)
+        {
+            Destroy(lo);
+        }
+    }
+
     private void ChangeVisibilityOfLobbyPlayerEverywhere(bool visible)
     {
         Debug.Log("ChangeVisibilityOfLobbyPlayerEverywhere");
@@ -866,6 +876,7 @@ public class NetworkManagerCustom : NetworkManager {
         }
         StopCoroutine("CheckLevelSelect");
         StopCoroutine("CheckLobbyReady");
+        DestroyLobbyPlayerUI();
         levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 
