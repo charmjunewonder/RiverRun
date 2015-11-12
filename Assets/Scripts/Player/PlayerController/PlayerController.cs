@@ -16,7 +16,7 @@ public class PlayerController : NetworkBehaviour {
 
 
     [SyncVar]
-    protected int disconnectCrystal;
+    public int disconnectCrystal;
 
     [SyncVar]
     public PlayerRole role;
@@ -47,6 +47,7 @@ public class PlayerController : NetworkBehaviour {
 
     [SyncVar]
     protected bool isInGame;
+    protected bool disconnectedCrystalInitialized = false;
 
     protected bool isDraggingCrystal;
 
@@ -90,7 +91,6 @@ public class PlayerController : NetworkBehaviour {
             shieldExist = false;
             isDraggingCrystal = false;
 
-
 		}
 	}
 
@@ -103,6 +103,13 @@ public class PlayerController : NetworkBehaviour {
             return;
         }
         if (role == PlayerRole.Engineer) return;
+
+        if (!disconnectedCrystalInitialized) {
+            for (int i = 3; i >= 0; i--) {
+                mainCrystalController.SetCrystal(i, (disconnectCrystal & 7) - 1);
+            }
+            disconnectedCrystalInitialized = true;
+        }
 
         if (isInGame) {
             if (enemyManager == null) LoadEnemyObject();
@@ -527,20 +534,16 @@ public class PlayerController : NetworkBehaviour {
             GetComponent<PlayerInfo>().Damage(-amount);
     }
 
-    /*
-    public void AddCrystalToList(int key, int value) {
-        crystalInfoList.Add(new DCCrystalInfo(key, value));
+    
+    public void UpdateDisconnectionCrystal(int v1, int v2, int v3, int v4) {
+        int a = 0;
+        a |= (v1 << 24);
+        a |= (v2 << 16);
+        a |= (v3 << 8);
+        a |= v4;
+        disconnectCrystal = a;
     }
 
-    public void RemoveCrystalFromList(int k) {
-        for(int i = 0; i < crystalInfoList.Count; i++){
-            if(crystalInfoList[i].key == k){
-                crystalInfoList.RemoveAt(i);
-                return;
-            }
-        }
-    }
-    */
     #endregion
     
     #region Initialization Setup
@@ -654,6 +657,10 @@ public class PlayerController : NetworkBehaviour {
             warningController.TriggerWarning();
             GetComponent<PlayerInfo>().Damage(damage);
         }
+    }
+
+    public void InitializeDisconnectCrystals(int crystal) {
+        disconnectCrystal = crystal;
     }
 
     #endregion

@@ -10,7 +10,7 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public string username;
     public float health;
 
-    public ArrayList crystals;
+    public int crystals;
 
 
 }

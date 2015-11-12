@@ -541,12 +541,15 @@ public class NetworkManagerCustom : NetworkManager {
                             dpc.currentRole = pc.role;
                             dpc.username = pc.username;
                             dpc.health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
-                            /*
-                            for (int j = 0; j < pc.crystalInfoList.Count; i++) {
-                                dpc.crystals.Add(pc.crystalInfoList[i]);
-                            }*/
+                            dpc.crystals = pc.disconnectCrystal;
 
-                                NetworkServer.Destroy(pc.gameObject);
+                            if (UltiController.checkUltiEnchanting()) {
+                                if (UltiController.getUltiPlayerNumber() == pc.slot) {
+                                    UltiController.setUltiEnchanting(false);
+                                }
+                            }
+
+                            NetworkServer.Destroy(pc.gameObject);
                             conn.isReady = false;
                             Debug.Log("disconnect " + conn.isReady);
                         }
@@ -636,16 +639,12 @@ public class NetworkManagerCustom : NetworkManager {
                             pc.username = dpc.username;
                             pc.role = dpc.currentRole;
                             pc.setInGame();
-                            pc.setCrystalList(dpc.crystals);
-
-
+                            pc.disconnectCrystal = dpc.crystals;
+                            pc.InitializeDisconnectCrystals(dpc.crystals);
                             if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
                             {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
                             }
-                                
-                            
-
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
                             Destroy(dpc.gameObject);
                         }

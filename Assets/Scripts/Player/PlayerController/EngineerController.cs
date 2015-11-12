@@ -59,8 +59,6 @@ public class EngineerController : PlayerController {
                 initializeTeammateUI();
             }
 
-
-            Debug.Log("crystalInfoList count " + crystalInfoList.Count);
             //foreach (DCCrystalInfo ci in crystalInfoList)
             //{
                 //mainCrystalController.SetCrystal(ci.key, ci.value);
@@ -75,7 +73,14 @@ public class EngineerController : PlayerController {
         }
         if (!isLocalPlayer) return;
 
-        
+        if (!disconnectedCrystalInitialized)
+        {
+            for (int i = 3; i >= 0; i--)
+            {
+                mainCrystalController.SetCrystal(i, (disconnectCrystal & 7) - 1);
+            }
+            disconnectedCrystalInitialized = true;
+        }
 
         if (!teammateInitialized) {
             if (teammatesInfo.Count != 0) {
@@ -178,16 +183,13 @@ public class EngineerController : PlayerController {
     }
 
     public void initializeTeammate(int slot, PlayerRole role, string un) {
-        Debug.Log("InitializeTeammates ****** " + isServer);
-        //if(isServer){
-            teammateInfo info = new teammateInfo();
-            info.slot = slot;
-            info.role = role;
-            info.un = un;
-            Debug.Log(slot + " " + role + " " + un);
-            teammatesInfo.Add(info);
-        //}
-        
+
+        teammateInfo info = new teammateInfo();
+        info.slot = slot;
+        info.role = role;
+        info.un = un;
+        Debug.Log(slot + " " + role + " " + un);
+        teammatesInfo.Add(info);
     }
 
     void OnLevelWasLoaded(int level)
