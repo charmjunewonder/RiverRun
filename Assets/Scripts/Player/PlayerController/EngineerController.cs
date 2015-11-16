@@ -67,19 +67,19 @@ public class EngineerController : PlayerController {
 	}
 
     void Update() {
-        if(isServer){
-            Debug.Log("Update " + teammatesInfo.Count);
         
-        }
         if (!isLocalPlayer) return;
 
         if (!disconnectedCrystalInitialized)
         {
+            int a = disconnectCrystal;
             for (int i = 3; i >= 0; i--)
             {
-                mainCrystalController.SetCrystal(i, (disconnectCrystal & 7) - 1);
+                mainCrystalController.SetCrystal(i, (a & 7) - 1);
+                a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+            GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
         }
 
         if (!teammateInitialized) {
@@ -106,7 +106,7 @@ public class EngineerController : PlayerController {
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
 
         if (plc != null)
-            plc.RpcAcceptHealFromEngineer(GetComponent<EngineerSkill1>().heal);
+            plc.Damage(-GetComponent<EngineerSkill1>().heal);
     }
 
     #endregion

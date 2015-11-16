@@ -32,11 +32,12 @@ public class UltiCrystalController : MonoBehaviour {
                 return;
             }
         }
+        playerController.UltiFailureHandling();
         Clear();
     }
 
     public void Clear() {
-        playerController.UltiFailureHandling();
+        
         for (int i = 0; i < crystals.Length; i++) {
             crystalImages[i].sprite = transparent;
             crystalImages[i].color = new Color(0, 0, 0, 0);

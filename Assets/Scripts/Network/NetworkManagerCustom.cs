@@ -542,10 +542,16 @@ public class NetworkManagerCustom : NetworkManager {
                             dpc.username = pc.username;
                             dpc.health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
                             dpc.crystals = pc.disconnectCrystal;
-
+                            
                             if (UltiController.checkUltiEnchanting()) {
-                                if (UltiController.getUltiPlayerNumber() == pc.slot) {
+                                if (UltiController.getUltiPlayerNumber() == i){
                                     UltiController.setUltiEnchanting(false);
+                                }
+
+                                for (int k = 0; k < maxPlayers; k++) {
+                                    if (gameplayerControllers[k] != null && k != i) {
+                                        ((PlayerController)gameplayerControllers[k]).UnlockUlti();
+                                    }
                                 }
                             }
 
@@ -641,6 +647,8 @@ public class NetworkManagerCustom : NetworkManager {
                             pc.setInGame();
                             pc.disconnectCrystal = dpc.crystals;
                             pc.InitializeDisconnectCrystals(dpc.crystals);
+                            gamePlayer.GetComponent<PlayerInfo>().setHealth(dpc.health);
+
                             if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
                             {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
@@ -921,7 +929,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void AttackPlayer(int index, float damage) {
 
         if (gameplayerControllers[index] != null)
-            ((PlayerController)gameplayerControllers[index]).RpcDamage(damage);
+            ((PlayerController)gameplayerControllers[index]).Damage(damage);
 
     }
 

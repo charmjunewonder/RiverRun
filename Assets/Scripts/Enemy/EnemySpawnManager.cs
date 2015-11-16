@@ -21,27 +21,34 @@ public class EnemySpawnManager : NetworkBehaviour {
         if (isServer) {
             transform.rotation = Quaternion.identity;
             transform.position = new Vector3(0, 0, 0);
-            spaceship = GameObject.FindGameObjectWithTag("Spaceship");
             waves = 5;
-            countDown = 60.0f;
+            countDown = 5.0f;
             GenerateEnemies();
         }
     }
 
     void Update() {
-        if(waves < 0) return;
-        countDown -= Time.deltaTime;
+        if (isServer) {
+            if (waves < 0) return;
+            countDown -= Time.deltaTime;
 
-        if (countDown <= 0) {
-            waves--;
-            GenerateEnemies();
-            countDown = 60.0f;
+            if (countDown <= 0)
+            {
+                waves--;
+                GenerateEnemies();
+                countDown = 60.0f;
+            }
         }
+        
     }
 
     public GameObject GetSpaceShip() { return spaceship; }
 
     private void GenerateEnemies() {
+
+        if(spaceship == null)
+            spaceship = GameObject.Find("Spaceship(Clone)");
+
         int enemiesNum = Random.Range(enemiesMin, enemiesMax);
 
         for (int i = 0; i < enemiesNum; i++){

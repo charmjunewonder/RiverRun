@@ -7,7 +7,7 @@ public class PlayerInfo :  NetworkBehaviour{
 	public PlayerRole role;
 	protected int level;
 
-    [SyncVar]
+    [SyncVar(hook = "OnChange")]
 	protected float health;
 
     protected float max_health = 10.0f;
@@ -48,12 +48,14 @@ public class PlayerInfo :  NetworkBehaviour{
         if (health > 10)
             health = 10;
 
-        int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
-        Debug.Log("perc " + health / max_health * 10);
+        if (isLocalPlayer) {
+            int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
-        healthController.setHealth(perc);
+            Debug.Log("perc " + health / max_health * 10);
 
+            healthController.setHealth(perc);
+        }
     }
 
 	public int getLevel(){ return level; }
@@ -65,10 +67,17 @@ public class PlayerInfo :  NetworkBehaviour{
             health = 0;
         if (health > 10)
             health = 10;
+    }
+
+    private void OnChange(float f) {
+        if (healthController == null) return;
+
+        Debug.Log("Health Hook " + f);
+
+        health = f;
 
         int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
-        healthController.setHealth(perc);
-
+         healthController.setHealth(perc);
     }
 }

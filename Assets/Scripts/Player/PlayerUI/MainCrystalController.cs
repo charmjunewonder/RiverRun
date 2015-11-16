@@ -68,7 +68,7 @@ public class MainCrystalController : MonoBehaviour {
             }
         }
 
-        playerController.UpdateDisconnectionCrystal(crystals[0] + 1, crystals[1] + 1, crystals[2] + 1, crystals[3] + 1);
+        playerController.CmdUpdateDisconnectionCrystal(crystals[0] + 1, crystals[1] + 1, crystals[2] + 1, crystals[3] + 1);
     }
 
     public void SelectCrystal(int slot_num) {
@@ -97,6 +97,8 @@ public class MainCrystalController : MonoBehaviour {
             current_slot = -1;
             current_type = -1;
             draggedImage.color = new Color(1, 1, 1, 0);
+
+            playerController.CmdUpdateDisconnectionCrystal(crystals[0] + 1, crystals[1] + 1, crystals[2] + 1, crystals[3] + 1);
         }
     }
 

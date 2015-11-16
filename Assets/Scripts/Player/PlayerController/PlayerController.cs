@@ -47,7 +47,7 @@ public class PlayerController : NetworkBehaviour {
 
     [SyncVar]
     protected bool isInGame;
-    protected bool disconnectedCrystalInitialized = false;
+    protected bool disconnectedCrystalInitialized;
 
     protected bool isDraggingCrystal;
 
@@ -59,6 +59,7 @@ public class PlayerController : NetworkBehaviour {
     #region StartUpdate
     void Awake() {
         isInGame = false;
+        disconnectedCrystalInitialized = false;
     }
 
 
@@ -105,10 +106,13 @@ public class PlayerController : NetworkBehaviour {
         if (role == PlayerRole.Engineer) return;
 
         if (!disconnectedCrystalInitialized) {
+            int a = disconnectCrystal;
             for (int i = 3; i >= 0; i--) {
-                mainCrystalController.SetCrystal(i, (disconnectCrystal & 7) - 1);
+                mainCrystalController.SetCrystal(i, (a & 7) - 1);
+                a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+            GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
         }
 
         if (isInGame) {
@@ -305,27 +309,35 @@ public class PlayerController : NetworkBehaviour {
 	void CmdDoFire(int skillIndex, int enemyIndex)
 	{
         Debug.Log("CmdDoFire " + skillIndex + enemyIndex);
-
-        if (enemyIndex == -1){
-            for (int i = 0; i < enemyManager.transform.childCount; i++)
+        if (role == PlayerRole.Striker) {
+            if (enemyIndex == -1)
             {
-                enemyManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                for (int i = 0; i < enemyManager.transform.childCount; i++)
+                {
+                    enemyManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                }
+            }
+            else
+            {
+                Transform enemy = enemyManager.transform.GetChild(enemyIndex);
+
+                enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+
+                GameObject lightening = Instantiate(lighteningPrefab, transform.position, Quaternion.identity) as GameObject;
+
+                lightening.transform.GetChild(0).position = enemy.position;
+                lightening.transform.GetChild(1).position = transform.GetChild(Random.Range(1, 3)).position;
+
+                lightening.GetComponent<SyncTransformLightening>().setTransform(lightening.transform.GetChild(0), lightening.transform.GetChild(1));
+
+                NetworkServer.Spawn(lightening);
             }
         }
         else {
-            Transform enemy = enemyManager.transform.GetChild(enemyIndex);
-
-            enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
-
-            GameObject lightening = Instantiate(lighteningPrefab, transform.position, Quaternion.identity) as GameObject;
-
-            lightening.transform.GetChild(0).position = enemy.position;
-            lightening.transform.GetChild(1).position = transform.GetChild(Random.Range(1, 3)).position;
-
-            lightening.GetComponent<SyncTransformLightening>().setTransform(lightening.transform.GetChild(0), lightening.transform.GetChild(1));
-
-            NetworkServer.Spawn (lightening);
+            
+        
         }
+        
 
 
 
@@ -423,7 +435,7 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer){
             if (status){
                 ultiCrystalController.GenerateUltiCrystals();
-                int ulti_index = role == PlayerRole.Engineer ? 2 : 1;
+                int ulti_index = 1;
                 skillControllers[ulti_index].StartCoolDown();
             }
         }
@@ -450,8 +462,14 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+    public void UnlockUlti() {
+        if (isServer) {
+            RpcUnlockUlti();
+        }
+    }
+
     [ClientRpc]
-    protected void RpcUnlockUlti(){
+    public void RpcUnlockUlti(){
         if (isLocalPlayer) {
             mainCrystalController.CloseCrystalPortal();
             if (role != PlayerRole.Engineer)
@@ -528,14 +546,8 @@ public class PlayerController : NetworkBehaviour {
             mainCrystalController.AcceptCrystal(crys_num);
     }
 
-    [ClientRpc]
-    public void RpcAcceptHealFromEngineer(float amount) {
-        if (isLocalPlayer)
-            GetComponent<PlayerInfo>().Damage(-amount);
-    }
-
-    
-    public void UpdateDisconnectionCrystal(int v1, int v2, int v3, int v4) {
+    [Command]
+    public void CmdUpdateDisconnectionCrystal(int v1, int v2, int v3, int v4) {
         int a = 0;
         a |= (v1 << 24);
         a |= (v2 << 16);
@@ -554,12 +566,6 @@ public class PlayerController : NetworkBehaviour {
 
     public void setInGame() {
         isInGame = true;
-    }
-
-    public void setCrystalList(ArrayList al) {
-        for (int i = 0; i < al.Count; i++) {
-            //crystalInfoList.Add((DCCrystalInfo)al[i]);
-        }
     }
 
     private void setStrikerDefenderControllers(GameObject ui)
@@ -637,11 +643,9 @@ public class PlayerController : NetworkBehaviour {
 
         Debug.Log("InitializeSetCrystal");
         int ran = Random.Range(0, 4);
-        //crystalInfoList.Add(new DCCrystalInfo(0, ran));
         mainCrystalController.AcceptCrystal(ran);
 
         ran = Random.Range(0, 4);
-        //crystalInfoList.Add(new DCCrystalInfo(1, ran));
         mainCrystalController.AcceptCrystal(ran);
         
     }
@@ -650,17 +654,23 @@ public class PlayerController : NetworkBehaviour {
 
     #region Utility
 
+    public void Damage(float damage) {
+        GetComponent<PlayerInfo>().Damage(damage);
+        if(damage > 0)
+            RpcDamage(damage);
+    }
+
     [ClientRpc]
     public void RpcDamage(float damage)
     {
         if (isLocalPlayer) {
             warningController.TriggerWarning();
-            GetComponent<PlayerInfo>().Damage(damage);
         }
     }
 
     public void InitializeDisconnectCrystals(int crystal) {
         disconnectCrystal = crystal;
+        Debug.Log("InitializeDisconnectCrystals " + crystal);
     }
 
     #endregion
