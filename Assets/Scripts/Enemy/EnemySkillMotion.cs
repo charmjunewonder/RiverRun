@@ -4,17 +4,15 @@ using System.Collections;
 
 public class EnemySkillMotion : NetworkBehaviour {
 
-    private GameObject spaceship;
+
     [SyncVar]
     private int target;
     public Vector3 velocity;
     private float damage;
 
-    public void setSpaceship(GameObject ss) { spaceship = ss; }
     public void setIndex(int ind) { target = ind; }
     public void setVelocity(Vector3 v) { velocity = v; }
     public void setDamage(float d) { damage = d; }
-    
     public Vector3 getVelocity() { return velocity; }
     public float getDamage() { return damage; }
 

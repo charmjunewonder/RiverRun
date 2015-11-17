@@ -14,6 +14,8 @@ public class PlayerController : NetworkBehaviour {
     public int slot;
     public string username;
 
+    [SyncVar]
+    public int rank;
 
     [SyncVar]
     public int disconnectCrystal;
@@ -53,7 +55,10 @@ public class PlayerController : NetworkBehaviour {
 
     private Vector3 shieldPoint1, shieldPoint2;
     private bool shieldExist;
-    //private Transform draggedCrystal;
+    private float shieldTime;
+    private int shieldNumber;
+
+    protected PlayerParameter playerParameter;
 
 
     #region StartUpdate
@@ -83,11 +88,6 @@ public class PlayerController : NetworkBehaviour {
 
 			skillIndex = 0;
             
-            /*foreach(DCCrystalInfo ci in crystalInfoList) {
-                mainCrystalController.SetCrystal(ci.key, ci.value);
-            }
-            */
-
             shieldPoint1 = Vector3.zero;
             shieldExist = false;
             isDraggingCrystal = false;
@@ -112,7 +112,9 @@ public class PlayerController : NetworkBehaviour {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
+
         }
 
         if (isInGame) {
@@ -375,10 +377,10 @@ public class PlayerController : NetworkBehaviour {
 
         shield.GetComponent<SyncTransform>().setTransform(shield.transform);
 
-        shield.GetComponent<ShieldCollisionBehaviour>().setMaximumDefendNumber(5);
+        shield.GetComponent<ShieldCollisionBehaviour>().setMaximumDefendNumber(shieldNumber);
 
         shield.GetComponent<ShieldCollisionBehaviour>().playerController = this;
-        shield.GetComponent<ShieldCollisionBehaviour>().setCountDown(8.0f);
+        shield.GetComponent<ShieldCollisionBehaviour>().setCountDown(shieldTime);
 
         NetworkServer.Spawn(shield);
 
@@ -612,6 +614,8 @@ public class PlayerController : NetworkBehaviour {
     void OnLevelWasLoaded(int level)
     {
         Debug.Log("OnLevelWasLoaded");
+        initializeData();
+
         if (isLocalPlayer)
         {
             //if(level != 0)
@@ -650,6 +654,29 @@ public class PlayerController : NetworkBehaviour {
         
     }
 
+
+    protected void initializeData() {
+        playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
+        Debug.Log("playerParameter " + playerParameter.maxHp);
+        GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
+        if (role == PlayerRole.Engineer)
+        {
+            GetComponent<EngineerSkill1>().coolDown = playerParameter.coolingDown_1;
+            GetComponent<EngineerSkill1>().heal = playerParameter.healPt;
+
+        }
+        else
+        {
+            GetComponent<StrikerSkill1>().coolDown = playerParameter.coolingDown_1;
+            GetComponent<StrikerSkill2>().coolDown = playerParameter.coolingDown_2;
+            GetComponent<StrikerSkill2>().damage = role == PlayerRole.Striker ? playerParameter.ultiPt : playerParameter.ultiTime;
+            if (role == PlayerRole.Defender)
+            {
+                shieldTime = playerParameter.sheildTime;
+                shieldNumber = playerParameter.sheildHp;
+            }
+        }
+    }
     #endregion
 
     #region Utility

@@ -23,6 +23,10 @@ public class EnemyMotion : NetworkBehaviour {
     [SyncVar]
     private float max_blood;
 
+    private int damage;
+    private float attackTime;
+
+
     [SyncVar]
     private int flyStatus;
 
@@ -46,7 +50,8 @@ public class EnemyMotion : NetworkBehaviour {
     public void setMaxBlood(float b) { max_blood = b; }
     public float getMaxBlood() { return max_blood; }
     public void setIndex(int ind) { index = ind; }
-
+    public void setDamage(int d) { damage = d; }
+    public void setAttackTime(float t) { attackTime = t; skillTimer = attackTime; }
 
     public void DecreaseBlood(float damage) {
         blood -= damage;
@@ -74,7 +79,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             transform.LookAt(destination);
 
-            skillTimer = Random.Range(3.0f, 15f);
+            skillTimer = 60;
 
             turnDirection = Random.Range(0, 2);
             turnDirection = turnDirection == 0 ? -1 : 1;
@@ -175,13 +180,12 @@ public class EnemyMotion : NetworkBehaviour {
             attack.transform.parent = enemySkillManager.transform;
 
             EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
-            esm.setDamage(1);
+            esm.setDamage(damage);
 
             Vector3 ran = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
 
             Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(80f, 100f);
             esm.setVelocity(vel);
-            esm.setSpaceship(spaceship);
 
             int target = Random.Range(0, 4);
             esm.setIndex(target);
@@ -191,7 +195,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             NetworkServer.Spawn(attack);
 
-            skillTimer = Random.Range(5.0f, 7.0f);
+            skillTimer = attackTime;
         }
     }
 
