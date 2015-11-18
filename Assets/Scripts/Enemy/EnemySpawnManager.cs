@@ -82,9 +82,9 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             Vector3 spaceshipPos = spaceship.transform.position;
 
-            float randomZ = Random.Range(550.0f, 600.0f);
-            float randomX = Random.Range(-randomZ * 0.4f, randomZ * 0.4f);
-            float randomY = Random.Range(-randomZ * 0.4f, randomZ * 0.3f);
+            float randomZ = Random.Range(600.0f, 650.0f);
+            float randomX = Random.Range(-80.0f, 80.0f);
+            float randomY = Random.Range(-80.0f, 80.0f);
 
             Vector3 pos = new Vector3(randomX, randomY, spaceshipPos.z + randomZ);
 
