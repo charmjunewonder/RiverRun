@@ -121,16 +121,16 @@ Shader "UI/UI_Flash"
 				             + clamp(0.07-abs(u_loc_2-IN.texcoord.x),0,0.07)*clamp(0.07-abs(v_loc_2-IN.texcoord.y),0,0.07);
 				
 				
-				half u_high = clamp (abs(frac(_Time.y*_Speed)-0.5)*2.0-0.25,0.01,0.49) *2.0;
-				half v_high = clamp (abs(frac(_Time.y*_Speed+0.25)-0.5)*2.0-0.25,0.01,0.49) *2.0;
-				half u_high_2 = clamp (abs(frac(_Time.y*_Speed+0.5)-0.5)*2.0-0.25,0.01,0.49) *2.0;
-				half v_high_2 = clamp (abs(frac(_Time.y*_Speed+0.75)-0.5)*2.0-0.25,0.01,0.49) *2.0;
-				bool isIn = (abs(u_high-IN.texcoord.x)<0.04)*(abs(v_high-IN.texcoord.y)<0.04)+
-				              (abs(u_high_2-IN.texcoord.x)<0.04)*(abs(v_high_2-IN.texcoord.y)<0.04);
+				//half u_high = clamp (abs(frac(_Time.y*_Speed)-0.5)*2.0-0.25,0.01,0.49) *2.0;
+				//half v_high = clamp (abs(frac(_Time.y*_Speed+0.25)-0.5)*2.0-0.25,0.01,0.49) *2.0;
+				//half u_high_2 = clamp (abs(frac(_Time.y*_Speed+0.5)-0.5)*2.0-0.25,0.01,0.49) *2.0;
+				//half v_high_2 = clamp (abs(frac(_Time.y*_Speed+0.75)-0.5)*2.0-0.25,0.01,0.49) *2.0;
+				//bool isIn = (abs(u_high-IN.texcoord.x)<0.04)*(abs(v_high-IN.texcoord.y)<0.04)+
+				//              (abs(u_high_2-IN.texcoord.x)<0.04)*(abs(v_high_2-IN.texcoord.y)<0.04);
 			   
 				//isIn = isIn*_Trigger;
 				//half4 color = baseColor*(!isIn)+isIn*_HighColor*_Power;
-				weight = weight+isIn*0.5;
+				//weight = weight+isIn*0.5;
 				half4 color = baseColor+_Trigger*weight*_HighColor*_Power*800;
 				color = half4 (color.r,color.g,color.b,baseColor.a);
 				return color;

@@ -16,10 +16,11 @@ public class NetworkManagerCustom : NetworkManager {
     public GameObject DisconnectedPlayerPrefab;
     public MissionPanel missionPanel;
     public ServerMissionCompletePanel serverMissionPanel;
+    public ServerGamePanel sGamePanel;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
-    private ArrayList disconnectedPlayerControllers;
+    public ArrayList disconnectedPlayerControllers{ get; set; }
     private HashSet<string> userNameSet;
     private NetworkMode currentMode;
     public GameObject serverConnect;
@@ -381,6 +382,7 @@ public class NetworkManagerCustom : NetworkManager {
         currentMode = NetworkMode.Game;
         ResetLobbyPlayerArray();
         ServerChangeScene(selectedLevel);
+        SetServerGamePanel();
     }
 
     private void SetupEngineerTeammateInfo() {
@@ -885,6 +887,9 @@ public class NetworkManagerCustom : NetworkManager {
         }
         StopCoroutine("CheckLevelSelect");
         StopCoroutine("CheckLobbyReady");
+        sGamePanel.Reset();
+        sGamePanel.gameObject.SetActive(false);
+        serverMissionPanel.gameObject.SetActive(false);
         DestroyLobbyPlayerUI();
         levelPanel.gameObject.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
@@ -925,6 +930,29 @@ public class NetworkManagerCustom : NetworkManager {
         levelPanel.GetComponent<LobbyLevelPanel>().ResetButtons();
     }
 
+    private void SetServerGamePanel()
+    {
+        sGamePanel.gameObject.SetActive(true);
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            PlayerController lp = (PlayerController)gameplayerControllers[i];
+            if (lp != null)
+            {
+                Debug.Log("SetServerMissionCompletePanel");
+                sGamePanel.playerInfos[i].gameObject.SetActive(true);
+                sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 50, 100);
+            }
+            else
+            {
+                DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[i];
+                if (dpc != null)
+                {
+                    sGamePanel.playerInfos[i].gameObject.SetActive(true);
+                    sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 50, 100);
+                }
+            }
+        }
+    }
 
     #region Feiran's Function - Never Touch!
 
@@ -937,10 +965,10 @@ public class NetworkManagerCustom : NetworkManager {
 
 
     public void GameEnded() {
-        // to do: Change Scene
         serverMissionPanel.gameObject.SetActive(true);
         serverMissionPanel.SetServerMissionCompletePanel(200, 200, "Good");
-
+        sGamePanel.Reset();
+        sGamePanel.gameObject.SetActive(false);
         for (int k = 0; k < maxPlayers; k++)
         {
             if (gameplayerControllers[k] != null )

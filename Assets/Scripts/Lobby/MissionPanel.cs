@@ -19,7 +19,7 @@ public class MissionPanel : MonoBehaviour {
     public int test;
 	// Use this for initialization
 	void Start () {
-        SetMissonComplete(100, 3, "Eric", PlayerRole.Engineer, 10, 60, 100, 15, 10);
+        //SetMissonComplete(100, 3, "Eric", PlayerRole.Engineer, 10, 60, 100, 15, 10);
 	}
 
 

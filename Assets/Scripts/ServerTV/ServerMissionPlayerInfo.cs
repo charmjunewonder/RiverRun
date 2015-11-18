@@ -12,7 +12,7 @@ public class ServerMissionPlayerInfo : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        SetUserInfo("Feiran", PlayerRole.Defender, 15, 100, 200);
+        
 	}
 
     public void SetUserInfo(string username, PlayerRole pr, int rank, int experience, int fullEx)
@@ -40,5 +40,10 @@ public class ServerMissionPlayerInfo : MonoBehaviour {
                 roleImage.sprite = userPanelSprite[2];
                 break;
         }
+    }
+
+    public void Reset()
+    {
+        SetUserInfo("", PlayerRole.Striker, 0, 10, 10);
     }
 }

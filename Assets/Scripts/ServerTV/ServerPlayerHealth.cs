@@ -15,6 +15,11 @@ public class ServerPlayerHealth : MonoBehaviour {
             num = 2;
             healthPercent.text = "<color=#B02E45FF>" + health * 10 + "%</color>";
         }
+        else
+        {
+            healthPercent.text = health * 10 + "%";
+        }
+
         for (int i = 0; i < 10; i++)
         {
             transform.GetChild(i).GetComponent<Image>().sprite = i < health ? sprites[num] : sprites[num + 1];

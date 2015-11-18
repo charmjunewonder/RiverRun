@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour {
 
     [SyncVar]
     public int slot;
+    [SyncVar]
     public string username;
 
     [SyncVar]
@@ -708,6 +709,7 @@ public class PlayerController : NetworkBehaviour {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
             int score = Random.Range(100, 200);
+
             NetworkManagerCustom.SingletonNM.MissionComplete(score, score / 50, username, role, rank, score, 200, 
                 Random.Range(50, 100), Random.Range(1, 10));
         }
