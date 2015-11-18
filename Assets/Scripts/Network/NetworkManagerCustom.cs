@@ -14,6 +14,7 @@ public class NetworkManagerCustom : NetworkManager {
     public GameObject StrikerPrefab;
     public GameObject EngineerPrefab;
     public GameObject DisconnectedPlayerPrefab;
+    public MissionPanel missionPanel;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
@@ -933,5 +934,24 @@ public class NetworkManagerCustom : NetworkManager {
 
     }
 
+
+    public void GameEnded() {
+        // to do: Change Scene
+
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null )
+            {
+                ((PlayerController)gameplayerControllers[k]).RpcMissionComplete();
+            }
+        }
+
+    }
+
+    public void MissionComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti)
+    {
+        missionPanel.gameObject.SetActive(true);
+        missionPanel.SetMissonComplete(score, star, username,  pr, rank, experience, fullEx, skill1, ulti);
+    }
     #endregion
 }

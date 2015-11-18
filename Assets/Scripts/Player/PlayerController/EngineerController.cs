@@ -16,12 +16,7 @@ public class EngineerController : PlayerController {
 
     public SyncListTeammateInfo teammatesInfo = new SyncListTeammateInfo();
 
-
-
-
     public Sprite[] teammatePhotoes;
-
-    protected GameObject ui;
 
     private bool teammateInitialized = false;
 

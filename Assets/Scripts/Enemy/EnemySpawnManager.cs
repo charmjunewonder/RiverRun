@@ -17,10 +17,11 @@ public class EnemySpawnManager : NetworkBehaviour {
     private int[] enemyNumbers;
     private EnemyData[][] enemyData;
 
-
     private float countDown;
 
     private EnemyParameter enemyParameter;
+
+    public float totalTime;
 
     void Start() {
         if (isServer) {
@@ -47,6 +48,7 @@ public class EnemySpawnManager : NetworkBehaviour {
             enemyNumbers = enemyParameter.enemyNumbers;
             enemyData = enemyParameter.enemyDatas;
 
+            StartCoroutine("PlayingTimeCountDown");
         }
     }
 
@@ -62,7 +64,6 @@ public class EnemySpawnManager : NetworkBehaviour {
                 waves++;
             }
         }
-        
     }
 
     public GameObject GetSpaceShip() { return spaceship; }
@@ -105,5 +106,13 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
     }
 
+    IEnumerator PlayingTimeCountDown() {
+        while (totalTime >= 0) {
+            totalTime -= 1;
+            yield return new WaitForSeconds(1);
+        }
+
+        NetworkManagerCustom.SingletonNM.GameEnded();
+    }
 
 }

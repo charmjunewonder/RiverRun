@@ -34,7 +34,6 @@ public class PlayerController : NetworkBehaviour {
     protected Skill[] skills;
 
     protected EventSystem e;
-    
     protected int[] crystals;
     protected SkillController[] skillControllers;
     protected PlayerInfo playerInfo;
@@ -42,6 +41,7 @@ public class PlayerController : NetworkBehaviour {
     protected MainCrystalController mainCrystalController;
     protected ReminderController reminderController;
     protected WarningController warningController;
+    protected GameObject ui;
 
     public GameObject enemyManager;
     private Transform enemyUITarget;
@@ -73,7 +73,7 @@ public class PlayerController : NetworkBehaviour {
         GameObject.DontDestroyOnLoad(gameObject);
 
         if (isLocalPlayer) {
-			GameObject ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity) as GameObject;
+			ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity) as GameObject;
             GameObject.DontDestroyOnLoad(ui);
             NetworkManagerCustom.SingletonNM.DisableLobbyUI();
             setStrikerDefenderControllers(ui);
@@ -700,6 +700,16 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("InitializeDisconnectCrystals " + crystal);
     }
 
+    [ClientRpc]
+    public void RpcMissionComplete() {
+        if (isLocalPlayer) {
+            Debug.Log("Mission Complete Local");
+            ui.SetActive(false);
+            int score = Random.Range(100, 200);
+            NetworkManagerCustom.SingletonNM.MissionComplete(score, score / 50, username, role, rank, score, 200, 
+                Random.Range(50, 100), Random.Range(1, 10));
+        }
+    }
     #endregion
 
 }
