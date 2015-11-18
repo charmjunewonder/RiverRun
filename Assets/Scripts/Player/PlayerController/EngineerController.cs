@@ -189,17 +189,21 @@ public class EngineerController : PlayerController {
 
     void OnLevelWasLoaded(int level)
     {
-        if (isLocalPlayer)
+        if (level == 1)
         {
-            //if (level != 0)
-            //ClientScene.Ready(connectionToServer);
-            if (level == 0) return;
-            //initializeTeammateUI();
-            cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
+            if (isLocalPlayer)
+            {
+                //if (level != 0)
+                //ClientScene.Ready(connectionToServer);
+                if (level == 0) return;
+                //initializeTeammateUI();
+                cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
 
-            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
-            mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+                mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+                mainCrystalController.AcceptCrystal(Random.Range(0, 4));
+            }
         }
+
 
         if (level == 13)
             print("Woohoo");

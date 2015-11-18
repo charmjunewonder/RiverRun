@@ -15,6 +15,7 @@ public class NetworkManagerCustom : NetworkManager {
     public GameObject EngineerPrefab;
     public GameObject DisconnectedPlayerPrefab;
     public MissionPanel missionPanel;
+    public ServerMissionCompletePanel serverMissionPanel;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
@@ -937,6 +938,8 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void GameEnded() {
         // to do: Change Scene
+        serverMissionPanel.gameObject.SetActive(true);
+        serverMissionPanel.SetServerMissionCompletePanel(200, 200, "Good");
 
         for (int k = 0; k < maxPlayers; k++)
         {
@@ -945,11 +948,12 @@ public class NetworkManagerCustom : NetworkManager {
                 ((PlayerController)gameplayerControllers[k]).RpcMissionComplete();
             }
         }
-
+        ServerChangeScene("Empty");
     }
 
     public void MissionComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti)
     {
+        Debug.Log("MissinComplete");
         missionPanel.gameObject.SetActive(true);
         missionPanel.SetMissonComplete(score, star, username,  pr, rank, experience, fullEx, skill1, ulti);
     }
