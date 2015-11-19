@@ -6,8 +6,8 @@ public class StrikerSkill2 : Skill {
 	void Start () {
         skillName = "aoe";
         int level = gameObject.GetComponent<PlayerInfo>().getLevel();
-        damage = Mathf.Pow(2, level) * 10 + 200;
+        damage = 20;
         heal = 0;
-        coolDown = 75;
+        coolDown = 60;
 	}
 }
