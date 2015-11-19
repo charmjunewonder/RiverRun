@@ -4,7 +4,7 @@ using System.Collections;
 
 public class SyncTransform : NetworkBehaviour {
 
-    [SyncVar (hook = "SyncPosition")]
+    [SyncVar]
     private Vector3 pos;
 
     [SyncVar]
@@ -18,7 +18,7 @@ public class SyncTransform : NetworkBehaviour {
 
         if(!isServer){
             transform.rotation = q;
-
+            transform.position = pos;
             transform.localScale = scale;
         }
 	}

@@ -75,7 +75,7 @@ public class PlayerInfo :  NetworkBehaviour{
     private void OnChange(float f) {
         if (healthController == null) return;
 
-        Debug.Log("Health Hook " + f);
+        //Debug.Log("Health Hook " + f);
 
         health = f;
 
