@@ -46,10 +46,10 @@ public class EnemyParameter : MonoBehaviour {
     {
         difficultyFactor = diffFactor;
         enemyBasicHp = 40 + 5 * difficultyFactor;
-        enemyBasicAp = 2 + (difficultyFactor % 5);//temp
+        enemyBasicAp = 2 + (difficultyFactor / 5);//temp
         enemyBasicAttackTime = 10.0f - difficultyFactor * 0.25f;
         maxNumberPerWave = 20 + 2 * difficultyFactor; // maximum 50 
-        enemyWave = 2 + ((difficultyFactor+2) % 4); //every 4 rank add a wave
+        enemyWave = 3 + ((difficultyFactor+2) / 4); //every 4 rank add a wave
     }
 
     private void generateEnemyData()

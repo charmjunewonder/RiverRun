@@ -65,25 +65,25 @@ public class PlayerParameter:MonoBehaviour{
             case PlayerRole.Striker:
                 {
                     attackPt = 5 + rank; //striker attack
-                    coolingDown_1 = 0.5f - (rank % 5)*0.1f; //coolingDown 1
+                    coolingDown_1 = 0.5f - (rank / 5)*0.1f; //coolingDown 1
                     coolingDown_2 = 60.0f - rank * 2.0f;//coolingDown 2
                     ultiPt = attackPt * 2;//ultimate skill attack
                     break;
                 }
             case PlayerRole.Defender:
                 {
-                    coolingDown_1 = 0.5f - (rank % 5) * 0.1f; //coolingDown 1
+                    coolingDown_1 = 0.5f - (rank / 5) * 0.1f; //coolingDown 1
                     coolingDown_2 = 60.0f - rank * 2.0f;//coolingDown 2
                     ultiTime = 10.0f + rank * 1.2f; // defender froze enemy time
                     sheildTime = 3.0f + rank * 0.2f;//defender shield time
-                    sheildHp = 2 + (rank % 4) * 1;//defender shield defend attack number
+                    sheildHp = 2 + (rank / 4) * 1;//defender shield defend attack number
                     break;
                 }
             case PlayerRole.Engineer:
                 {
                     healPt = 10 + rank;//engineer heal point
-                    coolingDown_1 = 3.0f - (rank % 5) * 0.5f;//engineer heal coolingdown time
-                    coolingDown_2 = 2.0f - (rank % 5) * 0.3f;//crystal produce time 
+                    coolingDown_1 = 3.0f - (rank / 5) * 0.5f;//engineer heal coolingdown time
+                    coolingDown_2 = 2.0f - (rank / 5) * 0.3f;//crystal produce time 
                     playerCoolingDown = coolingDown_2 * 2.0f;//player cooling down for assign crystals
                     break;
                 }
