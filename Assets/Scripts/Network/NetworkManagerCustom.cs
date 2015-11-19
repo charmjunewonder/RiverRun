@@ -271,7 +271,7 @@ public class NetworkManagerCustom : NetworkManager {
                 }
             }
             debuglog += " allSame " + isAllSame + " allselected " + isAllSelected;
-            Debug.Log(debuglog);
+            //Debug.Log(debuglog);
 
             if (userCount < minPlayers)
             {
@@ -479,6 +479,9 @@ public class NetworkManagerCustom : NetworkManager {
 		if(i >= maxPlayers) {
 			conn.Disconnect();
             conn.Dispose();
+            Debug.Log("**********************OnServerConnect Disconnect the Client**********************");
+            Debug.Log("**********************OnServerConnect Disconnect the Client**********************");
+            Debug.Log("**********************OnServerConnect Disconnect the Client**********************");
 
             //tell the client
         }
@@ -693,6 +696,8 @@ public class NetworkManagerCustom : NetworkManager {
         DisableGameUI();
         missionPanel.gameObject.SetActive(false);
         currentMode = NetworkMode.Level;
+        Application.LoadLevel("Empty");
+
     }
 
     public override void OnClientError(NetworkConnection conn, int errorCode)
@@ -954,6 +959,19 @@ public class NetworkManagerCustom : NetworkManager {
                 }
             }
         }
+    }
+
+    public void OnRestartClicked()
+    {
+        StopServerClbk();
+        ServerChangeScene("Empty");
+        StartCoroutine(waitAndStartServer());
+    }
+
+    IEnumerator waitAndStartServer()
+    {
+        yield return new WaitForSeconds(0.5f);
+        StartServer();
     }
 
     #region Feiran's Function - Never Touch!

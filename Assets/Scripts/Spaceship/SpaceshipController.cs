@@ -5,7 +5,7 @@ public class SpaceshipController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameObject.Find("SceneCamera").SetActive(false);
+		//GameObject.Find("SceneCamera").SetActive(false);
 	}
 	
 	// Update is called once per frame
