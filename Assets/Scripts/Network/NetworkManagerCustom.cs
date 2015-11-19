@@ -947,7 +947,7 @@ public class NetworkManagerCustom : NetworkManager {
             {
                 Debug.Log("SetServerMissionCompletePanel");
                 sGamePanel.playerInfos[i].gameObject.SetActive(true);
-                sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 50, 100);
+                sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 10);
             }
             else
             {
@@ -955,7 +955,7 @@ public class NetworkManagerCustom : NetworkManager {
                 if (dpc != null)
                 {
                     sGamePanel.playerInfos[i].gameObject.SetActive(true);
-                    sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 50, 100);
+                    sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 10);
                 }
             }
         }
@@ -981,6 +981,16 @@ public class NetworkManagerCustom : NetworkManager {
         if (gameplayerControllers[index] != null)
             ((PlayerController)gameplayerControllers[index]).Damage(damage);
 
+    }
+
+    public void FreezeAI(float t) {
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null)
+            {
+                ((PlayerController)gameplayerControllers[k]).RpcFreezeAI(t);
+            }
+        }
     }
 
 

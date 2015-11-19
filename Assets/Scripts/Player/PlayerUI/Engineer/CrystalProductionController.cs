@@ -34,7 +34,19 @@ public class CrystalProductionController : MonoBehaviour {
     public void Revoke() {
         StopAllCoroutines();
         crystalSelected = -1;
-        StartCoroutine("CloseBar");
+
+        for (int i = 1; i < 5; i++)
+        {
+            Transform child = transform.GetChild(i);
+            Image image = child.GetComponent<Image>();
+            image.raycastTarget = false;
+            image.color = new Color(1, 1, 1, 0);
+            child.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+        }
+
+        GetComponent<Image>().fillAmount = 0;
+        arrows.GetComponent<Image>().fillAmount = 0;
+
     }
 
     public bool isFinished() {
@@ -70,32 +82,6 @@ public class CrystalProductionController : MonoBehaviour {
         }
     }
 
-    IEnumerator CloseBar()
-    {
-        for (int i = 1; i < 5; i++){
-            Transform child = transform.GetChild(i);
-            Image image = child.GetComponent<Image>();
-            image.raycastTarget = false;
-            image.color = new Color(1, 1, 1, 0);
-            child.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-
-        }
-
-        while (GetComponent<Image>().fillAmount > 0)
-        {
-            GetComponent<Image>().fillAmount -= 0.04f;
-            yield return new WaitForSeconds(0.01f);
-        }
-        StartCoroutine("CloseArrow");
-    }
-
-    IEnumerator CloseArrow()
-    {
-        while (arrows.GetComponent<Image>().fillAmount > 0)
-        {
-            arrows.GetComponent<Image>().fillAmount -= 0.08f;
-            yield return new WaitForSeconds(0.01f);
-        }
-    }
+    
     #endregion
 }

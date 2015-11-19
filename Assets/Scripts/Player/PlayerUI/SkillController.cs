@@ -16,6 +16,8 @@ public class SkillController : MonoBehaviour {
 	public PlayerController playerController;
 
 	public void selectSkill(int index){
+        Debug.Log("coolDownStarted" + coolDownStarted + " " + index);
+
 		if (coolDownStarted) return;
 
         if(index < 1){
@@ -40,7 +42,6 @@ public class SkillController : MonoBehaviour {
         coolDownStarted = false;
         coolDownImage.fillAmount = 0;
         coolDownText.text = "";
-        Debug.Log(coolDownStarted);
     }
 
 	protected void coolingDown(){

@@ -16,7 +16,7 @@ public class EnemyMotion : NetworkBehaviour {
     private GameObject spaceship;
     private GameObject enemySkillManager;
 
-    private float skillTimer;
+    public float skillTimer;
 
     [SyncVar]
     public float blood;
@@ -24,11 +24,11 @@ public class EnemyMotion : NetworkBehaviour {
     private float max_blood;
 
     private int damage;
-    private float attackTime;
-
+    public float attackTime;
 
     [SyncVar]
     private int flyStatus;
+
 
     private int turnDirection;
     private int turnTimer;
@@ -36,14 +36,16 @@ public class EnemyMotion : NetworkBehaviour {
     private float finishTurnAngle;
     private float turnningSpeed;
     private float turnAngleZ;
+    
+    
+    public float freezeTimer;
+    public Vector3 prevVelocity;
 
     public float recomeAngle;
 
     private Vector3 pz = new Vector3(0, 0, 1000);
     private Vector3 nz = new Vector3(0, 0, -1000);
 
-
-    private void setSpaceship(GameObject ss) { spaceship = ss; }
     public void setEnemySkills(GameObject es) { enemySkillManager = es; }
     public void setBlood(float b) { blood = b; }
     public float getBlood() { return blood; }
@@ -79,7 +81,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             transform.LookAt(destination);
 
-            skillTimer = 60;
+            skillTimer = 2;
 
             turnDirection = Random.Range(0, 2);
             turnDirection = turnDirection == 0 ? -1 : 1;
@@ -87,6 +89,8 @@ public class EnemyMotion : NetworkBehaviour {
             turnAngle = 0;
             turnTimer = 0;
             turnAngleZ = 0.0f;
+
+            freezeTimer = -1;
         }
 
 	}
@@ -94,6 +98,14 @@ public class EnemyMotion : NetworkBehaviour {
 	void Update () {
         if (isServer)
         {
+            if (freezeTimer >= 0) {
+                freezeTimer -= Time.deltaTime;
+                return;
+            }
+            if (prevVelocity != Vector3.zero) {
+                GetComponent<Rigidbody>().velocity = prevVelocity;
+                prevVelocity = Vector3.zero;
+            }
            autoFly();
            launchMissle();
         }
@@ -103,23 +115,8 @@ public class EnemyMotion : NetworkBehaviour {
                 transform.parent = GameObject.Find("EnemyManager").transform;
             }
         }
-            /*
-        else {
-            if (flyStatus == 1) {
-                transform.parent = null;
-            }
-            else
-            {
-                if (transform.parent == null)
-                {
-                    transform.parent = GameObject.Find("EnemyManager").transform;
-                }
-            }
-
-
-        }
-             */
 	}
+
 
     private void autoFly() {
 
@@ -170,7 +167,7 @@ public class EnemyMotion : NetworkBehaviour {
     private void launchMissle() {
         skillTimer -= Time.deltaTime;
 
-        if(flyStatus != 0 && flyStatus != 3)
+        if(flyStatus != -1 && flyStatus != 0 && flyStatus != 3)
             return;
 
         if (skillTimer <= 0 && transform.position.z > spaceship.transform.position.z + 50)
@@ -197,6 +194,12 @@ public class EnemyMotion : NetworkBehaviour {
 
             skillTimer = attackTime;
         }
+    }
+
+    public void Freeze(float t) {
+        freezeTimer = t;
+        prevVelocity = GetComponent<Rigidbody>().velocity;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     IEnumerator Rotate() {

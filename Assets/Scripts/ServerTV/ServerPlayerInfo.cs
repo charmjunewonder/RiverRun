@@ -7,18 +7,15 @@ public class ServerPlayerInfo : MonoBehaviour {
     public Image roleImage;
     public Sprite[] roleImageSet;
     public ServerPlayerHealth hc;
-    private int fullHealth;
     void Start()
     {
         //SetUserInfo("Ericcc", PlayerRole.Defender, 40, 100);
     }
-    public void SetUserInfo(string userName, PlayerRole pr, int health, int fullHealth)
+    public void SetUserInfo(string userName, PlayerRole pr, int health)
     {
         userNameText.text = userName;
         roleNameText.text = pr.ToString();
-        this.fullHealth = fullHealth;
-        int percent = health * 10 / fullHealth;
-        hc.setHealth(percent);
+        hc.setHealth(health);
         switch (pr)
         {
             case PlayerRole.Striker:
@@ -35,12 +32,11 @@ public class ServerPlayerInfo : MonoBehaviour {
 
     public void SetHealth(int health)
     {
-        int percent = health * 10 / fullHealth;
-        hc.setHealth(percent);
+        hc.setHealth(health);
     }
 
     public void Reset()
     {
-        SetUserInfo("", PlayerRole.Striker, 10, 10);
+        SetUserInfo("", PlayerRole.Striker, 10);
     }
 }

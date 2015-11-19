@@ -42,7 +42,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             average_rank /= players.Length;
 
-            enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(average_rank);
+            enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(0);
 
             max_wave = enemyParameter.enemyWave;
             enemyNumbers = enemyParameter.enemyNumbers;
@@ -76,7 +76,6 @@ public class EnemySpawnManager : NetworkBehaviour {
         int enemiesNum = enemyNumbers[waves];
 
 
-
         for (int i = 0; i < enemiesNum; i++){
             int enemyNum = Random.Range(0, enemyPrefab.Length);
 
@@ -95,15 +94,32 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();
             em.setEnemySkills(enemySkills);
+            /*
             em.setBlood(10);//enemyData[waves][i].maxHp);
             em.setMaxBlood(10);//enemyData[waves][i].maxHp);
             em.setIndex(i);
             em.setDamage(1);//enemyData[waves][i].attackPt);
+            */
             em.setAttackTime(5);//enemyData[waves][i].attackTime);
+            
+
+            em.setBlood(enemyData[waves][i].maxHp);//;
+            em.setMaxBlood(enemyData[waves][i].maxHp);//);
+            em.setIndex(i);
+            em.setDamage(enemyData[waves][i].attackPt);//;
+            //em.setAttackTime(enemyData[waves][i].attackTime);//);
 
             NetworkServer.Spawn(enemy);
             
         }
+    }
+
+    public void Freeze(float t) {
+        countDown += t;
+        for (int i = 0; i < transform.childCount; i++){
+            transform.GetChild(i).GetComponent<EnemyMotion>().Freeze(t);
+        }
+
     }
 
     IEnumerator PlayingTimeCountDown() {

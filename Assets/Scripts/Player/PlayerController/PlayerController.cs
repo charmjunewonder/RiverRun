@@ -44,7 +44,8 @@ public class PlayerController : NetworkBehaviour {
     protected WarningController warningController;
     protected GameObject ui;
 
-    public GameObject enemyManager;
+    public GameObject enemyUIManager;
+    public GameObject defenderEnemyManager;
     private Transform enemyUITarget;
     private Transform skillPanel;
 
@@ -97,13 +98,18 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update () {
-        if (!isLocalPlayer) {
-            if (enemyManager == null)
+        if (isServer) {
+            if (defenderEnemyManager == null || enemyUIManager == null)
             {
                 LoadEnemyObject();
             }
             return;
         }
+        else if (!isLocalPlayer) {
+            return;
+        }
+
+
         if (role == PlayerRole.Engineer) return;
 
         if (!disconnectedCrystalInitialized) {
@@ -119,11 +125,12 @@ public class PlayerController : NetworkBehaviour {
         }
 
         if (isInGame) {
-            if (enemyManager == null) LoadEnemyObject();
+            if (enemyUIManager == null) LoadEnemyObject();
             else {
                 for (int i = 0; i < 20; i++){
-                    if (i < enemyManager.transform.childCount){
-                        Transform enemy = enemyManager.transform.GetChild(i);
+                    if (i < enemyUIManager.transform.childCount)
+                    {
+                        Transform enemy = enemyUIManager.transform.GetChild(i);
                         if(enemy.position.z < 10) continue;
                         Vector3 screenPoint = cam.WorldToScreenPoint(enemy.position);
                         Transform target = enemyUITarget.GetChild(i);
@@ -176,9 +183,9 @@ public class PlayerController : NetworkBehaviour {
 
                 if (role == PlayerRole.Striker)
                 {
-                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                     {
-                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Transform enemy = enemyUIManager.transform.GetChild(i);
                         Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -205,9 +212,9 @@ public class PlayerController : NetworkBehaviour {
 
                     }
                     else {
-                        for (int i = 0; i < enemyManager.transform.childCount; i++)
+                        for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                         {
-                            Transform enemy = enemyManager.transform.GetChild(i);
+                            Transform enemy = enemyUIManager.transform.GetChild(i);
                             Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                             Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                             Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -267,9 +274,9 @@ public class PlayerController : NetworkBehaviour {
 
                 if (role == PlayerRole.Striker)
                 {
-                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                     {
-                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Transform enemy = enemyUIManager.transform.GetChild(i);
                         Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -281,9 +288,9 @@ public class PlayerController : NetworkBehaviour {
                     }
                 }
                 else {
-                    for (int i = 0; i < enemyManager.transform.childCount; i++)
+                    for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                     {
-                        Transform enemy = enemyManager.transform.GetChild(i);
+                        Transform enemy = enemyUIManager.transform.GetChild(i);
                         Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -315,14 +322,14 @@ public class PlayerController : NetworkBehaviour {
         if (role == PlayerRole.Striker) {
             if (enemyIndex == -1)
             {
-                for (int i = 0; i < enemyManager.transform.childCount; i++)
+                for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                 {
-                    enemyManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                    enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
                 }
             }
             else
             {
-                Transform enemy = enemyManager.transform.GetChild(enemyIndex);
+                Transform enemy = enemyUIManager.transform.GetChild(enemyIndex);
 
                 enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
 
@@ -337,8 +344,11 @@ public class PlayerController : NetworkBehaviour {
             }
         }
         else {
-            
-        
+            float freezeTime = GetComponent<StrikerSkill2>().damage;
+            freezeTime = freezeTime < 8 ? 8 : freezeTime;
+            defenderEnemyManager.GetComponent<EnemySpawnManager>().Freeze(freezeTime);
+            enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
+            NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
         }
         
 
@@ -397,6 +407,18 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+    [ClientRpc]
+    public void RpcFreezeAI(float t) {
+        if (isLocalPlayer) {
+            GameObject.Find("AllianceSpaceshipObject").GetComponent<AllianceSpaceshipSpawnController>().Freeze(t);
+        }
+    }
+
+    [Command]
+    public void CmdFreezeAI(float t) {
+        GameObject.Find("AllianceSpaceshipObject").GetComponent<AllianceSpaceshipSpawnController>().Freeze(t);
+        NetworkManagerCustom.SingletonNM.FreezeAI(t);
+    }
 
     public void CloseShield() {
         shieldExist = false;
@@ -408,12 +430,14 @@ public class PlayerController : NetworkBehaviour {
     public void SetSkillIndex(int index) { skillIndex = index; }
 
     public void RequestUlti(){
+        Debug.Log("RequestUlti Local");
         CmdRequestUlti();
     }
 
     [Command]
     protected void CmdRequestUlti(){
         Debug.Log("Player Controller Server: Ulti Request");
+        Debug.Log("UltiController.checkUltiEnchanting() " + UltiController.checkUltiEnchanting());
         if (!UltiController.checkUltiEnchanting()) {
             Debug.Log("Player Controller Server: Ulti Request Success");
             UltiController.setUltiEnchanting(true);
@@ -441,6 +465,9 @@ public class PlayerController : NetworkBehaviour {
                 int ulti_index = 1;
                 skillControllers[ulti_index].StartCoolDown();
             }
+            else {
+                reminderController.setReminder("Teammate is activating ultimate skill", 3.0f);
+            }
         }
     }
 
@@ -456,6 +483,7 @@ public class PlayerController : NetworkBehaviour {
     [Command]
     protected void CmdDoneUlti()
     {
+        UltiController.setUltiEnchanting(false);
         for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
         {
             if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
@@ -486,7 +514,7 @@ public class PlayerController : NetworkBehaviour {
         CmdDoFire(ulti_index, -1);
         CmdDoneUlti();
         ultiCrystalController.Clear();
-        UltiController.setUltiEnchanting(false);
+        
     }
 
     public void RevokeUlti() {
@@ -636,13 +664,17 @@ public class PlayerController : NetworkBehaviour {
 
     private void LoadEnemyObject()
     {
+        GameObject t1 = GameObject.Find("EnemyManager");
+        GameObject t2 = GameObject.Find("EnemySkills");
         if (role == PlayerRole.Striker)
         {
-            enemyManager = GameObject.Find("EnemyManager");
+            enemyUIManager = t1;
+            defenderEnemyManager = t2;
         }
         else
         {
-            enemyManager = GameObject.Find("EnemySkills");
+            defenderEnemyManager = t1;
+            enemyUIManager = t2;
         }
     }
 
@@ -688,6 +720,12 @@ public class PlayerController : NetworkBehaviour {
         GetComponent<PlayerInfo>().Damage(damage);
         if(damage > 0)
             RpcDamage(damage);
+
+        float health = (int)GetComponent<PlayerInfo>().getHealth();
+
+        int perc = health == 0 ? 0 : (int)(health / (int)GetComponent<PlayerInfo>().getMaxHealth() * 10) + 1;
+
+        NetworkManagerCustom.SingletonNM.sGamePanel.GetComponent<ServerGamePanel>().playerInfos[slot].SetHealth(perc);
     }
 
     [ClientRpc]

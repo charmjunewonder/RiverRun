@@ -3,8 +3,8 @@ using System.Collections;
 
 public class UltiController : MonoBehaviour {
 
-    private static bool isUltiEnchanting;
-    private static int ultiPlayerNumber;
+    public static bool isUltiEnchanting;
+    public static int ultiPlayerNumber;
 
 	// Use this for initialization
 	void Start () {

@@ -11,7 +11,11 @@ public class AllianceSpaceshipSpawnController : MonoBehaviour {
 
     private int number;
 
-    
+    public void Freeze(float t) {
+        for (int i = 0; i < transform.childCount; i++) {
+           transform.GetChild(i).GetComponent<AllianceAI>().Freeze(t);
+        }
+    }
 
     public void decreaseNumber() { 
         number--;
@@ -70,6 +74,8 @@ public class AllianceSpaceshipSpawnController : MonoBehaviour {
         }
 
         GameObject alliance = Instantiate(alliancePrefab, pos, Quaternion.identity) as GameObject;
+
+        alliance.transform.parent = transform;
 
         alliance.transform.LookAt(toLookAt);
 

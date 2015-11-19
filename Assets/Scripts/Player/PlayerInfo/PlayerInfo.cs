@@ -45,8 +45,8 @@ public class PlayerInfo :  NetworkBehaviour{
 
         if (health < 0)
             health = 0;
-        if (health > 10)
-            health = 10;
+        if (health > max_health)
+            health = max_health;
 
 
         if (isLocalPlayer) {
@@ -65,9 +65,12 @@ public class PlayerInfo :  NetworkBehaviour{
 
         if (health < 0)
             health = 0;
-        if (health > 10)
-            health = 10;
+        if (health > max_health)
+            health = max_health;
+
     }
+
+    public float getMaxHealth() { return max_health; }
 
     private void OnChange(float f) {
         if (healthController == null) return;
