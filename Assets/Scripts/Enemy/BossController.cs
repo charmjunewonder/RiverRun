@@ -103,13 +103,17 @@ public class BossController : NetworkBehaviour {
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             RpcCreateDieParticle();
-
-            NetworkManagerCustom.SingletonNM.GameEnded();
+            Invoke("EndGame", 2.0f);
 
             NetworkServer.Destroy(gameObject);
         }
     }
 
+    private void EndGame()
+    {
+        NetworkManagerCustom.SingletonNM.GameEnded();
+
+    }
     [ClientRpc]
     void RpcCreateDieParticle()
     {
