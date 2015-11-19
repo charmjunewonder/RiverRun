@@ -271,7 +271,7 @@ public class NetworkManagerCustom : NetworkManager {
                 }
             }
             debuglog += " allSame " + isAllSame + " allselected " + isAllSelected;
-            //Debug.Log(debuglog);
+            Debug.Log(debuglog);
 
             if (userCount < minPlayers)
             {
@@ -878,6 +878,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("ResetAfterStopServer");
         currentMode = NetworkMode.Level;
+        hasCreatePlayer = false;
         userNameSet.Clear();
         for (int i = 0; i < maxPlayers; i++)
         {
