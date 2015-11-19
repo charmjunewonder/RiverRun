@@ -146,7 +146,13 @@ public class PlayerController : NetworkBehaviour {
                         if (role == PlayerRole.Striker) {
                             Image image = target.GetChild(0).GetComponent<Image>();
                             image.color = new Color(1, 1, 1, 1);
-                            float blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
+                            
+                            float blood_perc;
+                            if(enemy.tag == "Enemy")
+                                blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
+                            else
+                                blood_perc = enemy.GetComponent<BossController>().getBlood() / enemy.GetComponent<BossController>().getMaxBlood();
+                            
                             image.fillAmount = blood_perc;
                         }
                         
@@ -205,6 +211,12 @@ public class PlayerController : NetworkBehaviour {
                 else {
                     if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 30)
                     {
+                        if (GetComponent<PlayerInfo>().getHealth() == 0)
+                        {
+                            reminderController.setReminder("Device damaged. Please ask engineer to repair", 3.0f);
+                            return;
+                        }
+
                         Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
                         float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
 
@@ -255,6 +267,12 @@ public class PlayerController : NetworkBehaviour {
 
         if(Input.touchCount > 1 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(1).phase == TouchPhase.Ended)){
             if (role == PlayerRole.Defender && Vector3.Distance(shieldPoint1, shieldPoint2) > 30){
+
+                    if (GetComponent<PlayerInfo>().getHealth() == 0) {
+                        reminderController.setReminder("Device damaged. Please ask engineer to repair", 3.0f);
+                        return;
+                    }
+
                     Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
                     float radius = Vector3.Distance(shieldPoint2, shieldCenter);
 
@@ -337,7 +355,10 @@ public class PlayerController : NetworkBehaviour {
             {
                 Transform enemy = enemyUIManager.transform.GetChild(enemyIndex);
 
-                enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                if(enemy.tag == "Enemy")
+                    enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                else
+                    enemy.GetComponent<BossController>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
 
                 GameObject lightening = Instantiate(lighteningPrefab, transform.position, Quaternion.identity) as GameObject;
 
@@ -437,7 +458,10 @@ public class PlayerController : NetworkBehaviour {
     public void SetSkillIndex(int index) { skillIndex = index; }
 
     public void RequestUlti(){
-        Debug.Log("RequestUlti Local");
+        if (GetComponent<PlayerInfo>().getHealth() == 0) {
+            reminderController.setReminder("Device damaged. Please ask engineer to repair", 3.0f);
+            return;
+        }
         CmdRequestUlti();
     }
 

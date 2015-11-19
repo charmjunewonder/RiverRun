@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class EnemySpawnManager : NetworkBehaviour {
 	[SerializeField] GameObject[] enemyPrefab;
 
-    public GameObject portalPrefab;
+    public GameObject bossPrefab;
 
     public GameObject enemySkills;
 
@@ -25,8 +25,6 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     void Start() {
         if (isServer) {
-            scoreObject = GameObject.FindGameObjectWithTag("DataSource");
-
             transform.rotation = Quaternion.identity;
             transform.position = new Vector3(0, 0, 0);
             waves = 0;
@@ -54,14 +52,24 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     void Update() {
         if (isServer) {
-            if (waves >= max_wave) return;
+            if (waves > max_wave) return;
+            
             countDown -= Time.deltaTime;
 
             if (countDown <= 0)
             {
-                GenerateEnemies();
-                countDown = 60.0f;
-                waves++;
+                if (waves == max_wave)
+                {
+                    GenerateBoss();
+                    countDown = 40.0f;
+                    waves++;
+                }
+                else {
+                    GenerateEnemies();
+                    countDown = 40.0f;
+                    waves++;
+                }
+
             }
         }
     }
@@ -114,12 +122,38 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
     }
 
+    private void GenerateBoss() {
+        float randomZ = Random.Range(1200f, 1300.0f);
+        float randomX = Random.Range(90, 110);
+        float randomY = Random.Range(-20.0f, 20.0f);
+
+        Vector3 pos = new Vector3(randomX, randomY, randomZ);
+
+        GameObject boss = GameObject.Instantiate(bossPrefab, pos, Quaternion.identity) as GameObject;
+
+        boss.transform.LookAt(new Vector3(0, 0, 1));
+        boss.transform.parent = transform;
+
+        BossController bc = boss.GetComponent<BossController>();
+        bc.setEnemySkills(enemySkills);
+
+        bc.setAttackTime(5);
+        bc.setBlood(100);
+        bc.setMaxBlood(100);
+        bc.setDamage(2);
+
+        NetworkServer.Spawn(boss);
+    }
+
     public void Freeze(float t) {
         countDown += t;
         for (int i = 0; i < transform.childCount; i++){
-            transform.GetChild(i).GetComponent<EnemyMotion>().Freeze(t);
+            Transform tran = transform.GetChild(i);
+            if(tran.tag == "Enemy")
+                tran.GetComponent<EnemyMotion>().Freeze(t);
+            else
+                tran.GetComponent<BossController>().Freeze(t);
         }
-
     }
 
     IEnumerator PlayingTimeCountDown() {
