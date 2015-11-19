@@ -691,6 +691,7 @@ public class NetworkManagerCustom : NetworkManager {
         //return back to lobby
         ChangeTo(connectPanel);
         DisableGameUI();
+        missionPanel.gameObject.SetActive(false);
         currentMode = NetworkMode.Level;
     }
 

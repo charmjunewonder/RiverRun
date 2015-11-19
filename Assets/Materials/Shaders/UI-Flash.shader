@@ -50,6 +50,7 @@ Shader "UI/UI_Flash"
 		{
 
 		CGPROGRAM
+		    #pragma target 3.0
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -110,13 +111,13 @@ Shader "UI/UI_Flash"
 				
 				if (_UseAlphaClip)
 					clip (baseColor.a - 0.001);
+				float time;
+				time = _Time.y*_Speed;	
 
-				half u_loc = clamp (abs(frac(_Time.y*_Speed)-0.5)*2.0-0.25,0.0,0.5) *2.0;
-				half v_loc = clamp (abs(frac(_Time.y*_Speed+0.25)-0.5)*2.0-0.25,0.0,0.5) *2.0;
-				half u_loc_2 = clamp (abs(frac(_Time.y*_Speed+0.5)-0.5)*2.0-0.25,0.0,0.5) *2.0;
-				half v_loc_2 = clamp (abs(frac(_Time.y*_Speed+0.75)-0.5)*2.0-0.25,0.0,0.5) *2.0;
-				//bool isIn = (abs(u_loc-IN.texcoord.x)<0.04)*(abs(v_loc-IN.texcoord.y)<0.04)+
-				//              (abs(u_loc_2-IN.texcoord.x)<0.04)*(abs(v_loc_2-IN.texcoord.y)<0.04);
+				half u_loc = clamp (abs(frac(time)-0.5)*2.0-0.25,0.0,0.5) *2.0;
+				half v_loc = clamp (abs(frac(time+0.25)-0.5)*2.0-0.25,0.0,0.5) *2.0;
+				half u_loc_2 = clamp (abs(frac(time+0.5)-0.5)*2.0-0.25,0.0,0.5) *2.0;
+				half v_loc_2 = clamp (abs(frac(time+0.75)-0.5)*2.0-0.25,0.0,0.5) *2.0;
 			    half weight = clamp(0.07-abs(u_loc-IN.texcoord.x),0,0.07)*clamp(0.07-abs(v_loc-IN.texcoord.y),0,0.07)
 				             + clamp(0.07-abs(u_loc_2-IN.texcoord.x),0,0.07)*clamp(0.07-abs(v_loc_2-IN.texcoord.y),0,0.07);
 				
@@ -128,8 +129,6 @@ Shader "UI/UI_Flash"
 				//bool isIn = (abs(u_high-IN.texcoord.x)<0.04)*(abs(v_high-IN.texcoord.y)<0.04)+
 				//              (abs(u_high_2-IN.texcoord.x)<0.04)*(abs(v_high_2-IN.texcoord.y)<0.04);
 			   
-				//isIn = isIn*_Trigger;
-				//half4 color = baseColor*(!isIn)+isIn*_HighColor*_Power;
 				//weight = weight+isIn*0.5;
 				half4 color = baseColor+_Trigger*weight*_HighColor*_Power*800;
 				color = half4 (color.r,color.g,color.b,baseColor.a);

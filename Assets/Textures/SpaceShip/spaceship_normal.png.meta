@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e37ad3472edac3d47afe81815ca6e140
+guid: 22118872b1e37ba4e9c77259a6003fe0
 timeCreated: 1445274147
 licenseType: Pro
 TextureImporter:
@@ -49,7 +49,7 @@ TextureImporter:
   textureType: 1
   buildTargetSettings:
   - buildTarget: iPhone
-    maxTextureSize: 1024
+    maxTextureSize: 512
     textureFormat: -1
     compressionQuality: 50
     allowsAlphaSplitting: 0
