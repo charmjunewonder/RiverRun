@@ -23,6 +23,12 @@ public class PlayerController : NetworkBehaviour {
 
     [SyncVar]
     public PlayerRole role;
+    [SyncVar]
+    public int skill1Counter = 0;
+    [SyncVar]
+    public int skill2Counter = 0;
+    [SyncVar]
+    public int supportCounter = 0;
 
     public Sprite[] skillIcons;
     public Sprite[] enemyIcons;
@@ -339,7 +345,7 @@ public class PlayerController : NetworkBehaviour {
                 lightening.transform.GetChild(1).position = transform.GetChild(Random.Range(1, 3)).position;
 
                 lightening.GetComponent<SyncTransformLightening>().setTransform(lightening.transform.GetChild(0), lightening.transform.GetChild(1));
-
+                skill1Counter++;
                 NetworkServer.Spawn(lightening);
             }
         }
@@ -368,6 +374,7 @@ public class PlayerController : NetworkBehaviour {
     protected void CmdDefendAttack(NetworkInstanceId netID)
     {
         GameObject obj = NetworkServer.FindLocalObject(netID);
+        skill1Counter++;
         NetworkServer.Destroy(obj);
     }
 
@@ -483,6 +490,7 @@ public class PlayerController : NetworkBehaviour {
     [Command]
     protected void CmdDoneUlti()
     {
+        skill2Counter++;
         UltiController.setUltiEnchanting(false);
         for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
         {
@@ -746,10 +754,9 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer) {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
-            int score = Random.Range(100, 200);
-
-            NetworkManagerCustom.SingletonNM.MissionComplete(score, score / 50, username, role, rank, score, 200, 
-                Random.Range(50, 100), Random.Range(1, 10));
+            int exp = Random.Range(50, 200);
+            NetworkManagerCustom.SingletonNM.MissionComplete(skill1Counter * 3 + skill2Counter * 10, 4, username, role, rank, exp, 200, 
+                skill1Counter, skill2Counter);
         }
     }
     #endregion

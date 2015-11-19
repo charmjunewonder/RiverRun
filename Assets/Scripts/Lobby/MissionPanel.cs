@@ -27,12 +27,31 @@ public class MissionPanel : MonoBehaviour {
     {
         scoreText.text = "" + score;
         SetStar(star);
-        SetUser(username, pr);
         rankText.text = "" + rank;
         rankPercent.text = "<color=#FFFFFFFF>"+experience+"</color>/"+fullEx;
         randSlider.value = ((float)experience) / fullEx;
-        skill1Text.text = "Defended <color=#B3F898FF>"+skill1+"</color> Enermy's Attacks";
-        utilText.text = "Activate <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills";
+
+
+        if (pr == PlayerRole.Unselected) pr = PlayerRole.Striker;
+        userNameText.text = username;
+        switch (pr)
+        {
+            case PlayerRole.Striker:
+                userPanel.sprite = userPanelSprite[0];
+                skill1Text.text = "Attacked <color=#B3F898FF>"+skill1+"</color> Enermy's Spaceships";
+                utilText.text = "Activate <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills";
+                break;
+            case PlayerRole.Engineer:
+                userPanel.sprite = userPanelSprite[1];
+                skill1Text.text = "Recovered Teammate <color=#B3F898FF>" + skill1 + "</color> Times";
+                utilText.text = "Generate <color=#B3F898FF>" + ulti + "</color> Cystals";
+                break;
+            case PlayerRole.Defender:
+                userPanel.sprite = userPanelSprite[2];
+                skill1Text.text = "Defended <color=#B3F898FF>"+skill1+"</color> Enermy's Attacks";
+                utilText.text = "Activate <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills";
+                break;
+        }
     }
 
     private void SetStar(int star)
@@ -49,21 +68,4 @@ public class MissionPanel : MonoBehaviour {
         }
     }
 
-    private void SetUser(string username, PlayerRole pr)
-    {
-        if (pr == PlayerRole.Unselected) pr = PlayerRole.Striker;
-        userNameText.text = username;
-        switch (pr)
-        {
-            case PlayerRole.Striker:
-                userPanel.sprite = userPanelSprite[0];
-                break;
-            case PlayerRole.Engineer:
-                userPanel.sprite = userPanelSprite[1];
-                break;
-            case PlayerRole.Defender:
-                userPanel.sprite = userPanelSprite[2];
-                break;
-        }
-    }
 }

@@ -91,9 +91,12 @@ public class EngineerController : PlayerController {
     [Command]
     public void CmdAssignCrystal(int slot, int crystal) {
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
-        
-        if(plc != null)
+
+        if (plc != null)
+        {
             plc.RpcAcceptCrystalFromEngineer(crystal);
+            skill2Counter++;
+        }
     }
 
     [Command]
@@ -101,7 +104,10 @@ public class EngineerController : PlayerController {
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
 
         if (plc != null)
+        {
             plc.Damage(-GetComponent<EngineerSkill1>().heal);
+            skill1Counter++;
+        }
     }
 
     #endregion

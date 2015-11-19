@@ -9,7 +9,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
     public Vector3 FixInctancePosition, FixInctanceAngle;
     public float FixInctanceScalePercent = 100;
     public bool IsDefaultCollisionPoint;
-
+    private int maxCount;
     private int count;
     public float countDown;
     public bool countDownFlag;
@@ -29,6 +29,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
         countDown -= Time.deltaTime;
         if (countDown <= 0) {
             NetworkServer.Destroy(gameObject);
+            playerController.skill1Counter += (maxCount-count);
             playerController.CloseShield();
         }
 
@@ -40,6 +41,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
             if(count <= 0)
             {
                 NetworkServer.Destroy(gameObject);
+                playerController.skill1Counter += maxCount;
                 playerController.CloseShield();
             }
                 
@@ -81,6 +83,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
 
     public void setMaximumDefendNumber(int num) {
         count = num;
+        maxCount = num;
     }
 
     public void setCountDown(float cd) {
