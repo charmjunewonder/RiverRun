@@ -58,6 +58,22 @@ public class EngineerController : PlayerController {
             //{
                 //mainCrystalController.SetCrystal(ci.key, ci.value);
             //}
+            switch (role)
+            {
+                case PlayerRole.Striker:
+                    rank = LoginController.StrikerLevel;
+                    exp = LoginController.StrikerExp;
+                    break;
+                case PlayerRole.Engineer:
+                    rank = LoginController.EngineerLevel;
+                    exp = LoginController.EngineerExp;
+                    break;
+                case PlayerRole.Defender:
+                    rank = LoginController.DefenderLevel;
+                    exp = LoginController.DefenderExp;
+                    break;
+            }
+            CmdChangeRank(rank, exp);
         }
 	}
 

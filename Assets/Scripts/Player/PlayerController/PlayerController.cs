@@ -17,17 +17,17 @@ public class PlayerController : NetworkBehaviour {
 
     [SyncVar]
     public int rank;
+    [SyncVar]
+    public int exp;
 
     [SyncVar]
     public int disconnectCrystal;
 
     [SyncVar]
     public PlayerRole role;
-    [SyncVar]
+
     public int skill1Counter = 0;
-    [SyncVar]
     public int skill2Counter = 0;
-    [SyncVar]
     public int supportCounter = 0;
 
     public Sprite[] skillIcons;
@@ -100,6 +100,22 @@ public class PlayerController : NetworkBehaviour {
             shieldExist = false;
             isDraggingCrystal = false;
 
+            switch (role)
+            {
+                case PlayerRole.Striker:
+                    rank = LoginController.StrikerLevel;
+                    exp = LoginController.StrikerExp;
+                    break;
+                case PlayerRole.Engineer:
+                    rank = LoginController.EngineerLevel;
+                    exp = LoginController.EngineerExp;
+                    break;
+                case PlayerRole.Defender:
+                    rank = LoginController.DefenderLevel;
+                    exp = LoginController.DefenderExp;
+                    break;
+            }
+            CmdChangeRank(rank, exp);
 		}
 	}
 
@@ -778,11 +794,17 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer) {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
-            int exp = Random.Range(50, 200);
             NetworkManagerCustom.SingletonNM.MissionComplete(skill1Counter * 3 + skill2Counter * 10, 4, username, role, rank, exp, 200, 
                 skill1Counter, skill2Counter);
         }
     }
     #endregion
 
+
+    [Command]
+    public void CmdChangeRank(int newrank, int newexp)
+    {
+        rank = newrank;
+        exp = newexp;
+    }
 }

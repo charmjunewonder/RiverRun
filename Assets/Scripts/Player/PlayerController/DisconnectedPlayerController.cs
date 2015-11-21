@@ -12,5 +12,8 @@ public class DisconnectedPlayerController : NetworkBehaviour {
 
     public int crystals;
 
+    public int rank;
+
+    public int exp;
 
 }

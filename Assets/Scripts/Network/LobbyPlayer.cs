@@ -50,9 +50,11 @@ public class LobbyPlayer : NetworkBehaviour {
             //    NetworkManagerCustom.SingletonNM.ChangeTo(NetworkManagerCustom.SingletonNM.lobbyPanel);
             //    CmdChangeToLobbyPanel();
             //}
-            strikerLevel.text = "RANK " + PlayerPrefs.GetInt("sl");
-            engineerLevel.text = "RANK " + PlayerPrefs.GetInt("el");
-            defenderLevel.text = "RANK " + PlayerPrefs.GetInt("dl");
+            strikerLevel.text = "RANK " + LoginController.StrikerLevel;
+            engineerLevel.text = "RANK " + LoginController.EngineerLevel;
+            defenderLevel.text = "RANK " + LoginController.DefenderLevel;
+            nameText.text = "<color=#79C25DFF>" + userName + "</color>";
+
 
         }
         OnMyName(userName);
@@ -135,6 +137,9 @@ public class LobbyPlayer : NetworkBehaviour {
         //Debug.Log("OnMyName " + newName);
         userName = newName;
         nameText.text = newName;
+        if(isLocalPlayer)
+            nameText.text = "<color=#79C25DFF>" + userName + "</color>";
+
     }
 
     public void OnMyRole(PlayerRole newRole)

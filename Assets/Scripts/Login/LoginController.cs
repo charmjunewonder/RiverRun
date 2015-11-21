@@ -12,6 +12,12 @@ public class LoginController : MonoBehaviour {
 	public Text displayMessage;
     public LobbyConnectPanel lcp;
     public static string userName = "Player";
+    public static int StrikerLevel = 0;
+    public static int StrikerExp = 0;
+    public static int EngineerLevel = 0;
+    public static int EngineerExp = 0;
+    public static int DefenderLevel = 0;
+    public static int DefenderExp = 0;
 
     void Start()
     {
@@ -40,6 +46,7 @@ public class LoginController : MonoBehaviour {
     }
 
     public void OnLoginPressed(){
+        Debug.Log("OnLoginPressed ");
         string domain = ServerUtils.domainName + ":80";
         string storedDomain = PlayerPrefs.GetString("DataIp");
         if (ServerUtils.CheckIpAddress(storedDomain))
@@ -105,38 +112,57 @@ public class LoginController : MonoBehaviour {
 					if (result == "success")
 					{
 						displayMessage.text = "Login Success";
-						
-						ex = @"<pid>.+</pid>";
+
+                        ex = @"<name>.+</name>";
 						m = Regex.Match(download.text, ex);
-						string pid = m.Value;
-						pid = pid.Replace("<pid>", "");
-						pid = pid.Replace("</pid>", "");
-						PlayerPrefs.SetString("pid", pid);
+                        string uname = m.Value;
+                        uname = uname.Replace("<name>", "");
+                        uname = uname.Replace("</name>", "");
                         userName = name;
-						Debug.Log("pid stored: "+ pid);
 
                         ex = @"<sl>.+</sl>";
                         m = Regex.Match(download.text, ex);
                         string sl = m.Value;
                         sl = sl.Replace("<sl>", "");
                         sl = sl.Replace("</sl>", "");
-                        PlayerPrefs.SetString("sl", sl);
+                        StrikerLevel = int.Parse(sl);
+
+                        ex = @"<sexp>.+</sexp>";
+                        m = Regex.Match(download.text, ex);
+                        string sexp = m.Value;
+                        sexp = sexp.Replace("<sexp>", "");
+                        sexp = sexp.Replace("</sexp>", "");
+                        StrikerExp = int.Parse(sexp);
 
                         ex = @"<el>.+</el>";
                         m = Regex.Match(download.text, ex);
                         string el = m.Value;
                         el = el.Replace("<el>", "");
                         el = el.Replace("</el>", "");
-                        PlayerPrefs.SetString("el", el);
+                        EngineerLevel = int.Parse(el);
+
+                        ex = @"<eexp>.+</eexp>";
+                        m = Regex.Match(download.text, ex);
+                        string eexp = m.Value;
+                        eexp = eexp.Replace("<eexp>", "");
+                        eexp = eexp.Replace("</eexp>", "");
+                        EngineerExp = int.Parse(eexp);
 
                         ex = @"<dl>.+</dl>";
                         m = Regex.Match(download.text, ex);
                         string dl = m.Value;
                         dl = dl.Replace("<dl>", "");
                         dl = dl.Replace("</dl>", "");
-                        PlayerPrefs.SetString("dl", dl);
+                        DefenderLevel = int.Parse(dl);
 
-                        Debug.Log("level stored: " + sl + " " + el + " " + dl);
+                        ex = @"<dexp>.+</dexp>";
+                        m = Regex.Match(download.text, ex);
+                        string dexp = m.Value;
+                        dexp = dexp.Replace("<dexp>", "");
+                        dexp = dexp.Replace("</dexp>", "");
+                        DefenderExp = int.Parse(dexp);
+
+                        Debug.Log("level stored: " + StrikerLevel + " " + StrikerExp + " " + EngineerLevel + " " + EngineerExp + " " + DefenderLevel + " " + DefenderExp);
 
                         lcp.OnClickJoin();
                     }
