@@ -213,6 +213,8 @@ public class EngineerController : PlayerController {
     {
         if (level == 1)
         {
+            initializeData();
+
             if (isLocalPlayer)
             {
                 //if (level != 0)
@@ -267,6 +269,17 @@ public class EngineerController : PlayerController {
         //GameObject.DontDestroyOnLoad(e);
     }
 
+    protected void initializeData()
+    {
+        playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
+        Debug.Log("playerParameter " + playerParameter.maxHp);
+        GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
+
+        GetComponent<EngineerSkill1>().coolDown = playerParameter.coolingDown_1;
+        GetComponent<EngineerSkill1>().heal = playerParameter.healPt;
+
+        
+    }
 
     #endregion
 }

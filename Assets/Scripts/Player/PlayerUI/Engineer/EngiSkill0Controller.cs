@@ -21,6 +21,7 @@ public class EngiSkill0Controller : SkillController {
         GetComponent<Image>().material = selectedMaterial;
         transform.parent.GetComponent<EngiSkillSwitch>().SetSkill(0);
         isSkillSelected = true;
+        
     }
 
     public void DeslectedSkill() {

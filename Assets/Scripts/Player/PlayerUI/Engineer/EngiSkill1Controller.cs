@@ -8,6 +8,7 @@ public class EngiSkill1Controller : SkillController {
     public void SkillPressed() {
        transform.parent.GetComponent<EngiSkillSwitch>().SetSkill(1);
        crystalProductionPanel.TriggerAnimation();
+       
     }
 
     public void SkillReleased() {

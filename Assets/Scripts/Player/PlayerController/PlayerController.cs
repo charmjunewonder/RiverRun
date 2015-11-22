@@ -742,23 +742,16 @@ public class PlayerController : NetworkBehaviour {
         playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
         Debug.Log("playerParameter " + playerParameter.maxHp);
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
-        if (role == PlayerRole.Engineer)
-        {
-            GetComponent<EngineerSkill1>().coolDown = playerParameter.coolingDown_1;
-            GetComponent<EngineerSkill1>().heal = playerParameter.healPt;
 
-        }
-        else
+        GetComponent<StrikerSkill1>().coolDown = playerParameter.coolingDown_1;
+        GetComponent<StrikerSkill2>().coolDown = playerParameter.coolingDown_2;
+        GetComponent<StrikerSkill2>().damage = role == PlayerRole.Striker ? playerParameter.ultiPt : playerParameter.ultiTime;
+        if (role == PlayerRole.Defender)
         {
-            GetComponent<StrikerSkill1>().coolDown = playerParameter.coolingDown_1;
-            GetComponent<StrikerSkill2>().coolDown = playerParameter.coolingDown_2;
-            GetComponent<StrikerSkill2>().damage = role == PlayerRole.Striker ? playerParameter.ultiPt : playerParameter.ultiTime;
-            if (role == PlayerRole.Defender)
-            {
-                shieldTime = playerParameter.sheildTime;
-                shieldNumber = playerParameter.sheildHp;
-            }
+            shieldTime = playerParameter.sheildTime;
+            shieldNumber = playerParameter.sheildHp;
         }
+        
     }
     #endregion
 
@@ -798,7 +791,6 @@ public class PlayerController : NetworkBehaviour {
                 skill1Counter, skill2Counter);
         }
     }
-    #endregion
 
 
     [Command]
@@ -807,4 +799,7 @@ public class PlayerController : NetworkBehaviour {
         rank = newrank;
         exp = newexp;
     }
+    #endregion
+
+
 }

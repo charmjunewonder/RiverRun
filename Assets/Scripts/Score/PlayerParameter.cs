@@ -81,8 +81,8 @@ public class PlayerParameter:MonoBehaviour{
                 }
             case PlayerRole.Engineer:
                 {
-                    healPt = 10 + rank;//engineer heal point
-                    coolingDown_1 = 2.0f - (rank / 5) * 0.5f;//engineer heal coolingdown time
+                    healPt = 2 + rank;//engineer heal point
+                    coolingDown_1 = 1.5f - (rank / 5) * 0.5f;//engineer heal coolingdown time
                     coolingDown_2 = 2.0f - (rank / 5) * 0.3f;//crystal produce time 
                     playerCoolingDown = coolingDown_2 * 2.0f;//player cooling down for assign crystals
                     break;
