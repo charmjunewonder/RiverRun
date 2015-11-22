@@ -790,14 +790,35 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [ClientRpc]
-    public void RpcMissionComplete() {
+    public void RpcMissionComplete(int s1Counter, int s2Counter)
+    {
         if (isLocalPlayer) {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
-            NetworkManagerCustom.SingletonNM.MissionComplete(skill1Counter * 3 + skill2Counter * 10, 4, username, role, rank, exp, 200, 
-                skill1Counter, skill2Counter);
+            int score = ScoreParameter.CalcuateScore(s1Counter, s2Counter);
+            int currentFullExp = ScoreParameter.CurrentFullExp(rank);
+            exp = exp + score;
+            while (exp > currentFullExp)
+            {
+                exp -= currentFullExp;
+                rank++;
+                currentFullExp = ScoreParameter.CurrentFullExp(rank);
+            }
+            //update rank;
+            CmdChangeRank(rank, exp);
+            int roleIndex = 0;
+            switch (role)
+            {
+                case PlayerRole.Striker: roleIndex = 1; break;
+                case PlayerRole.Engineer: roleIndex = 2; break;
+                case PlayerRole.Defender: roleIndex = 3; break;
+            }
+            DataServerUtil.Singleton.UpdateRankExp(rank, exp, roleIndex);
+            NetworkManagerCustom.SingletonNM.MissionComplete(score, 4, username, role, rank, exp, currentFullExp,
+                s1Counter, s2Counter);
         }
     }
+
     #endregion
 
 
