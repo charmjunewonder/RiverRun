@@ -32,7 +32,7 @@ public class ServerMissionCompletePanel : MonoBehaviour {
             {
                 Debug.Log("SetServerMissionCompletePanel");
                 playerInfos[i].gameObject.SetActive(true);
-                playerInfos[i].SetUserInfo(lp.username, lp.role, lp.rank, lp.exp, 100);
+                playerInfos[i].SetUserInfo(lp.username, lp.role, lp.rank, lp.exp, ScoreParameter.CurrentFullExp(lp.rank));
             }
             else
             {
@@ -40,7 +40,7 @@ public class ServerMissionCompletePanel : MonoBehaviour {
                 if (dpc != null)
                 {
                     playerInfos[i].gameObject.SetActive(true);
-                    playerInfos[i].SetUserInfo(dpc.username, dpc.currentRole, dpc.rank, dpc.exp, 200);
+                    playerInfos[i].SetUserInfo(dpc.username, dpc.currentRole, dpc.rank, dpc.exp, ScoreParameter.CurrentFullExp(dpc.rank));
                 }
             }
         }

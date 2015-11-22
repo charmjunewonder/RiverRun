@@ -965,7 +965,7 @@ public class NetworkManagerCustom : NetworkManager {
     {
         StopServerClbk();
         ServerChangeScene("Empty");
-        StartCoroutine(waitAndStartServer());
+        //StartCoroutine(waitAndStartServer());
     }
 
     IEnumerator waitAndStartServer()
@@ -1003,7 +1003,8 @@ public class NetworkManagerCustom : NetworkManager {
         {
             if (gameplayerControllers[k] != null )
             {
-                ((PlayerController)gameplayerControllers[k]).RpcMissionComplete();
+                PlayerController gpc = (PlayerController)gameplayerControllers[k];
+                gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter);
             }
         }
         ServerChangeScene("Empty");
