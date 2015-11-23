@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TutorialController : MonoBehaviour {
+public class LobbyTutorialController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

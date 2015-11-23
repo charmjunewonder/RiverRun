@@ -1015,6 +1015,7 @@ public class NetworkManagerCustom : NetworkManager {
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);
         int totalScore = 0;
+        ArrayList names = new ArrayList();
         for (int k = 0; k < maxPlayers; k++)
         {
             if (gameplayerControllers[k] != null )
@@ -1022,10 +1023,14 @@ public class NetworkManagerCustom : NetworkManager {
                 PlayerController gpc = (PlayerController)gameplayerControllers[k];
                 gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter);
                 totalScore += gpc.skill1Counter + gpc.skill2Counter;
+                names.Add(gpc.username);
             }
         }
+        totalScore += (600 - EnemySpawnManager.currentTime) * 10;
         serverMissionPanel.gameObject.SetActive(true);
         serverMissionPanel.SetServerMissionCompletePanel(totalScore, EnemySpawnManager.currentTime, "Good");
+        //send team record to data server
+        //DataServerUtil.Singleton.SendTeamRecord(names, totalScore);
         Debug.Log("MissinComplete Time: " + EnemySpawnManager.currentTime);
 
         ServerChangeScene("Empty");
