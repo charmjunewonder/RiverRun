@@ -59,8 +59,8 @@ public class SignupController : MonoBehaviour {
         }
         
         string serverUrl = ServerUtils.urlHeader + domain + "/register.php";
-        string name = uName.text.ToLower();
-        string name2 = uName2.text.ToLower();
+        string name = uName.text;
+        string name2 = uName2.text;
 		bool isValid = true;
 		
 		if(!ServerUtils.CheckUsername(name))

@@ -8,9 +8,11 @@ public class LeaderBoardPanel : MonoBehaviour {
 
     public LeaderBoardRecord[] teamRecords;
     public PersonalUserInfo[] personalRecords;
+    public static LeaderBoardPanel Singleton;
 
 	// Use this for initialization
 	void Start () {
+        Singleton = this;
         teamPanel.SetActive(false);
         personalPanel.SetActive(false);
 	}
@@ -23,11 +25,11 @@ public class LeaderBoardPanel : MonoBehaviour {
         //{
         //    lbr.SetRecord("Ruth", "Shirley", "Mike", "Ralph", 10301186);
         //}
-        teamRecords[0].SetRecord("Ruth", "Shirley", "Mike", "Ralph", 10301186);
-        teamRecords[1].SetRecord("Feiran", "Zhen", "Emily", "Eric", 9552186);
-        teamRecords[2].SetRecord("Brentt", "Kirsten", "Atit", "Joseph", 8243189);
-        teamRecords[3].SetRecord("Stephanie", "Laura", "Mike", "Ming", 6193328);
-        teamRecords[4].SetRecord("Ruth", "Shirley", "Mike", "Ralph", 5324819);
+        //teamRecords[0].SetRecord("Ruth", "Shirley", "Mike", "Ralph", 10301186);
+        //teamRecords[1].SetRecord("Feiran", "Zhen", "Emily", "Eric", 9552186);
+        //teamRecords[2].SetRecord("Brentt", "Kirsten", "Atit", "Joseph", 8243189);
+        //teamRecords[3].SetRecord("Stephanie", "Laura", "Mike", "Ming", 6193328);
+        //teamRecords[4].SetRecord("Ruth", "Shirley", "Mike", "Ralph", 5324819);
     }
 
     public void ShowPersonalPanel()

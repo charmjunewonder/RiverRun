@@ -1030,7 +1030,7 @@ public class NetworkManagerCustom : NetworkManager {
         serverMissionPanel.gameObject.SetActive(true);
         serverMissionPanel.SetServerMissionCompletePanel(totalScore, EnemySpawnManager.currentTime, "Good");
         //send team record to data server
-        //DataServerUtil.Singleton.SendTeamRecord(names, totalScore);
+        DataServerUtil.Singleton.SendTeamRecord(names, totalScore);
         Debug.Log("MissinComplete Time: " + EnemySpawnManager.currentTime);
 
         ServerChangeScene("Empty");

@@ -106,7 +106,7 @@ public class LoginController : MonoBehaviour {
 	{
 		WWWForm form = new WWWForm ();
 
-        form.AddField("pname", name.ToLower());
+        form.AddField("pname", name);
 				
 		// Create a download object
 		WWW download = new WWW (serverUrl, form);

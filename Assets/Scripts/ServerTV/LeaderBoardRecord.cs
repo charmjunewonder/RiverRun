@@ -17,15 +17,6 @@ public class LeaderBoardRecord : MonoBehaviour {
         playerName[2].text = name3;
         playerName[3].text = name4;
 
-        string scoreString = "";
-        while (score != 0)
-        {
-            
-            int temp = score % 1000;
-            score /= 1000;
-            scoreString = temp + "," + scoreString;
-            Debug.Log(scoreString);
-        }
-        scoreText.text = scoreString;
+        scoreText.text = System.String.Format("{0:n0}", score);
     }
 }
