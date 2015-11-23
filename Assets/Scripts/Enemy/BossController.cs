@@ -4,10 +4,13 @@ using System.Collections;
 
 public class BossController : EnemyMotion{
 
+    private Vector3 newDes;
+
 	void Start () {
         if (isServer) {
             velocity = -transform.position.normalized;
             skillTimer = 5;
+            newDes = new Vector3(Random.Range(-50, 50), Random.Range(-50, 50), 450);
         }
 	}
 	
@@ -17,6 +20,12 @@ public class BossController : EnemyMotion{
             {
                 transform.position += velocity;
                 return;
+            }
+
+            transform.position += (newDes - transform.position).normalized * 0.2f;
+
+            if (Vector3.Distance(transform.position, newDes) < 1) {
+                newDes = new Vector3(Random.Range(-50, 50), Random.Range(-50, 50), 450);
             }
 
             skillTimer -= Time.deltaTime;

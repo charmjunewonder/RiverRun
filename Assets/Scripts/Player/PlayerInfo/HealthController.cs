@@ -21,12 +21,12 @@ public class HealthController : MonoBehaviour {
 
             if (timer <= 0) {
                 if (transform.GetChild(0).GetComponent<Image>().color.a == 0) {
-                    for (int i = 0; i < transform.childCount; i++) {
+                    for (int i = 0; i < 10; i++) {
                         transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 1);
                     }
                 }
                 else {
-                    for (int i = 0; i < transform.childCount; i++)
+                    for (int i = 0; i < 10; i++)
                     {
                         transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 0);
                     }

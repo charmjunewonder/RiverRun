@@ -21,7 +21,7 @@ public class ServerCameraMovement : MonoBehaviour {
         transform.position = new Vector3(radius * Mathf.Cos(angle * Mathf.PI / 180), pos.y, radius * Mathf.Sin(angle * Mathf.PI / 180));
         transform.LookAt(new Vector3(0, 0, 0));
 
-        if (angle >= -75 || angle < -105) {
+        if (angle >= -80 || angle < -100) {
             flag *= -1;
         } 
 	}

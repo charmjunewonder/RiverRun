@@ -144,12 +144,12 @@ public class EnemyMotion : NetworkBehaviour {
             turnAngle += Time.deltaTime * 20;
             transform.Rotate(0, -turnDirection * Time.deltaTime * 20, 0, Space.World);
             if (turnAngle >= 180) {
-                StartCoroutine(RotateBack(new Vector3(transform.position.x, Random.Range(-10, 10), 600)));
+                StartCoroutine(RotateBack(new Vector3(transform.position.x, Random.Range(-15, 15), 600)));
                 flyStatus = 2;
             }
         }
         else if (flyStatus == 2) {
-            if (transform.position.z >= 400) {
+            if (transform.position.z >= 475) {
                 flyStatus = 3;
                 recomeAngle = Random.Range(5, 10);
                 turnningSpeed = Random.Range(20, 30);
