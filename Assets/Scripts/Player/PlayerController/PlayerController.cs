@@ -766,6 +766,8 @@ public class PlayerController : NetworkBehaviour {
 
         int perc = health == 0 ? 0 : (int)(health / (int)GetComponent<PlayerInfo>().getMaxHealth() * 10) + 1;
 
+        perc = perc > 10 ? 10 : perc;
+
         NetworkManagerCustom.SingletonNM.sGamePanel.GetComponent<ServerGamePanel>().playerInfos[slot].SetHealth(perc);
     }
 
