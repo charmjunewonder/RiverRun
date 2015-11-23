@@ -10,21 +10,21 @@ public class EnemyMotion : NetworkBehaviour {
     [SyncVar]
     public int index;
 
-    public Vector3 velocity;
+    protected Vector3 velocity;
     public Vector3 destination;
 
     private GameObject spaceship;
-    private GameObject enemySkillManager;
+    protected GameObject enemySkillManager;
 
-    public float skillTimer;
+    protected float skillTimer;
 
     [SyncVar]
-    public float blood;
+    protected float blood;
     [SyncVar]
-    private float max_blood;
+    protected float max_blood;
 
-    private int damage;
-    public float attackTime;
+    protected int damage;
+    protected float attackTime;
 
     [SyncVar]
     private int flyStatus;
@@ -38,7 +38,7 @@ public class EnemyMotion : NetworkBehaviour {
     private float turnAngleZ;
     
     
-    public float freezeTimer;
+    protected float freezeTimer;
     public Vector3 prevVelocity;
 
     public float recomeAngle;

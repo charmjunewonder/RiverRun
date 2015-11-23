@@ -974,7 +974,7 @@ public class NetworkManagerCustom : NetworkManager {
         StartServer();
     }
 
-    #region Feiran's Function - Never Touch!
+    #region Feiran's Functions
 
     public void AttackPlayer(int index, float damage) {
 
@@ -993,8 +993,12 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
+    public void EndGame() {
+        Debug.Log("EndGame");
+        Invoke("GameEnded", 2.0f);
+    }
 
-    public void GameEnded() {
+    private void GameEnded() {
 
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);

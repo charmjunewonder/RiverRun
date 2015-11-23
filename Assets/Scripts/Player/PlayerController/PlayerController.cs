@@ -164,11 +164,8 @@ public class PlayerController : NetworkBehaviour {
                             image.color = new Color(1, 1, 1, 1);
                             
                             float blood_perc;
-                            if(enemy.tag == "Enemy")
-                                blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
-                            else
-                                blood_perc = enemy.GetComponent<BossController>().getBlood() / enemy.GetComponent<BossController>().getMaxBlood();
-                            
+                            blood_perc = enemy.GetComponent<EnemyMotion>().getBlood() / enemy.GetComponent<EnemyMotion>().getMaxBlood();
+
                             image.fillAmount = blood_perc;
                         }
                         

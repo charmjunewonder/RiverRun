@@ -107,15 +107,15 @@ public class EnemySpawnManager : NetworkBehaviour {
             em.setMaxBlood(10);//enemyData[waves][i].maxHp);
             em.setIndex(i);
             em.setDamage(1);//enemyData[waves][i].attackPt);
-            */
-            em.setAttackTime(5);//enemyData[waves][i].attackTime);
             
+            em.setAttackTime(5);//enemyData[waves][i].attackTime);
+            */
 
             em.setBlood(enemyData[waves][i].maxHp);//;
             em.setMaxBlood(enemyData[waves][i].maxHp);//);
             em.setIndex(i);
             em.setDamage(enemyData[waves][i].attackPt);//;
-            //em.setAttackTime(enemyData[waves][i].attackTime);//);
+            em.setAttackTime(enemyData[waves][i].attackTime);//);
 
             NetworkServer.Spawn(enemy);
             
@@ -149,10 +149,8 @@ public class EnemySpawnManager : NetworkBehaviour {
         countDown += t;
         for (int i = 0; i < transform.childCount; i++){
             Transform tran = transform.GetChild(i);
-            if(tran.tag == "Enemy")
-                tran.GetComponent<EnemyMotion>().Freeze(t);
-            else
-                tran.GetComponent<BossController>().Freeze(t);
+            tran.GetComponent<EnemyMotion>().Freeze(t);
+
         }
     }
 
@@ -163,7 +161,7 @@ public class EnemySpawnManager : NetworkBehaviour {
             yield return new WaitForSeconds(1);
         }
 
-        NetworkManagerCustom.SingletonNM.GameEnded();
+        NetworkManagerCustom.SingletonNM.EndGame();
     }
 
 }

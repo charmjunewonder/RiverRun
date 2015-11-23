@@ -2,34 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections;
 
-public class BossController : NetworkBehaviour {
-
-    public GameObject attackPrefab;
-    public GameObject dieParticlePref;
-
-    private Vector3 velocity;
-    private GameObject enemySkillManager;
-
-    [SyncVar]
-    public float blood;
-    [SyncVar]
-    private float max_blood;
-
-    private int damage;
-    public float attackTime;
-
-    public float freezeTimer;
-    public Vector3 prevVelocity;
-
-    public float skillTimer;
-
-    public void setEnemySkills(GameObject es) { enemySkillManager = es; }
-    public void setBlood(float b) { blood = b; }
-    public float getBlood() { return blood; }
-    public void setMaxBlood(float b) { max_blood = b; }
-    public float getMaxBlood() { return max_blood; }
-    public void setDamage(int d) { damage = d; }
-    public void setAttackTime(float t) { attackTime = t; skillTimer = attackTime; }
+public class BossController : EnemyMotion{
 
 	void Start () {
         if (isServer) {
@@ -67,7 +40,7 @@ public class BossController : NetworkBehaviour {
 
             Vector3 pos = transform.position + 20 * (new Vector3(Mathf.Sin(i * Mathf.PI / 6), Mathf.Cos(i * Mathf.PI / 6), 0));
 
-            GameObject attack = GameObject.Instantiate(attackPrefab, pos, Quaternion.identity) as GameObject;
+            GameObject attack = GameObject.Instantiate(bulletPref, pos, Quaternion.identity) as GameObject;
 
             attack.transform.parent = enemySkillManager.transform;
 
@@ -97,23 +70,20 @@ public class BossController : NetworkBehaviour {
     public void DecreaseBlood(float damage)
     {
         blood -= damage;
-        Debug.Log("CmdDecreaseBlood " + blood);
+        
         if (blood <= 0)
         {
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             RpcCreateDieParticle();
-            Invoke("EndGame", 2.0f);
+
+            Debug.Log("CmdDecreaseBlood " + blood);
+            NetworkManagerCustom.SingletonNM.EndGame();
 
             NetworkServer.Destroy(gameObject);
         }
     }
 
-    private void EndGame()
-    {
-        NetworkManagerCustom.SingletonNM.GameEnded();
-
-    }
     [ClientRpc]
     void RpcCreateDieParticle()
     {
