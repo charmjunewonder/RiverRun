@@ -48,6 +48,7 @@ public class PlayerController : NetworkBehaviour {
     protected MainCrystalController mainCrystalController;
     protected ReminderController reminderController;
     protected WarningController warningController;
+    protected ProgressBarController progressBarController;
     protected GameObject ui;
 
     public GameObject enemyUIManager;
@@ -570,15 +571,15 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("Player Controller Server: Support Submission Success");
         if (UltiController.checkUltiEnchanting()) {
             PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[UltiController.getUltiPlayerNumber()];
-            plc.RpcSupportGivenBack(crystalIndex);
+            plc.RpcSupportGivenBack(slot, crystalIndex);
         }
     }
 
     [ClientRpc]
-    public void RpcSupportGivenBack(int crystalIndex) {
+    public void RpcSupportGivenBack(int slot, int crystalIndex) {
         if (isLocalPlayer){
             Debug.Log("Player Controller: Give Crystal " + crystalIndex + " Back to Client");
-            ultiCrystalController.AcceptCrystal(crystalIndex);
+            ultiCrystalController.AcceptCrystalFrom(slot, crystalIndex);
         }
     }
 
@@ -603,6 +604,21 @@ public class PlayerController : NetworkBehaviour {
         isDraggingCrystal = f;
     }
 
+    [Command]
+    public void CmdUltiSupportFeedback(int slot, bool feedback) {
+        PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
+        plc.RpcReceiveSupportFeedback(feedback);
+    }
+
+    [ClientRpc]
+    public void RpcReceiveSupportFeedback(bool feedback) {
+        if (feedback) {
+            mainCrystalController.PortalShine();
+        }
+        else {
+            reminderController.setReminder("Support Wrong Crystals", 3.0f);
+        }
+    }
 
     #endregion
 
@@ -657,6 +673,8 @@ public class PlayerController : NetworkBehaviour {
         ultiCrystalController.setPlayerController(this);
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
+
+        progressBarController = ui.transform.GetChild(5).GetComponent<ProgressBarController>();
 
         enemyUITarget = ui.transform.GetChild(6);
 
@@ -766,6 +784,12 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer) {
             warningController.TriggerWarning();
         }
+    }
+
+    [ClientRpc]
+    public void RpcAddProgress(float perc) {
+        if(isLocalPlayer)
+            progressBarController.SetProgress(perc);
     }
 
     public void InitializeDisconnectCrystals(int crystal) {

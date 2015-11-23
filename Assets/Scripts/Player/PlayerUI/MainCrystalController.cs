@@ -116,6 +116,10 @@ public class MainCrystalController : MonoBehaviour {
         }
     }
 
+    public void PortalShine() {
+        StopAllCoroutines();
+        StartCoroutine("FadeShiningColor");
+    }
 
     public void OpenCrystalPortal(string name) {
         transform.GetChild(4).GetComponent<Image>().sprite = crystalPortalSprites[1];
@@ -125,5 +129,15 @@ public class MainCrystalController : MonoBehaviour {
     public void CloseCrystalPortal() {
         transform.GetChild(4).GetComponent<Image>().sprite = crystalPortalSprites[0];
         transform.GetChild(6).GetComponent<Text>().text = "";
+    }
+
+    IEnumerator FadeShiningColor() {
+        Image image = transform.GetChild(4).GetChild(0).GetComponent<Image>();
+        image.color = new Color(1, 1, 1, 1);
+        while (image.color.a >= 0) {
+            image.color -= new Color(0, 0, 0, 0.04f);
+            yield return new WaitForSeconds(0.02f);
+        }
+        image.color = new Color(1, 1, 1, 0);
     }
 }

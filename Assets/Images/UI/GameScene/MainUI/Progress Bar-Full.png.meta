@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 43a7aad89cf893e4fbebfde704005640
-timeCreated: 1444010988
+guid: d62f3f3216693ea45ac677d0bf116d48
+timeCreated: 1448251374
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -47,12 +47,7 @@ TextureImporter:
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
   textureType: 8
-  buildTargetSettings:
-  - buildTarget: iPhone
-    maxTextureSize: 1024
-    textureFormat: -1
-    compressionQuality: 50
-    allowsAlphaSplitting: 0
+  buildTargetSettings: []
   spriteSheet:
     sprites: []
   spritePackingTag: 

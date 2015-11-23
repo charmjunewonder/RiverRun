@@ -254,6 +254,8 @@ public class EngineerController : PlayerController {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
+        progressBarController = ui.transform.GetChild(7).GetComponent<ProgressBarController>();
+
         Transform teammatePanel = ui.transform.GetChild(5);
         for (int i = 0; i < 4; i++)
         {

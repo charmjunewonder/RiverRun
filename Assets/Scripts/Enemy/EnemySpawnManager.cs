@@ -17,12 +17,18 @@ public class EnemySpawnManager : NetworkBehaviour {
     private int[] enemyNumbers;
     private EnemyData[][] enemyData;
 
+    public int maxEnemyNum;
+    public int curEnemyNum;
+
     private float countDown;
 
     private EnemyParameter enemyParameter;
 
     public float totalTime;
     public static int currentTime = 0;
+    
+    
+
     void Start() {
         if (isServer) {
             transform.rotation = Quaternion.identity;
@@ -46,6 +52,12 @@ public class EnemySpawnManager : NetworkBehaviour {
             enemyNumbers = enemyParameter.enemyNumbers;
             enemyData = enemyParameter.enemyDatas;
 
+            maxEnemyNum = 0;
+            curEnemyNum = 0;
+            for(int i = 0; i < max_wave; i++) {
+                maxEnemyNum += enemyNumbers[i];
+            }
+
             StartCoroutine("PlayingTimeCountDown");
         }
     }
@@ -65,11 +77,12 @@ public class EnemySpawnManager : NetworkBehaviour {
                     waves++;
                 }
                 else {
-                    GenerateEnemies();
-                    countDown = 40.0f;
-                    waves++;
+                    if (transform.childCount <= 2) {
+                        GenerateEnemies();
+                        countDown = 40.0f;
+                        waves++;
+                    }
                 }
-
             }
         }
     }
@@ -162,6 +175,16 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
 
         NetworkManagerCustom.SingletonNM.EndGame();
+    }
+
+    public void AddProgress(int num) {
+        if (num == 1) {
+            curEnemyNum++;
+            NetworkManagerCustom.SingletonNM.AddProgress(((float)curEnemyNum) / maxEnemyNum * 0.8f);
+        }
+        else {
+            NetworkManagerCustom.SingletonNM.AddProgress(1.0f);
+        }
     }
 
 }

@@ -49,6 +49,7 @@ public class NetworkManagerCustom : NetworkManager {
     private ArrayList levels;
     private bool isServer = false;
     private bool hasCreatePlayer = false;
+
     void Start()
     {
 
@@ -989,6 +990,17 @@ public class NetworkManagerCustom : NetworkManager {
             if (gameplayerControllers[k] != null)
             {
                 ((PlayerController)gameplayerControllers[k]).RpcFreezeAI(t);
+            }
+        }
+    }
+
+    
+    public void AddProgress(float perc) {
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null)
+            {
+                ((PlayerController)gameplayerControllers[k]).RpcAddProgress(perc);
             }
         }
     }

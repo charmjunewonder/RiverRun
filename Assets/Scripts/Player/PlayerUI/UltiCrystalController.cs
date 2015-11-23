@@ -19,13 +19,14 @@ public class UltiCrystalController : MonoBehaviour {
     public void setPlayerController(PlayerController plc) { playerController = plc; }
     
 
-    public void AcceptCrystal(int index)
+    public void AcceptCrystalFrom(int slot, int index)
     {
         for (int i = 0; i < crystals.Length; i++) {
             if (crystals[i] == index) {
                 crystalImages[i].sprite = highlightedCrystalSprites[index];
                 crystalImages[i].material = highlightedMaterial;
                 crystals[i] = -i - 1;
+                playerController.CmdUltiSupportFeedback(slot, true);
                 if (CheckComplete()) {
                     playerController.ActivateUlti();
                 }
@@ -33,6 +34,7 @@ public class UltiCrystalController : MonoBehaviour {
             }
         }
         playerController.UltiFailureHandling();
+        playerController.CmdUltiSupportFeedback(slot, false);
         Clear();
     }
 

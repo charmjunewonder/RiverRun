@@ -60,6 +60,8 @@ public class EnemyMotion : NetworkBehaviour {
         Debug.Log("CmdDecreaseBlood " + blood);
         if (blood <= 0)
         {
+            transform.parent.GetComponent<EnemySpawnManager>().AddProgress(1);
+
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             RpcCreateDieParticle();
