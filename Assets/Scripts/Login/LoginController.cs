@@ -18,6 +18,7 @@ public class LoginController : MonoBehaviour {
     public static int EngineerExp = 0;
     public static int DefenderLevel = 0;
     public static int DefenderExp = 0;
+    private bool isProcessing = false;
 
     void Start()
     {
@@ -30,19 +31,37 @@ public class LoginController : MonoBehaviour {
     }
     public void OnLoginShowUp()
     {
-        if (loginImage.fillAmount == 0.9f) return;
+        if (isProcessing) return;
         StartCoroutine(showLoginImage());
     }
 
     IEnumerator showLoginImage()
     {
-        for(int i = 0; i < 50; i++)
+        if (!isProcessing && loginImage.fillAmount < 1)
         {
-            loginImage.fillAmount += 0.02f;
-            yield return new WaitForSeconds(0.02f);
+            isProcessing = true;
+            for (int i = 0; i < 50; i++)
+            {
+                loginImage.fillAmount += 0.02f;
+                yield return new WaitForSeconds(0.02f);
+            }
+            uName.gameObject.SetActive(true);
+            loginButton.gameObject.SetActive(true);
+            loginImage.fillAmount = 1;
+            isProcessing = false;
         }
-        uName.gameObject.SetActive(true);
-        loginButton.gameObject.SetActive(true);
+        else if (!isProcessing && loginImage.fillAmount >= 1)
+        {
+            isProcessing = true;
+            uName.gameObject.SetActive(false);
+            loginButton.gameObject.SetActive(false);
+            for (int i = 0; i < 50; i++)
+            {
+                loginImage.fillAmount -= 0.02f;
+                yield return new WaitForSeconds(0.02f);
+            }
+            isProcessing = false;
+        }
     }
 
     public void OnLoginPressed(){
@@ -86,8 +105,8 @@ public class LoginController : MonoBehaviour {
     IEnumerator LoginData (string name, string serverUrl)
 	{
 		WWWForm form = new WWWForm ();
-		
-		form.AddField ("pname", name);
+
+        form.AddField("pname", name.ToLower());
 				
 		// Create a download object
 		WWW download = new WWW (serverUrl, form);

@@ -38,18 +38,18 @@ public class MissionPanel : MonoBehaviour {
         {
             case PlayerRole.Striker:
                 userPanel.sprite = userPanelSprite[0];
-                skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Enemy's Spaceships";
-                utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills";
+                skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Enemy's Spaceships.";
+                utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
                 break;
             case PlayerRole.Engineer:
                 userPanel.sprite = userPanelSprite[1];
-                skill1Text.text = "Recovered Teammates <color=#B3F898FF>" + skill1 + "</color> Times";
-                utilText.text = "Generated <color=#B3F898FF>" + ulti + "</color> Crystals";
+                skill1Text.text = "Recovered Teammates <color=#B3F898FF>" + skill1 + "</color> Times.";
+                utilText.text = "Generated <color=#B3F898FF>" + ulti + "</color> Crystals.";
                 break;
             case PlayerRole.Defender:
                 userPanel.sprite = userPanelSprite[2];
-                skill1Text.text = "Defended <color=#B3F898FF>" + skill1 + "</color> Enemy's Attacks";
-                utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills";
+                skill1Text.text = "Defended <color=#B3F898FF>" + skill1 + "</color> Enemy's Attacks.";
+                utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
                 break;
         }
     }

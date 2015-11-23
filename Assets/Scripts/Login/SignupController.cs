@@ -10,22 +10,44 @@ public class SignupController : MonoBehaviour {
     public Button signupButton;
     public Image signupImage;
     public Text displayMessage;
+    private bool isProcessing = false;
 
     public void OnSignupShowUp()
     {
+        if (isProcessing) return;
         StartCoroutine(showSignupImage());
     }
 
     IEnumerator showSignupImage()
     {
-        for (int i = 0; i < 50; i++)
+        if (!isProcessing && signupImage.fillAmount < 1)
         {
-            signupImage.fillAmount += 0.02f;
-            yield return new WaitForSeconds(0.02f);
+            isProcessing = true;
+            for (int i = 0; i < 50; i++)
+            {
+                signupImage.fillAmount += 0.02f;
+                yield return new WaitForSeconds(0.02f);
+            }
+            uName.gameObject.SetActive(true);
+            uName2.gameObject.SetActive(true);
+            signupButton.gameObject.SetActive(true);
+            signupImage.fillAmount = 1;
+            isProcessing = false;
         }
-        uName.gameObject.SetActive(true);
-        uName2.gameObject.SetActive(true);
-        signupButton.gameObject.SetActive(true);
+        else if (!isProcessing && signupImage.fillAmount >= 1)
+        {
+            isProcessing = true;
+            uName.gameObject.SetActive(false);
+            uName2.gameObject.SetActive(false);
+            signupButton.gameObject.SetActive(false);
+            for (int i = 0; i < 50; i++)
+            {
+                signupImage.fillAmount -= 0.02f;
+                yield return new WaitForSeconds(0.02f);
+            }
+            isProcessing = false;
+        }
+
     }
 
     public void OnSignupPressed(){
@@ -37,8 +59,8 @@ public class SignupController : MonoBehaviour {
         }
         
         string serverUrl = ServerUtils.urlHeader + domain + "/register.php";
-		string name = uName.text;
-		string name2 = uName2.text;
+        string name = uName.text.ToLower();
+        string name2 = uName2.text.ToLower();
 		bool isValid = true;
 		
 		if(!ServerUtils.CheckUsername(name))

@@ -39,7 +39,7 @@ public class LobbyLevelPanel : MonoBehaviour {
         if (localLobbyPlayer != null)
         {
             localLobbyPlayer.CmdSetLevelWithSlot(le);
-            SetLevelInfo(le);
+            //SetLevelInfo(le);
         }
     }
 

@@ -995,18 +995,23 @@ public class NetworkManagerCustom : NetworkManager {
 
 
     public void GameEnded() {
-        serverMissionPanel.gameObject.SetActive(true);
-        serverMissionPanel.SetServerMissionCompletePanel(200, 200, "Good");
+
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);
+        int totalScore = 0;
         for (int k = 0; k < maxPlayers; k++)
         {
             if (gameplayerControllers[k] != null )
             {
                 PlayerController gpc = (PlayerController)gameplayerControllers[k];
                 gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter);
+                totalScore += gpc.skill1Counter + gpc.skill2Counter;
             }
         }
+        serverMissionPanel.gameObject.SetActive(true);
+        serverMissionPanel.SetServerMissionCompletePanel(totalScore, EnemySpawnManager.currentTime, "Good");
+        Debug.Log("MissinComplete Time: " + EnemySpawnManager.currentTime);
+
         ServerChangeScene("Empty");
     }
 

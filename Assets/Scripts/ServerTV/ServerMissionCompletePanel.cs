@@ -27,12 +27,12 @@ public class ServerMissionCompletePanel : MonoBehaviour {
         ArrayList gc = NetworkManagerCustom.SingletonNM.gameplayerControllers;
         for (int i = 0; i < NetworkManagerCustom.SingletonNM.maxPlayers; i++)
         {
-            PlayerController lp = (PlayerController)gc[i];
-            if (lp != null)
+            PlayerController pc = (PlayerController)gc[i];
+            if (pc != null)
             {
                 Debug.Log("SetServerMissionCompletePanel");
                 playerInfos[i].gameObject.SetActive(true);
-                playerInfos[i].SetUserInfo(lp.username, lp.role, lp.rank, lp.exp, ScoreParameter.CurrentFullExp(lp.rank));
+                playerInfos[i].SetUserInfo(pc.username, pc.role, pc.rank, pc.exp, ScoreParameter.CurrentFullExp(pc.rank));
             }
             else
             {

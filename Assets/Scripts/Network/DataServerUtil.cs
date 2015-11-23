@@ -10,6 +10,7 @@ public class DataServerUtil : MonoBehaviour
     void Start()
     {
         Singleton = this;
+        //UpdateRankExp(2, 100, 2);
     }
 
     public void UpdateRankExp(int rank, int exp, int role)
@@ -28,8 +29,8 @@ public class DataServerUtil : MonoBehaviour
     IEnumerator UpdateRankExpData(int rank, int exp, int role, string serverUrl)
     {
         WWWForm form = new WWWForm();
-        //form.AddField("name", LoginController.userName);
-        form.AddField("name", "a");
+        form.AddField("name", LoginController.userName);
+        //form.AddField("name", "a");
         form.AddField("rank", rank);
         form.AddField("exp", exp);
         form.AddField("role", role);

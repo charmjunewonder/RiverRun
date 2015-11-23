@@ -22,7 +22,7 @@ public class EnemySpawnManager : NetworkBehaviour {
     private EnemyParameter enemyParameter;
 
     public float totalTime;
-
+    public static int currentTime = 0;
     void Start() {
         if (isServer) {
             transform.rotation = Quaternion.identity;
@@ -157,8 +157,9 @@ public class EnemySpawnManager : NetworkBehaviour {
     }
 
     IEnumerator PlayingTimeCountDown() {
-        while (totalTime >= 0) {
-            totalTime -= 1;
+        while (totalTime >= currentTime)
+        {
+            currentTime += 1;
             yield return new WaitForSeconds(1);
         }
 
