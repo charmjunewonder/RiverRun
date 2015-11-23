@@ -391,17 +391,6 @@ public class PlayerController : NetworkBehaviour {
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
         }
         
-
-
-
-        /*
-        GameObject bullet = (GameObject)Instantiate(playerInfo.getSkill(index).prefab, transform.position + ray.direction * 1, Quaternion.identity);
-		
-		NetworkServer.Spawn(bullet);
-		bullet.AddComponent<Rigidbody>();
-		bullet.GetComponent<Rigidbody>().useGravity = false;
-		bullet.GetComponent<Rigidbody>().velocity = ray.direction * 100;
-		*/
 	}
 
     [Command]
@@ -505,6 +494,7 @@ public class PlayerController : NetworkBehaviour {
     {
         if (isLocalPlayer){
             if (status){
+                mainCrystalController.OpenCrystalPortal(username);
                 ultiCrystalController.GenerateUltiCrystals();
                 int ulti_index = 1;
                 skillControllers[ulti_index].StartCoolDown();
@@ -558,6 +548,7 @@ public class PlayerController : NetworkBehaviour {
         int ulti_index = 1;
         CmdDoFire(ulti_index, -1);
         CmdDoneUlti();
+        mainCrystalController.CloseCrystalPortal();
         ultiCrystalController.Clear();
         
     }
@@ -566,6 +557,7 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("PlayerController RevokeUlti");
         int ulti_index = 1;
         skillControllers[ulti_index].RevokeCoolDown();
+        mainCrystalController.CloseCrystalPortal();
         CmdDoneUlti();
     }
 
