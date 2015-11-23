@@ -150,11 +150,16 @@ public class PlayerController : NetworkBehaviour {
         if (isInGame) {
             if (enemyUIManager == null) LoadEnemyObject();
             else {
+                int enemy_count = 0;
                 for (int i = 0; i < 20; i++){
-                    if (i < enemyUIManager.transform.childCount)
+                    if (enemy_count < enemyUIManager.transform.childCount)
                     {
-                        Transform enemy = enemyUIManager.transform.GetChild(i);
-                        if(enemy.position.z < 10) continue;
+                        Transform enemy = enemyUIManager.transform.GetChild(enemy_count);
+                        enemy_count++;
+                        if(enemy.position.z < 20 || Mathf.Abs(enemy.position.x) > 350){
+                            i--;
+                            continue;
+                        } 
                         Vector3 screenPoint = cam.WorldToScreenPoint(enemy.position);
                         Transform target = enemyUITarget.GetChild(i);
                         target.position = screenPoint;
@@ -657,6 +662,8 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log(role);
 
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
+        ui.transform.GetChild(0).GetChild(10).GetComponent<Text>().text = rank.ToString();
+
 
         skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);

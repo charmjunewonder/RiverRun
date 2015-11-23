@@ -79,7 +79,9 @@ public class EnemyMotion : NetworkBehaviour {
         if (isServer) {
             spaceship = transform.parent.GetComponent<EnemySpawnManager>().GetSpaceShip();
 
-            destination = spaceship.transform.position + new Vector3(0, 20, -30);
+            float radian = Random.Range(0, 2 * Mathf.PI);
+
+            destination = spaceship.transform.position + new Vector3(40 * Mathf.Cos(radian), 40 * Mathf.Sin(radian), 80);
 
             transform.LookAt(destination);
 
@@ -142,15 +144,15 @@ public class EnemyMotion : NetworkBehaviour {
             turnAngle += Time.deltaTime * 20;
             transform.Rotate(0, -turnDirection * Time.deltaTime * 20, 0, Space.World);
             if (turnAngle >= 180) {
-                StartCoroutine(RotateBack(new Vector3(transform.position.x, transform.position.y + Random.Range(-50, 50), 300)));
+                StartCoroutine(RotateBack(new Vector3(transform.position.x, Random.Range(-10, 10), 600)));
                 flyStatus = 2;
             }
         }
         else if (flyStatus == 2) {
-            if (transform.position.z >= 550) {
+            if (transform.position.z >= 400) {
                 flyStatus = 3;
-                recomeAngle = Random.Range(15, 30);
-                turnningSpeed = Random.Range(10, 30);
+                recomeAngle = Random.Range(5, 10);
+                turnningSpeed = Random.Range(20, 30);
                 StartCoroutine("Rotate");
             }
         }

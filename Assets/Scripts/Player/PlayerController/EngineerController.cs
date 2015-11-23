@@ -237,6 +237,7 @@ public class EngineerController : PlayerController {
     private void setEngineerController(GameObject ui)
     {
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
+        ui.transform.GetChild(0).GetChild(10).GetComponent<Text>().text = rank.ToString();
 
         Transform skillPanel = ui.transform.GetChild(1);
 
