@@ -13,6 +13,8 @@ public class LobbyConnectPanel : MonoBehaviour {
 
     public RectTransform lobbyPanel;
 
+    public Button loginShowButton, signupShowButton;
+    public Sprite[] buttonImages;
     //public InputField ipInput;
 
     void Start()
@@ -21,7 +23,7 @@ public class LobbyConnectPanel : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         panelImage = GetComponent<Image>();
-
+        StartCoroutine("highlightButton");
     }
 
 
@@ -99,5 +101,25 @@ public class LobbyConnectPanel : MonoBehaviour {
         {
             OnClickJoin();
         }
+    }
+
+    IEnumerator highlightButton()
+    {
+        while (true)
+        {
+            loginShowButton.image.sprite = buttonImages[0];
+            signupShowButton.image.sprite = buttonImages[2];
+            yield return new WaitForSeconds(0.2f);
+            loginShowButton.image.sprite = buttonImages[1];
+            signupShowButton.image.sprite = buttonImages[3];
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    public void StopHighlisht()
+    {
+        StopCoroutine("highlightButton");
+        loginShowButton.image.sprite = buttonImages[1];
+        signupShowButton.image.sprite = buttonImages[3];
     }
 }
