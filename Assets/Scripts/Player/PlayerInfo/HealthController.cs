@@ -47,7 +47,7 @@ public class HealthController : MonoBehaviour {
 
         if (!shinning){
             timer = 0.5f;
-            for (int i = 0; i < transform.childCount; i++)
+            for (int i = 0; i < 10; i++)
             {
                 transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 1);
             }

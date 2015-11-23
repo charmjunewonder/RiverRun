@@ -56,6 +56,9 @@ public class MainCrystalController : MonoBehaviour {
     }
 
     public void AcceptCrystal(int crys_num) {
+
+        bool flag = false;
+
         for (int i = 0; i < 4; i++) {
             if (crystals[i] == -1) {
                 crystals[i] = crys_num;
@@ -63,9 +66,18 @@ public class MainCrystalController : MonoBehaviour {
                 Image image = transform.GetChild(i).GetChild(0).GetComponent<Image>();
                 image.sprite = crystalSprites[crys_num];
                 image.color = new Color(1, 1, 1, 1);
-
+                flag = true;
                 break;
             }
+        }
+
+        if (!flag) {
+            for (int i = 3; i > 0; i--) {
+                crystals[i] = crystals[i-1];
+                transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = crystalSprites[crystals[i]];
+            }
+            crystals[0] = crys_num;
+            transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = crystalSprites[crys_num];
         }
 
         playerController.CmdUpdateDisconnectionCrystal(crystals[0] + 1, crystals[1] + 1, crystals[2] + 1, crystals[3] + 1);
