@@ -617,11 +617,15 @@ public class PlayerController : NetworkBehaviour {
 
     [ClientRpc]
     public void RpcReceiveSupportFeedback(bool feedback) {
-        if (feedback) {
-            mainCrystalController.PortalShine();
-        }
-        else {
-            reminderController.setReminder("Support Wrong Crystals", 3.0f);
+        if (isLocalPlayer) {
+            if (feedback)
+            {
+                mainCrystalController.PortalShine();
+            }
+            else
+            {
+                reminderController.setReminder("Support Wrong Crystals", 3.0f);
+            }
         }
     }
 
