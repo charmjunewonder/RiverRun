@@ -22,10 +22,17 @@ public class LighteningScript : MonoBehaviour
 	private int index = 0; //the current frame to display
 	private Vector2[] offsets;
 
+    void Awake() {
+        Debug.Log("Awake");
+        Initialize();
+        StartCoroutine(updateTiling());
+    }
+
 	void Start()
 	{
-		Initialize();
-		StartCoroutine(updateTiling());
+        Debug.Log("Start");
+		//Initialize();
+		//StartCoroutine(updateTiling());
 	}
 
 	public void Initialize()

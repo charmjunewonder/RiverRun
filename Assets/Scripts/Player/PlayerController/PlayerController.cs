@@ -8,7 +8,8 @@ public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
     public GameObject shieldPrefab;
-    public GameObject lighteningPrefab;
+    public GameObject strikerUlti;
+    public GameObject defenderUlti;
 
     [SyncVar]
     public int slot;
@@ -81,6 +82,15 @@ public class PlayerController : NetworkBehaviour {
 		playerInfo = gameObject.GetComponent<PlayerInfo>();
         GameObject.DontDestroyOnLoad(gameObject);
 
+        if (isServer) {
+            if (role == PlayerRole.Striker) {
+                transform.GetChild(1).GetChild(0).GetChild(0).position = new Vector3(-5.06f, 1.19f, 13.7f);
+                transform.GetChild(1).GetChild(0).GetChild(1).position = new Vector3(-5.06f, 1.19f, 13.7f);
+                transform.GetChild(1).GetChild(1).GetChild(0).position = new Vector3(5.06f, 1.19f, 13.7f);
+                transform.GetChild(1).GetChild(1).GetChild(1).position = new Vector3(5.06f, 1.19f, 13.7f);
+            }
+        }
+
         if (isLocalPlayer) {
 			ui = (GameObject)Instantiate (uiPrefab, transform.position, Quaternion.identity) as GameObject;
             GameObject.DontDestroyOnLoad(ui);
@@ -117,6 +127,7 @@ public class PlayerController : NetworkBehaviour {
                     break;
             }
             CmdChangeRank(rank, exp);
+
 		}
 	}
 
@@ -369,6 +380,11 @@ public class PlayerController : NetworkBehaviour {
                 {
                     enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
                 }
+                skill2Counter++;
+                strikerUlti.GetComponent<strikerUltimate>().Succeed();
+                RpcStrikerUlti(1);
+
+                DoneUlti();
             }
             else
             {
@@ -379,14 +395,10 @@ public class PlayerController : NetworkBehaviour {
                 else
                     enemy.GetComponent<BossController>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
 
-                GameObject lightening = Instantiate(lighteningPrefab, transform.position, Quaternion.identity) as GameObject;
+                FireLightening(enemy.transform.position);
 
-                lightening.transform.GetChild(0).position = enemy.position;
-                lightening.transform.GetChild(1).position = transform.GetChild(Random.Range(1, 3)).position;
-
-                lightening.GetComponent<SyncTransformLightening>().setTransform(lightening.transform.GetChild(0), lightening.transform.GetChild(1));
                 skill1Counter++;
-                NetworkServer.Spawn(lightening);
+                
             }
         }
         else {
@@ -398,6 +410,49 @@ public class PlayerController : NetworkBehaviour {
         }
         
 	}
+
+    public void FireLightening(Vector3 targetPos) {
+
+        transform.GetChild(1).GetChild(0).GetChild(0).position = targetPos;
+        transform.GetChild(1).GetChild(1).GetChild(0).position = targetPos;
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+        transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+
+        for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
+        {
+            if (NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+            {
+                ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcFireLightening(targetPos);
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void RpcFireLightening(Vector3 targetPos) {
+        if (isLocalPlayer) {
+            transform.GetChild(1).GetChild(0).GetChild(0).position = targetPos;
+            transform.GetChild(1).GetChild(1).GetChild(0).position = targetPos;
+            transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+            transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+        }
+    }
+
+    [ClientRpc]
+    public void RpcStrikerUlti(int status) {
+        
+        if (status == -2) {
+             strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
+        }
+        else if (status == -1) {
+            strikerUlti.GetComponent<strikerUltimate>().Fail();
+        }
+        else if (status == 0){
+            strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
+        }
+        else if (status == 1){
+            strikerUlti.GetComponent<strikerUltimate>().Succeed();
+        }
+    }
 
     [Command]
     protected void CmdDefendAttack(NetworkInstanceId netID)
@@ -483,11 +538,23 @@ public class PlayerController : NetworkBehaviour {
             UltiController.setUltiPlayerNumber(slot);
             
             RpcUltiActivationStatusUpdate(true);
+
+
+            if (role == PlayerRole.Striker) {
+                strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
+                RpcStrikerUlti(-2);
+            }
+                
+
+
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++) {
-                if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+                if (NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
                 {
-                    ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcLockUlti(username);
+                    if (i != slot)
+                        ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcLockUlti(username);
+                    
                 }
+               
             }
         }
         else {
@@ -504,6 +571,7 @@ public class PlayerController : NetworkBehaviour {
                 ultiCrystalController.GenerateUltiCrystals();
                 int ulti_index = 1;
                 skillControllers[ulti_index].StartCoolDown();
+                
             }
             else {
                 reminderController.setReminder("Teammate is activating ultimate skill", 3.0f);
@@ -521,15 +589,26 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [Command]
-    protected void CmdDoneUlti()
+    protected void CmdFailUlti()
     {
-        skill2Counter++;
-        UltiController.setUltiEnchanting(false);
-        for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
-        {
-            if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+        if (role == PlayerRole.Striker) {
+            strikerUlti.GetComponent<strikerUltimate>().Fail();
+            RpcStrikerUlti(-1);
+        }
+
+        DoneUlti();
+    }
+
+    public void DoneUlti() {
+        if (isServer) {
+            
+            UltiController.setUltiEnchanting(false);
+            for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
             {
-                ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcUnlockUlti();
+                if (i != slot && NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+                {
+                    ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcUnlockUlti();
+                }
             }
         }
     }
@@ -553,7 +632,6 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("Player Controller: Activate Ulti Success");
         int ulti_index = 1;
         CmdDoFire(ulti_index, -1);
-        CmdDoneUlti();
         mainCrystalController.CloseCrystalPortal();
         ultiCrystalController.Clear();
         
@@ -564,7 +642,7 @@ public class PlayerController : NetworkBehaviour {
         int ulti_index = 1;
         skillControllers[ulti_index].RevokeCoolDown();
         mainCrystalController.CloseCrystalPortal();
-        CmdDoneUlti();
+        CmdFailUlti();
     }
 
     #endregion
@@ -590,17 +668,14 @@ public class PlayerController : NetworkBehaviour {
 
     public void UltiFailureHandling() {
 
-        Debug.Log("Player Controller: Failed to Activate Ulti");
-
         CmdUltiFailureHandling();
-        CmdDoneUlti();
+        CmdFailUlti();
 
         reminderController.setReminder("Ultimate Skill Activation Fails.", 3);
     }
 
     [Command]
     public void CmdUltiFailureHandling() {
-        Debug.Log("Player Controller Server: Unlock Ulti Slot");
 
         UltiController.setUltiEnchanting(false);
     }
@@ -611,6 +686,11 @@ public class PlayerController : NetworkBehaviour {
 
     [Command]
     public void CmdUltiSupportFeedback(int slot, bool feedback) {
+
+        if (role == PlayerRole.Striker) {
+            strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
+            RpcStrikerUlti(0);
+        }
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
         plc.RpcReceiveSupportFeedback(feedback);
     }
