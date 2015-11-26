@@ -17,6 +17,7 @@ public class NetworkManagerCustom : NetworkManager {
     public MissionPanel missionPanel;
     public ServerMissionCompletePanel serverMissionPanel;
     public ServerGamePanel sGamePanel;
+    public ProgressBarController pbController;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
@@ -996,6 +997,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     
     public void AddProgress(float perc) {
+        pbController.SetProgress(perc);
         for (int k = 0; k < maxPlayers; k++)
         {
             if (gameplayerControllers[k] != null)
