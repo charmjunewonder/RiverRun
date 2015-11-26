@@ -47,6 +47,7 @@ public class NetworkManagerCustom : NetworkManager {
     #endregion
 
     private string selectedLevel = "Level1";
+    public LevelEnum selectedDifficulty;
     private ArrayList levels;
     private bool isServer = false;
     private bool hasCreatePlayer = false;
@@ -63,6 +64,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         SingletonNM = this;
         currentMode = NetworkMode.Level;
+        selectedDifficulty = selectedDifficulty = LevelEnum.Unselected;
         //currentPanel = connectPanel;
         lobbyPlayerArray = new ArrayList(maxPlayers);
         gameplayerControllers = new ArrayList(maxPlayers);
@@ -283,6 +285,7 @@ public class NetworkManagerCustom : NetworkManager {
             if (isAllSame)
             {
                 Debug.Log("Level Select Same");
+                selectedDifficulty = firstLevel;
                 StartCoroutine("CheckLobbyReady");
                 ChangeToLobbyPanel();
             }
