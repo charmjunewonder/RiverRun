@@ -1021,7 +1021,19 @@ public class NetworkManagerCustom : NetworkManager {
             if (gameplayerControllers[k] != null )
             {
                 PlayerController gpc = (PlayerController)gameplayerControllers[k];
-                gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter);
+                int score = ScoreParameter.CalcuateScore(gpc.skill1Counter, gpc.skill2Counter);
+                int currentFullExp = ScoreParameter.CurrentFullExp(gpc.rank);
+                int cexp = gpc.exp + score;
+                int crank = gpc.rank;
+                while (cexp > currentFullExp)
+                {
+                    cexp -= currentFullExp;
+                    crank++;
+                    currentFullExp = ScoreParameter.CurrentFullExp(crank);
+                }
+                gpc.rank = crank;
+                gpc.exp = cexp;
+                gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter, crank, cexp);
                 totalScore += gpc.skill1Counter + gpc.skill2Counter;
                 names.Add(gpc.username);
             }
