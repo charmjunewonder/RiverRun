@@ -78,7 +78,7 @@ public class EnemySpawnManager : NetworkBehaviour {
                 }
                 else {
                     if (transform.childCount <= 2) {
-                        GenerateEnemies();
+                        StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
                         countDown = 40.0f;
                         waves++;
                     }
@@ -89,12 +89,10 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     public GameObject GetSpaceShip() { return spaceship; }
 
-    private void GenerateEnemies() {
+    private void GenerateEnemies(int enemiesNum, int start){
 
         if(spaceship == null)
             spaceship = GameObject.Find("Spaceship(Clone)");
-
-        int enemiesNum = enemyNumbers[waves];
 
 
         for (int i = 0; i < enemiesNum; i++){
@@ -115,20 +113,13 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();
             em.setEnemySkills(enemySkills);
-            /*
-            em.setBlood(10);//enemyData[waves][i].maxHp);
-            em.setMaxBlood(10);//enemyData[waves][i].maxHp);
-            em.setIndex(i);
-            em.setDamage(1);//enemyData[waves][i].attackPt);
-            
-            em.setAttackTime(5);//enemyData[waves][i].attackTime);
-            */
 
-            em.setBlood(enemyData[waves][i].maxHp);//;
-            em.setMaxBlood(enemyData[waves][i].maxHp);//);
-            em.setIndex(i);
-            em.setDamage(enemyData[waves][i].attackPt);//;
-            em.setAttackTime(enemyData[waves][i].attackTime);//);
+
+            em.setBlood(enemyData[waves][start + i].maxHp);
+            em.setMaxBlood(enemyData[waves][start + i].maxHp);
+            em.setIndex(start + i);
+            em.setDamage(enemyData[waves][start + i].attackPt);
+            em.setAttackTime(enemyData[waves][start + i].attackTime);
 
             NetworkServer.Spawn(enemy);
             
@@ -184,6 +175,27 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
         else {
             NetworkManagerCustom.SingletonNM.AddProgress(1.0f);
+        }
+    }
+
+    IEnumerator GenerateEnemyInGroup(int num) {
+
+        int start = 0;
+
+        while (num > 0) {
+            
+            int n = Random.Range(3, 6);
+
+            if(n > num)
+                n = num;
+
+            GenerateEnemies(n, start);
+
+            start += n;
+
+            num -= n;
+
+            yield return new WaitForSeconds(3.0f);
         }
     }
 
