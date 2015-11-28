@@ -50,7 +50,6 @@ public class TeammatePanelController : MonoBehaviour {
                 child.GetComponent<EngiTeammateController>().setShowCoolDown(true);
             }
         }
-
     }
 
 }
