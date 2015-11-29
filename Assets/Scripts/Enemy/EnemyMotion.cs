@@ -6,6 +6,7 @@ public class EnemyMotion : NetworkBehaviour {
 
     public GameObject bulletPref;
     public GameObject dieParticlePref;
+    public GameObject frozenEffect;
 
     [SyncVar]
     public int index;
@@ -75,6 +76,11 @@ public class EnemyMotion : NetworkBehaviour {
         GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
     }
 
+    [ClientRpc]
+    void RpcSetFrozenEffect(bool status) {
+        frozenEffect.SetActive(status);
+    }
+
 	void Start () {
         if (isServer) {
             spaceship = transform.parent.GetComponent<EnemySpawnManager>().GetSpaceShip();
@@ -109,6 +115,7 @@ public class EnemyMotion : NetworkBehaviour {
             if (prevVelocity != Vector3.zero) {
                 GetComponent<Rigidbody>().velocity = prevVelocity;
                 prevVelocity = Vector3.zero;
+                RpcSetFrozenEffect(false);
             }
            autoFly();
            launchMissle();
@@ -201,6 +208,7 @@ public class EnemyMotion : NetworkBehaviour {
     }
 
     public void Freeze(float t) {
+        RpcSetFrozenEffect(true);
         freezeTimer = t;
         prevVelocity = GetComponent<Rigidbody>().velocity;
         GetComponent<Rigidbody>().velocity = Vector3.zero;

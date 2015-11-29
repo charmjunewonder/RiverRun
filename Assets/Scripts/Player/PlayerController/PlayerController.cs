@@ -93,6 +93,22 @@ public class PlayerController : NetworkBehaviour {
                 transform.GetChild(1).GetChild(0).GetChild(1).position = new Vector3(-5.06f, 1.19f, 13.7f);
                 transform.GetChild(1).GetChild(1).GetChild(0).position = new Vector3(5.06f, 1.19f, 13.7f);
                 transform.GetChild(1).GetChild(1).GetChild(1).position = new Vector3(5.06f, 1.19f, 13.7f);
+
+                strikerUlti.transform.position = new Vector3(0, 3.16f, 4.773f);
+                
+                strikerUlti.transform.localScale = new Vector3(1.82f, 1, 1);
+                
+            }
+            else {
+                defenderUlti.transform.position = new Vector3(0, 3.16f, 8.52f);
+                defenderUlti.transform.localScale = new Vector3(2, 1, 1);
+
+                defenderUlti.transform.GetChild(0).localPosition = new Vector3(0, -0.45f, 8.21f);
+
+                defenderUlti.transform.GetChild(2).GetComponent<ParticleSystem>().startSpeed = 0.8f;
+                defenderUlti.transform.GetChild(2).GetComponent<ParticleSystem>().startSize = 1;
+                defenderUlti.transform.GetChild(3).GetComponent<ParticleSystem>().startSpeed = 0.8f;
+                defenderUlti.transform.GetChild(3).GetComponent<ParticleSystem>().startSize = 1;
             }
         }
 
@@ -408,11 +424,15 @@ public class PlayerController : NetworkBehaviour {
             }
         }
         else {
+            RpcDefenderUlti(1);
+            defenderUlti.GetComponent<defenderUltimate>().Succeed();
             float freezeTime = GetComponent<StrikerSkill2>().damage;
             freezeTime = freezeTime < 8 ? 8 : freezeTime;
             defenderEnemyManager.GetComponent<EnemySpawnManager>().Freeze(freezeTime);
             enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
+
+            DoneUlti();
         }
         
 	}
@@ -457,6 +477,28 @@ public class PlayerController : NetworkBehaviour {
         }
         else if (status == 1){
             strikerUlti.GetComponent<strikerUltimate>().Succeed();
+        }
+    }
+
+    [ClientRpc]
+    public void RpcDefenderUlti(int status)
+    {
+
+        if (status == -2)
+        {
+            defenderUlti.GetComponent<defenderUltimate>().TriggerUlti();
+        }
+        else if (status == -1)
+        {
+            defenderUlti.GetComponent<defenderUltimate>().Fail();
+        }
+        else if (status == 0)
+        {
+            defenderUlti.GetComponent<defenderUltimate>().AddCrystal();
+        }
+        else if (status == 1)
+        {
+            defenderUlti.GetComponent<defenderUltimate>().Succeed();
         }
     }
 
@@ -551,6 +593,10 @@ public class PlayerController : NetworkBehaviour {
                 strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
                 RpcStrikerUlti(-2);
             }
+            else {
+                defenderUlti.GetComponent<defenderUltimate>().TriggerUlti();
+                RpcDefenderUlti(-2);
+            }
                 
 
 
@@ -601,6 +647,10 @@ public class PlayerController : NetworkBehaviour {
         if (role == PlayerRole.Striker) {
             strikerUlti.GetComponent<strikerUltimate>().Fail();
             RpcStrikerUlti(-1);
+        }
+        else {
+            defenderUlti.GetComponent<defenderUltimate>().Fail();
+            RpcDefenderUlti(-1);
         }
 
         DoneUlti();
@@ -697,6 +747,10 @@ public class PlayerController : NetworkBehaviour {
         if (role == PlayerRole.Striker) {
             strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
             RpcStrikerUlti(0);
+        }
+        else {
+            defenderUlti.GetComponent<defenderUltimate>().AddCrystal();
+            RpcDefenderUlti(0);
         }
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
         plc.RpcReceiveSupportFeedback(feedback);
