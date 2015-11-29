@@ -115,6 +115,7 @@ public class EnemyMotion : NetworkBehaviour {
             if (prevVelocity != Vector3.zero) {
                 GetComponent<Rigidbody>().velocity = prevVelocity;
                 prevVelocity = Vector3.zero;
+                frozenEffect.SetActive(false);
                 RpcSetFrozenEffect(false);
             }
            autoFly();
@@ -208,6 +209,7 @@ public class EnemyMotion : NetworkBehaviour {
     }
 
     public void Freeze(float t) {
+        frozenEffect.SetActive(true);
         RpcSetFrozenEffect(true);
         freezeTimer = t;
         prevVelocity = GetComponent<Rigidbody>().velocity;
