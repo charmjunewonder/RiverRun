@@ -405,7 +405,7 @@ public class PlayerController : NetworkBehaviour {
                 skill2Counter++;
                 strikerUlti.GetComponent<strikerUltimate>().Succeed();
                 RpcStrikerUlti(1);
-
+                CalculateScore();
                 DoneUlti();
             }
             else
@@ -989,14 +989,17 @@ public class PlayerController : NetworkBehaviour {
     public void OnScoreChanged(int ns)
     {
         if (!isLocalPlayer) return;
+        Debug.Log("OnScoreChanged " + ns);
         score = ns;
         //update score
-        scoreText.text = ""+score;
+        if(scoreText != null)
+            scoreText.text = ""+score;
     }
     public void OnRankChanged(int nr)
     {
         if (!isLocalPlayer) return;
         rank = nr;
-        rankText.text = ""+score;
+        if (rankText != null)
+            rankText.text = ""+score;
     }
 }

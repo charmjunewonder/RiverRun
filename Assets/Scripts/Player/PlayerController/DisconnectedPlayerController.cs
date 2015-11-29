@@ -15,5 +15,8 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public int rank;
 
     public int exp;
-
+    public int score;
+    public int skill1Counter = 0;
+    public int skill2Counter = 0;
+    public int supportCounter = 0;
 }

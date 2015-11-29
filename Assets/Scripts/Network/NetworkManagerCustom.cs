@@ -554,7 +554,12 @@ public class NetworkManagerCustom : NetworkManager {
                             dpc.username = pc.username;
                             dpc.health = pc.gameObject.GetComponent<PlayerInfo>().getHealth();
                             dpc.crystals = pc.disconnectCrystal;
-                            
+                            dpc.rank = pc.rank;
+                            dpc.exp = pc.exp;
+                            dpc.score = pc.score;
+                            dpc.skill1Counter = pc.skill1Counter;
+                            dpc.skill2Counter = pc.skill2Counter;
+                            dpc.supportCounter = pc.supportCounter;
                             if (UltiController.checkUltiEnchanting()) {
                                 if (UltiController.getUltiPlayerNumber() == i){
                                     UltiController.setUltiEnchanting(false);
@@ -656,6 +661,12 @@ public class NetworkManagerCustom : NetworkManager {
                             pc.slot = k;
                             pc.username = dpc.username;
                             pc.role = dpc.currentRole;
+                            pc.rank = dpc.rank;
+                            pc.exp = dpc.exp;
+                            pc.score = dpc.score;
+                            pc.skill1Counter = dpc.skill1Counter;
+                            pc.skill2Counter = dpc.skill2Counter;
+                            pc.supportCounter = dpc.supportCounter;
                             pc.setInGame();
                             pc.disconnectCrystal = dpc.crystals;
                             pc.InitializeDisconnectCrystals(dpc.crystals);

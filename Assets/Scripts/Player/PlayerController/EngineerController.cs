@@ -58,8 +58,8 @@ public class EngineerController : PlayerController {
             //{
                 //mainCrystalController.SetCrystal(ci.key, ci.value);
             //}
-            rankText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
-            scoreText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
+            rankText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
+            scoreText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
             switch (role)
             {
                 case PlayerRole.Striker:
@@ -116,6 +116,7 @@ public class EngineerController : PlayerController {
         {
             plc.RpcAcceptCrystalFromEngineer(crystal);
             skill2Counter++;
+            CalculateScore();
         }
     }
 
