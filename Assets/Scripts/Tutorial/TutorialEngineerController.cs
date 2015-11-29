@@ -39,7 +39,7 @@ public class TutorialEngineerController : MonoBehaviour {
                 stage++;
             }
 
-            if (stage == 9) {
+            if (stage == 10) {
                 ltController.GoToLobbyScene();
             }
         }
@@ -145,18 +145,23 @@ public class TutorialEngineerController : MonoBehaviour {
 
             return;
         }
-        Debug.Log(stage + " " + index);
+
         if (stage == 8 && index == 8) {
             
             ShowNextText();
             tmcController.SetPortal(true, "Eric");
             
             dragObjects[0].SetActive(true);
+            
+            return;
+        }
+
+        if(stage == 9 && index == 9){
             dragObjects[1].SetActive(true);
             return;
         }
 
-        if (stage == 9 && index == 9) {
+        if (stage == 10 && index == 10) {
             ShowNextText();
         }
 
@@ -201,10 +206,14 @@ public class TutorialEngineerController : MonoBehaviour {
             crystalCounter++;
         }
 
+        if (crystalCounter == 1) {
+            stage++;
+            SetStage(stage);
+        }
+
         if (crystalCounter == 2) {
             
             stage++;
-            Debug.Log("sssssss " + stage);
             StartCoroutine(AutoNextStage(stage, 0.5f));
         }
     }

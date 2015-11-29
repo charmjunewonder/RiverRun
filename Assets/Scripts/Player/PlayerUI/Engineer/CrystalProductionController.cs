@@ -26,7 +26,6 @@ public class CrystalProductionController : MonoBehaviour {
 
     #region Animation
     public void TriggerAnimation() {
-        Debug.Log("TriggerAnimation");
         if(!isFinished())
             StartCoroutine("StartArrow");
     }
