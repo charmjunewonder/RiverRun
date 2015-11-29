@@ -21,6 +21,9 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     public int exp;
 
+    [SyncVar(hook="OnScoreChanged")]
+    public int score;
+
     [SyncVar]
     public int disconnectCrystal;
 
@@ -51,6 +54,8 @@ public class PlayerController : NetworkBehaviour {
     protected WarningController warningController;
     protected ProgressBarController progressBarController;
     protected GameObject ui;
+    protected Text scoreText;
+    protected Text rankText;
 
     public GameObject enemyUIManager;
     public GameObject defenderEnemyManager;
@@ -110,7 +115,8 @@ public class PlayerController : NetworkBehaviour {
             shieldPoint1 = Vector3.zero;
             shieldExist = false;
             isDraggingCrystal = false;
-
+            rankText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
+            scoreText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
             switch (role)
             {
                 case PlayerRole.Striker:
@@ -127,7 +133,7 @@ public class PlayerController : NetworkBehaviour {
                     break;
             }
             CmdChangeRank(rank, exp);
-
+            rankText.text = ""+rank;
 		}
 	}
 
@@ -398,7 +404,7 @@ public class PlayerController : NetworkBehaviour {
                 FireLightening(enemy.transform.position);
 
                 skill1Counter++;
-                
+                CalculateScore();
             }
         }
         else {
@@ -459,6 +465,7 @@ public class PlayerController : NetworkBehaviour {
     {
         GameObject obj = NetworkServer.FindLocalObject(netID);
         skill1Counter++;
+        CalculateScore();
         NetworkServer.Destroy(obj);
     }
 
@@ -919,5 +926,17 @@ public class PlayerController : NetworkBehaviour {
     }
     #endregion
 
+    [Server]
+    public void CalculateScore()
+    {
+        score = ScoreParameter.CalcuateScore(skill1Counter, skill2Counter);
+    }
 
+    public void OnScoreChanged(int ns)
+    {
+        if (!isLocalPlayer) return;
+        score = ns;
+        //update score
+        scoreText.text = ""+score;
+    }
 }

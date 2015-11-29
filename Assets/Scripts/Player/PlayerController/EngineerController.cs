@@ -123,6 +123,7 @@ public class EngineerController : PlayerController {
         {
             plc.Damage(-GetComponent<EngineerSkill1>().heal);
             skill1Counter++;
+            CalculateScore();
         }
     }
 

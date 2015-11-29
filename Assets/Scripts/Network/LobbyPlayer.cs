@@ -228,6 +228,7 @@ public class LobbyPlayer : NetworkBehaviour {
         if (isLocalPlayer)
         {
             NetworkManagerCustom.SingletonNM.levelPanel.gameObject.GetComponent<LobbyLevelPanel>().LevelSelectNotSame();
+            AudioController.Singleton.PlayBadFeedBack();
         }
     }
 
