@@ -58,6 +58,8 @@ public class EngineerController : PlayerController {
             //{
                 //mainCrystalController.SetCrystal(ci.key, ci.value);
             //}
+            rankText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
+            scoreText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
             switch (role)
             {
                 case PlayerRole.Striker:
@@ -74,6 +76,8 @@ public class EngineerController : PlayerController {
                     break;
             }
             CmdChangeRank(rank, exp);
+            rankText.text = "" + rank;
+
         }
 	}
 

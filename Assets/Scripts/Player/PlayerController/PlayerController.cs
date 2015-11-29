@@ -16,7 +16,7 @@ public class PlayerController : NetworkBehaviour {
     [SyncVar]
     public string username;
 
-    [SyncVar]
+    [SyncVar(hook = "OnRankChanged")]
     public int rank;
     [SyncVar]
     public int exp;
@@ -992,5 +992,11 @@ public class PlayerController : NetworkBehaviour {
         score = ns;
         //update score
         scoreText.text = ""+score;
+    }
+    public void OnRankChanged(int nr)
+    {
+        if (!isLocalPlayer) return;
+        rank = nr;
+        rankText.text = ""+score;
     }
 }
