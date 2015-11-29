@@ -754,6 +754,10 @@ public class PlayerController : NetworkBehaviour {
         }
         PlayerController plc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[slot];
         plc.RpcReceiveSupportFeedback(feedback);
+        if (feedback)
+        {
+            supportCounter++;
+        }
     }
 
     [ClientRpc]
@@ -950,12 +954,12 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [ClientRpc]
-    public void RpcMissionComplete(int s1Counter, int s2Counter, int crank, int cexp)
+    public void RpcMissionComplete(int s1Counter, int s2Counter, int suCounter, int crank, int cexp)
     {
         if (isLocalPlayer) {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
-            int score = ScoreParameter.CalcuateScore(s1Counter, s2Counter);
+            int score = ScoreParameter.CalcuateScore(s1Counter, s2Counter, suCounter);
             int currentFullExp = ScoreParameter.CurrentFullExp(crank);
             
             int roleIndex = 0;
@@ -966,8 +970,9 @@ public class PlayerController : NetworkBehaviour {
                 case PlayerRole.Defender: roleIndex = 3; break;
             }
             DataServerUtil.Singleton.UpdateRankExp(crank, cexp, roleIndex);
-            NetworkManagerCustom.SingletonNM.MissionComplete(score, 4, username, role, crank, cexp, currentFullExp,
-                s1Counter, s2Counter);
+            int stars = ScoreParameter.CalcuateStar(score);
+            NetworkManagerCustom.SingletonNM.MissionComplete(score, stars, username, role, crank, cexp, currentFullExp,
+                s1Counter, s2Counter, suCounter);
         }
     }
 
@@ -983,7 +988,7 @@ public class PlayerController : NetworkBehaviour {
     [Server]
     public void CalculateScore()
     {
-        score = ScoreParameter.CalcuateScore(skill1Counter, skill2Counter);
+        score = ScoreParameter.CalcuateScore(skill1Counter, skill2Counter, supportCounter);
     }
 
     public void OnScoreChanged(int ns)

@@ -1037,7 +1037,7 @@ public class NetworkManagerCustom : NetworkManager {
             if (gameplayerControllers[k] != null )
             {
                 PlayerController gpc = (PlayerController)gameplayerControllers[k];
-                int score = ScoreParameter.CalcuateScore(gpc.skill1Counter, gpc.skill2Counter);
+                int score = ScoreParameter.CalcuateScore(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter);
                 int currentFullExp = ScoreParameter.CurrentFullExp(gpc.rank);
                 int cexp = gpc.exp + score;
                 int crank = gpc.rank;
@@ -1049,7 +1049,7 @@ public class NetworkManagerCustom : NetworkManager {
                 }
                 gpc.rank = crank;
                 gpc.exp = cexp;
-                gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter, crank, cexp);
+                gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter, crank, cexp);
                 totalScore += gpc.skill1Counter + gpc.skill2Counter;
                 names.Add(gpc.username);
             }
@@ -1064,11 +1064,11 @@ public class NetworkManagerCustom : NetworkManager {
         ServerChangeScene("Empty");
     }
 
-    public void MissionComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti)
+    public void MissionComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti, int support)
     {
         Debug.Log("MissinComplete");
         missionPanel.gameObject.SetActive(true);
-        missionPanel.SetMissonComplete(score, star, username,  pr, rank, experience, fullEx, skill1, ulti);
+        missionPanel.SetMissonComplete(score, star, username, pr, rank, experience, fullEx, skill1, ulti, support);
     }
     #endregion
 }

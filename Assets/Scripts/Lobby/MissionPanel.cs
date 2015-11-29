@@ -16,6 +16,8 @@ public class MissionPanel : MonoBehaviour {
     Text skill1Text;
     [SerializeField]
     Text utilText;
+    [SerializeField]
+    Text supportText;
     public int test;
 	// Use this for initialization
 	void Start () {
@@ -23,7 +25,7 @@ public class MissionPanel : MonoBehaviour {
 	}
 
 
-    public void SetMissonComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti)
+    public void SetMissonComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti, int support)
     {
         scoreText.text = "" + score;
         SetStar(star);
@@ -50,6 +52,9 @@ public class MissionPanel : MonoBehaviour {
                 userPanel.sprite = userPanelSprite[2];
                 skill1Text.text = "Defended <color=#B3F898FF>" + skill1 + "</color> Enemy's Attacks.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
+                break;
+            default:
+                supportText.text = "Support Teammates <color=#B3F898FF>" + ulti + "</color> Times.";
                 break;
         }
     }
