@@ -54,7 +54,7 @@ public class MissionPanel : MonoBehaviour {
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
                 break;
             default:
-                supportText.text = "Support Teammates <color=#B3F898FF>" + ulti + "</color> Times.";
+                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;
         }
     }

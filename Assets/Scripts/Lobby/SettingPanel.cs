@@ -8,7 +8,13 @@ public class SettingPanel : MonoBehaviour {
 
     public Text gameText;
     public Text dataText;
-
+    public Slider bgmSlider;
+    public Slider sfxSlider;
+    private GameObject bgmAudio;
+    private GameObject sfxAudio;
+    public Sprite greySprite;
+    public Image noPlayerImage;
+    public Text noPlayerText;
 	// Use this for initialization
 	void Start () {
         string gameIp = PlayerPrefs.GetString("GameIp");
@@ -22,6 +28,10 @@ public class SettingPanel : MonoBehaviour {
         {
             dataInput.text = dataIp;
         }
+#if UNITY_IOS
+        noPlayerImage.sprite = greySprite;
+        noPlayerText.gameObject.SetActive(false);
+#endif
     }
 	
 	// Update is called once per frame
@@ -58,5 +68,24 @@ public class SettingPanel : MonoBehaviour {
         {
             dataText.text = "IP Invalid";
         }
+    }
+
+    public void OnSoundEffectChanged()
+    {
+        //Debug.Log("OnSoundEffectChanged " + sfxSlider.value);
+
+        if (sfxAudio == null)
+            sfxAudio = GameObject.Find("BGMAudio");
+        if (sfxAudio != null)
+            sfxAudio.GetComponent<AudioSource>().volume = sfxSlider.value;
+    }
+
+    public void OnBGMChanged()
+    {
+        //Debug.Log("OnBGMChanged " + bgmSlider.value);
+        if(bgmAudio == null)
+            bgmAudio = GameObject.Find("BGMAudio");
+        if(bgmAudio != null)
+            bgmAudio.GetComponent<AudioSource>().volume = bgmSlider.value;
     }
 }

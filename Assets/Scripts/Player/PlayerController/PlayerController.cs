@@ -431,7 +431,7 @@ public class PlayerController : NetworkBehaviour {
             defenderEnemyManager.GetComponent<EnemySpawnManager>().Freeze(freezeTime);
             enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
-
+            skill2Counter++;
             DoneUlti();
         }
         

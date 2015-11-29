@@ -85,7 +85,9 @@ public class LoginController : MonoBehaviour {
 		
 		if(isValid){
             if (isServerReady)
-			    StartCoroutine (LoginData (name, serverUrl));
+            {
+                StartCoroutine(LoginData(name, serverUrl));
+            }
             else
             {
                 userName = name;
@@ -138,6 +140,7 @@ public class LoginController : MonoBehaviour {
                         uname = uname.Replace("<name>", "");
                         uname = uname.Replace("</name>", "");
                         userName = name;
+                        PlayerPrefs.SetString("name", userName);
 
                         ex = @"<sl>.+</sl>";
                         m = Regex.Match(download.text, ex);
