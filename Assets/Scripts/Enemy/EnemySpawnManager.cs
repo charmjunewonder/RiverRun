@@ -38,15 +38,43 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-            int average_rank = 0;
+            int input_rank = 0;
 
-            foreach (GameObject player in players) {
-                average_rank += player.GetComponent<PlayerController>().rank;
+            if (NetworkManagerCustom.SingletonNM.selectedDifficulty == LevelEnum.Easy)
+            {
+                int a = 1000;
+                foreach (GameObject player in players)
+                {
+                    if(player != null)
+                        a = Mathf.Min(player.GetComponent<PlayerController>().rank, a); 
+                }
+                input_rank = a;
+            }
+            else if (NetworkManagerCustom.SingletonNM.selectedDifficulty == LevelEnum.Medium) {
+                int count = 0;
+                foreach (GameObject player in players)
+                {
+                    if (player != null)
+                    {
+                        input_rank += player.GetComponent<PlayerController>().rank;
+                        count++;
+                    }
+                        
+                }
+                input_rank /= count++;
+            }
+            else {
+                int a = 0;
+                foreach (GameObject player in players)
+                {
+                    if(player != null)
+                        a = Mathf.Max(player.GetComponent<PlayerController>().rank, a);
+                }
+                input_rank = a;
             }
 
-            average_rank /= players.Length;
 
-            enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(0);
+            enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(input_rank);
 
             max_wave = enemyParameter.enemyWave;
             enemyNumbers = enemyParameter.enemyNumbers;
