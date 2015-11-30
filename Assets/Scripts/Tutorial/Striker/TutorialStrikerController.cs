@@ -44,7 +44,7 @@ public class TutorialStrikerController : MonoBehaviour {
         }
 
         if (stage >= 4 && stage < 6) {
-            for (int i = 0; i < enemyManager.transform.childCount; i++) {
+            for (int i = 0; i < 3; i++) {
                 Transform enemy = enemyManager.transform.GetChild(i);
                 Vector3 screenPoint = cam.WorldToScreenPoint(enemy.position);
                 Transform target = enemyUITarget.GetChild(i);

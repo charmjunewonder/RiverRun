@@ -52,6 +52,8 @@ public class NetworkManagerCustom : NetworkManager {
     private bool isServer = false;
     private bool hasCreatePlayer = false;
 
+    private float cizitenshipHealth;
+
     void Start()
     {
 

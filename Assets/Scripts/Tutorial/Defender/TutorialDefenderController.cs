@@ -119,16 +119,37 @@ public class TutorialDefenderController : MonoBehaviour {
                 if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 30) {
                     Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
                     float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
-                    radius = radius <= 100 ? radius : 100;
+
+                    radius = radius <= Screen.width / 5 ? radius : Screen.width / 5;
+                    
+
                     Ray ray = cam.ScreenPointToRay(shieldCenter);
                     createShield(ray, radius);
                     SetStage(++stage);
                 }
             }
 #endif
+#if UNITY_IOS
+            if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved){
+                shieldPoint1 = Input.GetTouch(0).position;
+            }
 
+            if(Input.touchCount > 1 && (Input.GetTouch(1).phase == TouchPhase.Began || Input.GetTouch(1).phase == TouchPhase.Moved)){
+                shieldPoint2 = Input.GetTouch(1).position;
+            }
 
-
+            if(Input.touchCount > 1 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(1).phase == TouchPhase.Ended)){
+                if(Vector3.Distance(shieldPoint1, shieldPoint2) > 30){
+                    Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
+                    float radius = Vector3.Distance(shieldPoint2, shieldCenter);
+                    radius = radius <= Screen.width / 5 ? radius : Screen.width / 5;
+                    Ray ray = cam.ScreenPointToRay(shieldCenter);
+                    createShield(ray, radius);
+                    SetStage(++stage);
+                }
+            
+            }
+#endif
         }
 
         if (stage == 8)
