@@ -30,7 +30,6 @@ public class CrystalProductionController : MonoBehaviour {
         {
             StartCoroutine("StartArrow");
             AudioController.Singleton.PlayEngineerCystalProductionSound();
-
         }
     }
 

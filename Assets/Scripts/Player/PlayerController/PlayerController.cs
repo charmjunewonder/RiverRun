@@ -53,6 +53,7 @@ public class PlayerController : NetworkBehaviour {
     protected ReminderController reminderController;
     protected WarningController warningController;
     protected ProgressBarController progressBarController;
+    protected HealthController citizenshipHealthController;
     protected GameObject ui;
     protected Text scoreText;
     protected Text rankText;
@@ -275,11 +276,7 @@ public class PlayerController : NetworkBehaviour {
 
                         Ray ray = cam.ScreenPointToRay(shieldCenter);
 
-                        Vector3 shieldPos = ray.direction.normalized * 8;
-
-                        CmdCreateShield(shieldPos, radius / 30);
-
-                        
+                        CmdCreateShield(ray, radius / 30);
 
                     }
                     else {
@@ -328,12 +325,12 @@ public class PlayerController : NetworkBehaviour {
 
                     Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
                     float radius = Vector3.Distance(shieldPoint2, shieldCenter);
-
+                    radius = radius <= Screen.width / 5 ? radius : Screen.width / 5;
                     Ray ray = cam.ScreenPointToRay(shieldCenter);
 
                     Vector3 shieldPos = ray.direction.normalized * 10;
 
-                    CmdCreateShield(shieldPos, radius / 30);
+                    CmdCreateShield(shieldPos, radius / 100);
 
                     return;
                 }
@@ -519,19 +516,20 @@ public class PlayerController : NetworkBehaviour {
     }
 
     [Command]
-    protected void CmdCreateShield(Vector3 pos, float scale)
+    protected void CmdCreateShield(Ray ray, float scale)
     {
-
         if (shieldExist) {
             RpcDeclineShieldCreation();
             return;
         }
 
-        GameObject shield = Instantiate(shieldPrefab, pos, Quaternion.identity) as GameObject;
+        Vector3 shieldPos = ray.direction.normalized * 8;
+
+        GameObject shield = Instantiate(shieldPrefab, shieldPos, Quaternion.identity) as GameObject;
 
         shield.transform.localScale *= scale;
 
-        shield.transform.LookAt(Vector3.forward);
+        shield.transform.LookAt(-ray.direction * 20);
 
         shield.GetComponent<SyncTransform>().setTransform(shield.transform);
 
@@ -824,7 +822,6 @@ public class PlayerController : NetworkBehaviour {
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
         ui.transform.GetChild(0).GetChild(10).GetComponent<Text>().text = rank.ToString();
 
-
         skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
         skillPanel.GetChild(0).GetComponent<Image>().sprite = role == PlayerRole.Striker ? skillIcons[0] : skillIcons[2];
@@ -842,6 +839,7 @@ public class PlayerController : NetworkBehaviour {
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
         progressBarController = ui.transform.GetChild(5).GetComponent<ProgressBarController>();
+        citizenshipHealthController = ui.transform.GetChild(5).GetChild(2).GetComponent<HealthController>();
 
         enemyUITarget = ui.transform.GetChild(6);
 
@@ -956,6 +954,12 @@ public class PlayerController : NetworkBehaviour {
     public void RpcAddProgress(float perc) {
         if(isLocalPlayer)
             progressBarController.SetProgress(perc);
+    }
+
+    [ClientRpc]
+    public void RpcSetCitizenshipHealth(float f) {
+        if(isLocalPlayer)
+            citizenshipHealthController.setHealth((int)f);
     }
 
     public void InitializeDisconnectCrystals(int crystal) {

@@ -150,6 +150,10 @@ public class EnemyMotion : NetworkBehaviour {
                 flyStatus = 1;
                 transform.LookAt(new Vector3(transform.position.x, transform.position.y, -100));
                 StartCoroutine("Rotate");
+                int damageCitizenship = Random.Range(0, 100);
+                if (damageCitizenship < 20) {
+                    NetworkManagerCustom.SingletonNM.AttackCitizenship(1);
+                }
             }
         } 
         else if (flyStatus == 1) {
@@ -183,7 +187,10 @@ public class EnemyMotion : NetworkBehaviour {
     private void launchMissle() {
         skillTimer -= Time.deltaTime;
 
-        if(flyStatus != -1 && flyStatus != 0 && flyStatus != 3)
+        if(flyStatus != -1 && flyStatus != 0)
+            return;
+
+        if(flyStatus == 3 && Mathf.Abs(transform.position.x) > 150)
             return;
 
         if (skillTimer <= 0 && transform.position.z > spaceship.transform.position.z + 50)

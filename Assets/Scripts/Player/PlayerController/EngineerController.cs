@@ -132,6 +132,9 @@ public class EngineerController : PlayerController {
         }
     }
 
+    public void HealCitizenship() {
+        NetworkManagerCustom.SingletonNM.AttackCitizenship(-GetComponent<EngineerSkill1>().heal);
+    }
     #endregion
 
     #region Initialization
@@ -260,6 +263,8 @@ public class EngineerController : PlayerController {
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
         progressBarController = ui.transform.GetChild(7).GetComponent<ProgressBarController>();
+        ui.transform.GetChild(7).GetComponent<EngiCitizenshipController>().engineerController = this;
+        citizenshipHealthController = ui.transform.GetChild(7).GetChild(2).GetComponent<HealthController>();
 
         Transform teammatePanel = ui.transform.GetChild(5);
         for (int i = 0; i < 4; i++)

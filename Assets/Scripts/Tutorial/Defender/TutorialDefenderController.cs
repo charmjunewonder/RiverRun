@@ -349,8 +349,12 @@ public class TutorialDefenderController : MonoBehaviour {
         Vector3 shieldPos = ray.direction.normalized * 8;
 
         GameObject shield = Instantiate(shieldPrefab, shieldPos, Quaternion.identity) as GameObject;
-
+#if UNITY_STANDALONE_WIN
         shield.transform.localScale *= (radius / 30);
+#endif
+#if UNITY_IOS
+        shield.transform.localScale *= (radius / 100);
+#endif
 
         shield.transform.LookAt(-ray.direction.normalized * 20);
 

@@ -6,22 +6,31 @@ public class BossController : EnemyMotion{
 
     private Vector3 newDes;
 
+    private float frozenTime;
+
 	void Start () {
         if (isServer) {
             velocity = -transform.position.normalized;
             skillTimer = 5;
+            frozenTime = -1;
             newDes = new Vector3(Random.Range(-50, 50), Random.Range(-50, 50), 450);
         }
 	}
 	
 	void Update () {
         if (isServer) {
+
+            if (freezeTimer >= 0)
+            {
+                freezeTimer -= Time.deltaTime;
+                return;
+            }
+
             if (transform.position.z > 450)
             {
                 transform.position += velocity;
                 return;
             }
-
             transform.position += (newDes - transform.position).normalized * 0.2f;
 
             if (Vector3.Distance(transform.position, newDes) < 1) {
@@ -73,7 +82,7 @@ public class BossController : EnemyMotion{
     }
 
     public void Freeze(float t) {
-        skillTimer += t;
+        freezeTimer = t;
     }
 
     public void DecreaseBlood(float damage)

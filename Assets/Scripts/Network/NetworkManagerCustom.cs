@@ -1004,6 +1004,21 @@ public class NetworkManagerCustom : NetworkManager {
 
     #region Feiran's Functions
 
+    public void AttackCitizenship(float f) {
+        cizitenshipHealth -= f;
+
+        cizitenshipHealth = Mathf.Clamp(cizitenshipHealth, 0, 10);
+
+        for (int k = 0; k < maxPlayers; k++) {
+            if (gameplayerControllers[k] != null)
+            {
+                PlayerController pc = (PlayerController)gameplayerControllers[k];
+                pc.RpcSetCitizenshipHealth(cizitenshipHealth);
+            }
+        }
+        
+    }
+
     public void AttackPlayer(int index, float damage) {
 
         if (gameplayerControllers[index] != null)
