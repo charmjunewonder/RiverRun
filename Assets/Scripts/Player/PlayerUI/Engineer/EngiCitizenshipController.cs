@@ -9,7 +9,7 @@ public class EngiCitizenshipController : MonoBehaviour {
 
     public void Clicked() {
         if (skill0Controller.IsSkillSelected()) {
-            engineerController.HealCitizenship();
+            engineerController.CmdHealCitizenship();
             skill0Controller.DeslectedSkill();
             skill0Controller.StartCoolDown();
             tpController.NoGlow();

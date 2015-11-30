@@ -52,7 +52,7 @@ public class NetworkManagerCustom : NetworkManager {
     private bool isServer = false;
     private bool hasCreatePlayer = false;
 
-    private float cizitenshipHealth;
+    private float cizitenshipHealth = 10;
 
     void Start()
     {
@@ -1017,6 +1017,8 @@ public class NetworkManagerCustom : NetworkManager {
             }
         }
         
+        //to do  put cizitenshipHealth into your server UI funcion
+
     }
 
     public void AttackPlayer(int index, float damage) {

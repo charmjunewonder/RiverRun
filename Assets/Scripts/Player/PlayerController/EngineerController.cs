@@ -132,7 +132,8 @@ public class EngineerController : PlayerController {
         }
     }
 
-    public void HealCitizenship() {
+    [Command]
+    public void CmdHealCitizenship() {
         NetworkManagerCustom.SingletonNM.AttackCitizenship(-GetComponent<EngineerSkill1>().heal);
     }
     #endregion
