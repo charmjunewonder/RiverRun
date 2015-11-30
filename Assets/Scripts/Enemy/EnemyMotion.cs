@@ -72,12 +72,12 @@ public class EnemyMotion : NetworkBehaviour {
     }
 
     [ClientRpc]
-    void RpcCreateDieParticle() {
+    public void RpcCreateDieParticle() {
         GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
     }
 
     [ClientRpc]
-    void RpcSetFrozenEffect(bool status) {
+    public void RpcSetFrozenEffect(bool status) {
         frozenEffect.SetActive(status);
     }
 

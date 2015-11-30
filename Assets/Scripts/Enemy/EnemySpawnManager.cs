@@ -184,9 +184,16 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     public void Freeze(float t) {
         countDown += t;
+
+        
+
         for (int i = 0; i < transform.childCount; i++){
             Transform tran = transform.GetChild(i);
-            tran.GetComponent<EnemyMotion>().Freeze(t);
+
+            if (tran.tag == "Enemy")
+                tran.GetComponent<EnemyMotion>().Freeze(t);
+            else
+                tran.GetComponent<BossController>().Freeze(t);
 
         }
     }

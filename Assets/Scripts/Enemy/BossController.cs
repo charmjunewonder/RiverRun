@@ -82,6 +82,8 @@ public class BossController : EnemyMotion{
     }
 
     public void Freeze(float t) {
+        frozenEffect.SetActive(true);
+        RpcSetFrozenEffect(true);
         freezeTimer = t;
     }
 
