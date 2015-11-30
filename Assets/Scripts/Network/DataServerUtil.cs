@@ -119,7 +119,7 @@ public class DataServerUtil : MonoBehaviour
                             LeaderBoardPanel.Singleton.personalRecords[i].SetRecord(uname, score, rank, exp, ScoreParameter.CurrentFullExp(rank));
                             Debug.Log(rolename[i] + " " + scores + " " + scores + " " + ranks + " " + exps);
                         }
-                        LeaderBoardPanel.Singleton.ShowTeamPanel();
+                        //LeaderBoardPanel.Singleton.ShowTeamPanel();
                     }
                     else if (result == "fail")
                     {
@@ -202,6 +202,7 @@ public class DataServerUtil : MonoBehaviour
                             Debug.Log(name1 + " " + name2 + " " + name3 + " " + name4 + " " + score);
                         }
                         LeaderBoardPanel.Singleton.ShowTeamPanel();
+                        GetPersonalRecordData();
                     }
                     else if (result == "fail")
                     {
