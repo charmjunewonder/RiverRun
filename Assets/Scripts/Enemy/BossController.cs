@@ -25,7 +25,7 @@ public class BossController : EnemyMotion{
                 freezeTimer -= Time.deltaTime;
                 return;
             }
-
+            
             if (transform.position.z > 450)
             {
                 transform.position += velocity;
@@ -84,6 +84,7 @@ public class BossController : EnemyMotion{
     public void Freeze(float t) {
         frozenEffect.SetActive(true);
         RpcSetFrozenEffect(true);
+        StartCoroutine(CloseEffect(t));
         freezeTimer = t;
     }
 
@@ -122,5 +123,10 @@ public class BossController : EnemyMotion{
     void RpcCreateDieParticle()
     {
         GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
+    }
+
+    IEnumerator CloseEffect(float t) {
+        yield return new WaitForSeconds(t);
+        RpcSetFrozenEffect(false);
     }
 }
