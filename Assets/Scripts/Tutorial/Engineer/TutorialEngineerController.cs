@@ -7,6 +7,8 @@ public class TutorialEngineerController : MonoBehaviour {
 
     public EventSystem e;
 
+    public GameObject shinningText;
+
     public LobbyTutorialController ltController;
     public TutorialTeammatePanelController tpController;
     public CrystalProductionController cpController;
@@ -16,8 +18,12 @@ public class TutorialEngineerController : MonoBehaviour {
     public GameObject[] clickObjects;
     public GameObject[] textObjects;
     public GameObject[] dragObjects;
+    public GameObject[] frames;
 
     public int stage;
+
+    public AudioSource audioSource;
+    public AudioClip[] audioClips;
 
     private int textNum;
 
@@ -25,27 +31,58 @@ public class TutorialEngineerController : MonoBehaviour {
 
 	void Start () {
         textNum = 0;
-	    stage = 0;
+	    stage = -3;
         crystalCounter = 0;
 	}
 	
 	void Update () {
 
-        if (Input.GetMouseButton(0)) {
-
-            if (stage == 0) {
-                clickObjects[0].SetActive(true);
-                textObjects[0].SetActive(true);
-                stage++;
+        if (stage <= 0)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Debug.Log(stage);
+                SetStage(stage);
             }
+        }
 
-            if (stage == 10) {
+        if (stage == 8) {
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetStage(stage);
+            }
+        }
+
+        if (stage == 10) {
+            if (Input.GetMouseButtonDown(0))
+            {
                 ltController.GoToLobbyScene();
             }
         }
 	}
 
     public void SetStage(int index) {
+
+        Debug.Log(stage + " " + index);
+
+        if (stage < 0 && index == stage)
+        {
+            ShowNextText();
+            frames[index + 3].SetActive(true);
+            if (index + 3 != 0)
+                frames[index + 2].SetActive(false);
+            stage++;
+            return;
+        }
+
+        if (stage == 0 && index == 0) {
+            frames[2].SetActive(false);
+            shinningText.SetActive(false);
+            ShowNextText();
+            clickObjects[0].SetActive(true);
+            stage++;
+        }
+
         if (stage == 1 && index == 1) {
 
             clickObjects[0].SetActive(false);
@@ -53,6 +90,7 @@ public class TutorialEngineerController : MonoBehaviour {
 
             for(int i = 1; i <= 4; i++)
                 clickObjects[i].SetActive(true);
+            clickObjects[10].SetActive(true);
 
             tpController.SetGlow();
             stage++;
@@ -64,6 +102,8 @@ public class TutorialEngineerController : MonoBehaviour {
             tpController.NoGlow();
             for (int i = 1; i <= 4; i++)
                 clickObjects[i].SetActive(false);
+            clickObjects[10].SetActive(false);
+
             ShowNextText();
             clickObjects[5].SetActive(true);
 
@@ -141,23 +181,31 @@ public class TutorialEngineerController : MonoBehaviour {
 
             stage++;
 
-            StartCoroutine(AutoNextStage(stage, 6.0f));
+            shinningText.SetActive(true);
 
             return;
         }
 
         if (stage == 8 && index == 8) {
-            
+            shinningText.SetActive(false);
             ShowNextText();
             tmcController.SetPortal(true, "Eric");
             
+            audioSource.clip = audioClips[0];
+            audioSource.Play();
+
             dragObjects[0].SetActive(true);
-            
+            stage++;
             return;
         }
 
         if(stage == 9 && index == 9){
-            dragObjects[1].SetActive(true);
+            dragObjects[0].SetActive(false);
+            ShowNextText();
+
+            audioSource.clip = audioClips[1];
+            audioSource.Play();
+            stage++;
             return;
         }
 
@@ -190,31 +238,4 @@ public class TutorialEngineerController : MonoBehaviour {
         }
     }
 
-    IEnumerator AutoNextStage(int s, float t) {
-        yield return new WaitForSeconds(t);
-        SetStage(s);
-    }
-
-
-    public void CrystalSupported(int num) {
-        if (num == 1) {
-            dragObjects[1].SetActive(false);
-            crystalCounter++;
-        }
-        else {
-            dragObjects[0].SetActive(false);
-            crystalCounter++;
-        }
-
-        if (crystalCounter == 1) {
-            stage++;
-            SetStage(stage);
-        }
-
-        if (crystalCounter == 2) {
-            
-            stage++;
-            StartCoroutine(AutoNextStage(stage, 0.5f));
-        }
-    }
 }

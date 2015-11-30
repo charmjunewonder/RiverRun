@@ -38,6 +38,22 @@ public class UltiCrystalController : MonoBehaviour {
         Clear();
     }
 
+    // For tutorial
+    public void AcceptCrystal(int index)
+    {
+        for (int i = 0; i < crystals.Length; i++)
+        {
+            if (crystals[i] == index)
+            {
+                Debug.Log("Accept Crystal " + index);
+                crystalImages[i].sprite = highlightedCrystalSprites[index];
+                crystalImages[i].material = highlightedMaterial;
+                crystals[i] = -i - 1;
+                return;
+            }
+        }
+    }
+
     public void Clear() {
         
         for (int i = 0; i < crystals.Length; i++) {
@@ -59,6 +75,26 @@ public class UltiCrystalController : MonoBehaviour {
         GetComponent<Image>().fillAmount = 1;
         cancelButton.SetActive(true);
         GenerateUltiCrystalHelper();
+    }
+
+    // For tutorial
+    public void GenerateFixedUltiCrystals() {
+        
+        GetComponent<Image>().fillAmount = 1;
+        cancelButton.SetActive(true);
+
+        crystals = new int[3];
+
+        crystals[0] = 0;
+        crystals[1] = 3;
+        crystals[2] = 3;
+
+        for (int i = 0; i < 3; i++) {
+            crystalImages[i].sprite = crystalSprites[crystals[i]];
+            crystalImages[i].color = new Color(1, 1, 1, 1);
+        }
+
+        
     }
 
     private void GenerateUltiCrystalHelper() {

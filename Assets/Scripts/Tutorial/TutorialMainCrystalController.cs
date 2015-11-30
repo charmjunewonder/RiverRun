@@ -5,6 +5,8 @@ using System.Collections;
 public class TutorialMainCrystalController : MonoBehaviour {
 
     public TutorialEngineerController teController;
+    public TutorialStrikerController tsController;
+    public TutorialDefenderController tdController;
 
     public Sprite[] crystalSprites;
     public Sprite[] portalSprites;
@@ -56,7 +58,7 @@ public class TutorialMainCrystalController : MonoBehaviour {
 
     public void SelectCrystal(int slot_num)
     {
-        if (slot_num == 1 || slot_num == 2)
+        if (teController != null && (slot_num == 1 || slot_num == 2))
         {
             transform.GetChild(slot_num).GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
 
@@ -68,6 +70,20 @@ public class TutorialMainCrystalController : MonoBehaviour {
             draggedImage.color = new Color(1, 1, 1, 1);
 
         }
+
+        if ((tsController != null || tdController != null) && slot_num != 3)
+        {
+            transform.GetChild(slot_num).GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+
+            current_slot = slot_num;
+            current_type = slot_num;
+
+            draggedImage.sprite = crystalSprites[slot_num];
+            draggedImage.transform.position = Input.mousePosition;
+            draggedImage.color = new Color(1, 1, 1, 1);
+
+        }
+
     }
 
 
@@ -87,7 +103,9 @@ public class TutorialMainCrystalController : MonoBehaviour {
     {
         if (current_type != -1)
         {
-            teController.CrystalSupported(current_type);
+            if(teController != null && teController.stage < 8)
+                return;
+
             current_slot = -1;
             current_type = -1;
             draggedImage.color = new Color(1, 1, 1, 0);

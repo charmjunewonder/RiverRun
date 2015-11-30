@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections;
 
-public class TutorialStrikerController : MonoBehaviour {
+public class TutorialDefenderController : MonoBehaviour {
+
 
     public Camera cam;
+    public GameObject shieldPrefab;
     public GameObject disintegrationPrefab;
-    
-    
+
     public int stage;
 
 
@@ -20,6 +20,7 @@ public class TutorialStrikerController : MonoBehaviour {
 
     public GameObject shiningText;
     public GameObject enemyManager;
+    public GameObject enemies;
     public Transform enemyUITarget;
 
     public TutorialMainCrystalController tmcController;
@@ -31,52 +32,57 @@ public class TutorialStrikerController : MonoBehaviour {
 
     private int textNum;
 
-	void Start () {
+    private Vector3 shieldPoint1, shieldPoint2;
+
+    void Start()
+    {
         textNum = 0;
         stage = 0;
-	}
-	
-	void Update () {
-        if (stage <= 4) { 
-	        if (Input.GetMouseButtonDown(0)) {
+    }
+
+    void Update()
+    {
+        if (stage <= 3)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
                 SetStage(stage);
             }
         }
 
-        if (stage >= 4 && stage < 6) {
-            for (int i = 0; i < enemyManager.transform.childCount; i++) {
+        if (stage >= 4 && stage < 6)
+        {
+            for (int i = 0; i < enemyManager.transform.childCount; i++)
+            {
                 Transform enemy = enemyManager.transform.GetChild(i);
                 Vector3 screenPoint = cam.WorldToScreenPoint(enemy.position);
                 Transform target = enemyUITarget.GetChild(i);
                 target.position = screenPoint;
                 target.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-                Image image = target.GetChild(0).GetComponent<Image>();
-                image.color = new Color(1, 1, 1, 1);
             }
         }
 
-        if(stage == 5){
+        if (stage == 4)
+        {
 #if UNITY_STANDALONE_WIN
             if (Input.GetMouseButtonDown(0))
             {
-                Transform enemy = enemyManager.transform.GetChild(2);
+                Transform enemy = enemyManager.transform.GetChild(0);
                 Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                 Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                 Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
+                Debug.Log("distance " + Vector2.Distance(enemyPos2d, mousePos2d));
+
                 if (Vector2.Distance(enemyPos2d, mousePos2d) < 30)
                 {
                     ShowNextText();
-                    enemyUITarget.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
 
-                    if (enemyUITarget.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount <= 0)
-                    {
-                        enemyUITarget.GetChild(2).GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-                        enemyUITarget.GetChild(2).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-                        Destroy(enemyManager.transform.GetChild(2).gameObject);
-                        Instantiate(disintegrationPrefab, enemyManager.transform.GetChild(2).position, Quaternion.identity);
-                        SetStage(++stage);
-                    }
+                    enemyUITarget.transform.GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                    Destroy(enemyManager.transform.GetChild(0).gameObject);
+
+                    SetStage(stage);
+                    
                 }
             }
 #endif
@@ -84,24 +90,49 @@ public class TutorialStrikerController : MonoBehaviour {
             if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
 
-                Transform enemy = enemyManager.transform.GetChild(2);
+                Transform enemy = enemyManager.transform.GetChild(0);
                 Vector3 camPos = cam.WorldToScreenPoint(enemy.position);
                 Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                 Vector2 mousePos2d = new Vector2(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y);
 
-                if (Vector2.Distance(enemyPos2d, mousePos2d) < 80) {
-                    enemyUITarget.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
+                if (Vector2.Distance(enemyPos2d, mousePos2d) < 30)
+                {
                     ShowNextText();
-                    if (enemyUITarget.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount <= 0) {
-                        SetStage(++stage);
-                    }
+
+                    enemyUITarget.transform.GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                    Destroy(enemyManager.transform.GetChild(0).gameObject);
+
+                    SetStage(stage);
+                    
                 }
             }
 #endif
         }
 
+        if (stage == 5) {
+#if UNITY_STANDALONE_WIN
+            if (Input.GetMouseButtonDown(0)) {
+                shieldPoint1 = Input.mousePosition;
+            }
 
-        if (stage == 8) {
+            if (Input.GetMouseButtonUp(0)) {
+                if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 30) {
+                    Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
+                    float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
+                    radius = radius <= 100 ? radius : 100;
+                    Ray ray = cam.ScreenPointToRay(shieldCenter);
+                    createShield(ray, radius);
+                    SetStage(++stage);
+                }
+            }
+#endif
+
+
+
+        }
+
+        if (stage == 8)
+        {
             if (Input.GetMouseButtonDown(0))
             {
                 SetStage(stage);
@@ -113,11 +144,12 @@ public class TutorialStrikerController : MonoBehaviour {
             if (Input.GetMouseButtonDown(0))
             {
                 SetStage(stage);
-                
+
             }
         }
 
-        if (stage == 13 || stage == 14) {
+        if (stage == 13 || stage == 14)
+        {
             if (Input.GetMouseButtonDown(0))
             {
                 ShowNextText();
@@ -126,27 +158,30 @@ public class TutorialStrikerController : MonoBehaviour {
             }
         }
 
-        if (stage == 15) {
+        if (stage == 15)
+        {
             if (Input.GetMouseButtonDown(0))
             {
                 ltController.GoToLobbyScene();
             }
         }
 
-	}
+    }
 
 
 
-    public void SetStage(int index) {
-        
+    public void SetStage(int index)
+    {
+
         Debug.Log(stage + " " + index);
 
-        if (stage < 3) {
-            
+        if (stage < 3)
+        {
+
             ShowNextText();
             frames[index].SetActive(true);
-            if(index != 0)
-                frames[index-1].SetActive(false);
+            if (index != 0)
+                frames[index - 1].SetActive(false);
             stage++;
             return;
         }
@@ -155,6 +190,9 @@ public class TutorialStrikerController : MonoBehaviour {
         {
             ShowNextText();
             frames[2].SetActive(false);
+            enemyManager.GetComponent<TutorialGenerateAttack>().GenerateAttack();
+            clickObjects[0].SetActive(true);
+            shiningText.SetActive(false);
             stage++;
             return;
         }
@@ -162,16 +200,19 @@ public class TutorialStrikerController : MonoBehaviour {
         if (stage == 4 && index == 4)
         {
             ShowNextText();
-            clickObjects[0].SetActive(true);
-            shiningText.SetActive(false);
+            clickObjects[0].SetActive(false);
+            dragObjects[3].SetActive(true);
+            dragObjects[4].SetActive(true);
             stage++;
             return;
         }
 
         if (stage == 6 && index == 6)
         {
-             clickObjects[0].SetActive(false);
-             clickObjects[1].SetActive(true);
+            ShowNextText();
+            dragObjects[3].SetActive(false);
+            dragObjects[4].SetActive(false);
+            clickObjects[1].SetActive(true);
             stage++;
             return;
         }
@@ -186,7 +227,7 @@ public class TutorialStrikerController : MonoBehaviour {
         }
 
         if (stage == 8 && index == 8)
-        { 
+        {
             ShowNextText();
             dragObjects[0].SetActive(true);
             shiningText.SetActive(false);
@@ -198,7 +239,8 @@ public class TutorialStrikerController : MonoBehaviour {
             return;
         }
 
-        if (stage == 9 && index == 9) {
+        if (stage == 9 && index == 9)
+        {
             ShowNextText();
             frames[3].SetActive(false);
             dragObjects[0].SetActive(false);
@@ -208,20 +250,27 @@ public class TutorialStrikerController : MonoBehaviour {
             return;
         }
 
-        if (stage == 10 && index == 10) {
+        if (stage == 10 && index == 10)
+        {
             ShowNextText();
 
-            enemyUITarget.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
-            enemyUITarget.GetChild(1).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
+            for (int i = 0; i < enemyUITarget.childCount; i++) {
+                enemyUITarget.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+            }
+
+            for (int i = enemyManager.transform.childCount - 1; i >= 0 ; i--) {
+                Destroy(enemyManager.transform.GetChild(i).gameObject);
+            }
 
             shiningText.SetActive(true);
             stage++;
             return;
         }
 
-        if (stage == 11 && index == 11) {
+        if (stage == 11 && index == 11)
+        {
             ShowNextText();
-            
+
             tmcController.SetPortal(true, "Eric");
 
             audioSource.clip = audioClips[0];
@@ -233,21 +282,17 @@ public class TutorialStrikerController : MonoBehaviour {
             return;
         }
 
-        if (stage == 12 && index == 9) {
+        if (stage == 12 && index == 9)
+        {
             dragObjects[1].SetActive(false);
             audioSource.clip = audioClips[1];
             audioSource.Play();
 
-            enemyUITarget.GetChild(0).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
-            enemyUITarget.GetChild(1).GetChild(0).GetComponent<Image>().fillAmount -= 0.5f;
-            
-            enemyUITarget.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-            enemyUITarget.GetChild(1).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-            enemyUITarget.GetChild(0).GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-            enemyUITarget.GetChild(1).GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+            for(int i = 0; i < enemies.transform.childCount; i++)
+                Instantiate(disintegrationPrefab, enemies.transform.GetChild(i).position, Quaternion.identity);
 
-            Instantiate(disintegrationPrefab, enemyManager.transform.GetChild(0).position, Quaternion.identity);
-            Instantiate(disintegrationPrefab, enemyManager.transform.GetChild(1).position, Quaternion.identity);
+            for (int i = enemies.transform.childCount - 1; i >= 0; i--)
+                Destroy(enemies.transform.GetChild(i).gameObject);
 
             ShowNextText();
             stage++;
@@ -263,7 +308,8 @@ public class TutorialStrikerController : MonoBehaviour {
     }
 
 
-    IEnumerator WaitForCrystal(){
+    IEnumerator WaitForCrystal()
+    {
         audioSource.clip = audioClips[2];
         audioSource.Play();
         yield return new WaitForSeconds(3);
@@ -276,6 +322,25 @@ public class TutorialStrikerController : MonoBehaviour {
         ucController.AcceptCrystal(3);
         ucController.Clear();
         SetStage(10);
+    }
+
+    private void createShield(Ray ray, float radius) {
+        Vector3 shieldPos = ray.direction.normalized * 8;
+
+        GameObject shield = Instantiate(shieldPrefab, shieldPos, Quaternion.identity) as GameObject;
+
+        shield.transform.localScale *= (radius / 30);
+
+        shield.transform.LookAt(-ray.direction.normalized * 20);
+
+        StartCoroutine(DestroyShield(shield));
+    }
+
+    IEnumerator DestroyShield(GameObject g) {
+        yield return new WaitForSeconds(3);
+
+        Destroy(g);
+
     }
 
 }

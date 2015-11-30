@@ -5,26 +5,27 @@ public class TutorialDragController : MonoBehaviour {
 
     public Vector3 start, end;
 
-    protected Vector3 restart;
-    protected Vector3 speed;
+    public Vector3 restart;
+    public Vector3 speed;
 
-    float timer;
+    public float timer;
+    private float t;
 
 	void Start () {
-        timer = 1;
+        t = timer;
 	    speed = (end - start).normalized;
         restart = transform.position;
 	}
 	
 	void Update () {
 
-        timer -= Time.deltaTime;
+        t -= Time.deltaTime;
 
-        transform.position += speed * 0.5f;
+        transform.position += speed;
 
-        if (timer <= 0) {
+        if (t <= 0) {
             transform.position = restart;
-            timer = 1f;
+            t = timer;
         }
 	}
 }
