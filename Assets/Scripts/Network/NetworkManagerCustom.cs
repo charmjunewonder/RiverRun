@@ -1004,6 +1004,22 @@ public class NetworkManagerCustom : NetworkManager {
 
     #region Feiran's Functions
 
+    public void ClosePortal() {
+        GameObject portal = GameObject.Find("newPortal-blue");
+        for (int i = 1; i < portal.transform.childCount; i++)
+        {
+            portal.transform.GetChild(i).gameObject.SetActive(false);
+        }
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null)
+            {
+                PlayerController pc = (PlayerController)gameplayerControllers[k];
+                pc.RpcClosePortal();
+            }
+        }
+    }
+
     public void AttackCitizenship(float f) {
         cizitenshipHealth -= f;
 
@@ -1075,7 +1091,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void EndGame() {
         Debug.Log("EndGame");
-        Invoke("GameEnded", 2.0f);
+        Invoke("GameEnded", 5.0f);
     }
 
     private void GameEnded() {
