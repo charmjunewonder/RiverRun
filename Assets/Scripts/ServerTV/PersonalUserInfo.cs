@@ -18,15 +18,6 @@ public class PersonalUserInfo : MonoBehaviour {
         rankText.text = ""+rank;
         randSlider.value = experience * 1.0f / fullExp;
 
-        string scoreString = "";
-        while (score != 0)
-        {
-
-            int temp = score % 1000;
-            score /= 1000;
-            scoreString = temp + "," + scoreString;
-            Debug.Log(scoreString);
-        }
-        scoreText.text = scoreString;
+        scoreText.text = System.String.Format("{0:n0}", score);
     }
 }

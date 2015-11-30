@@ -2,7 +2,8 @@
 
 public class ScoreParameter
 {
-
+    public static float Personal_Health_Penalty_Persent = 0.01f;
+    public static float Citizen_Health_Penalty_Persent = 0.02f;
     public static int CurrentFullExp(int rank)
     {
         if (rank < 0) return 100;

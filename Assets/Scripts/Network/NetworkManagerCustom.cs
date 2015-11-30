@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using UnityStandardAssets.Network;
 using System.Collections.Generic;
 
-public enum NetworkMode { Level, Lobby, Game };
+public enum NetworkMode { Level, Lobby, Game, Complete };
 //public enum LobbyMode { Level, Role };
 
 public class NetworkManagerCustom : NetworkManager {
@@ -383,11 +383,12 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
         SetupEngineerTeammateInfo();
-        
         currentMode = NetworkMode.Game;
         ResetLobbyPlayerArray();
         ServerChangeScene(selectedLevel);
         SetServerGamePanel();
+        StartCoroutine(HealthPenalty());
+
     }
 
     private void SetupEngineerTeammateInfo() {
@@ -579,7 +580,9 @@ public class NetworkManagerCustom : NetworkManager {
                     }
                 }
                 break;
-
+            case NetworkMode.Complete:
+                Debug.Log("OnServerDisconnect Complete ");
+                break;
         }
     }
 
@@ -688,6 +691,11 @@ public class NetworkManagerCustom : NetworkManager {
                     em.errorMessage = "No Existing User on the Server";
                     NetworkServer.SendToClient(conn.connectionId, ErrorMessage.MsgType, em);
                 }
+                break;
+            case NetworkMode.Complete:
+                ErrorMessage eem = new ErrorMessage();
+                eem.errorMessage = "Game Ended!";
+                NetworkServer.SendToClient(conn.connectionId, ErrorMessage.MsgType, eem);
                 break;
         }
 
@@ -910,6 +918,8 @@ public class NetworkManagerCustom : NetworkManager {
         }
         StopCoroutine("CheckLevelSelect");
         StopCoroutine("CheckLobbyReady");
+        StopCoroutine(HealthPenalty());
+
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);
         serverMissionPanel.gameObject.SetActive(false);
@@ -1009,6 +1019,29 @@ public class NetworkManagerCustom : NetworkManager {
         }
     }
 
+    IEnumerator HealthPenalty()
+    {
+        while (true)
+        {
+            for (int k = 0; k < maxPlayers; k++)
+            {
+                if (gameplayerControllers[k] != null)
+                {
+                    PlayerController pc = (PlayerController)gameplayerControllers[k];
+                    if (pc.GetComponent<PlayerInfo>().getHealth() == 0)
+                    {
+                        int pernalty = (int)(pc.score * ScoreParameter.Personal_Health_Penalty_Persent);
+                        pc.score -= pernalty;
+                    }
+                }
+                //else if (disconnectedPlayerControllers[k] != null)
+                //{
+
+                //}
+            }
+            yield return new WaitForSeconds(1);
+        }
+    }
     
     public void AddProgress(float perc) {
         pbController.SetProgress(perc);
@@ -1027,19 +1060,21 @@ public class NetworkManagerCustom : NetworkManager {
     }
 
     private void GameEnded() {
-
+        currentMode = NetworkMode.Complete;
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);
         int totalScore = 0;
+        StopCoroutine(HealthPenalty());
+
         ArrayList names = new ArrayList();
         for (int k = 0; k < maxPlayers; k++)
         {
             if (gameplayerControllers[k] != null )
             {
                 PlayerController gpc = (PlayerController)gameplayerControllers[k];
-                int score = ScoreParameter.CalcuateScore(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter);
+                //int score = ScoreParameter.CalcuateScore(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter);
                 int currentFullExp = ScoreParameter.CurrentFullExp(gpc.rank);
-                int cexp = gpc.exp + score;
+                int cexp = gpc.exp + gpc.score;
                 int crank = gpc.rank;
                 while (cexp > currentFullExp)
                 {

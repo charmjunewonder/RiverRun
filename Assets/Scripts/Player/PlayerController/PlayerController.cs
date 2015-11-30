@@ -403,7 +403,7 @@ public class PlayerController : NetworkBehaviour {
                     enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
                 }
                 skill2Counter++;
-                CalculateScore();
+                CalculateScore(0, 1, 0);
                 strikerUlti.GetComponent<strikerUltimate>().Succeed();
                 RpcStrikerUlti(1);
                 
@@ -421,7 +421,7 @@ public class PlayerController : NetworkBehaviour {
                 FireLightening(enemy.transform.position);
 
                 skill1Counter++;
-                CalculateScore();
+                CalculateScore(1, 0, 0);
             }
         }
         else {
@@ -433,7 +433,7 @@ public class PlayerController : NetworkBehaviour {
             enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
             skill2Counter++;
-            CalculateScore();
+            CalculateScore(0, 1, 0);
             DoneUlti();
         }
         
@@ -509,7 +509,7 @@ public class PlayerController : NetworkBehaviour {
     {
         GameObject obj = NetworkServer.FindLocalObject(netID);
         skill1Counter++;
-        CalculateScore();
+        CalculateScore(1, 0, 0);
         NetworkServer.Destroy(obj);
     }
 
@@ -759,7 +759,7 @@ public class PlayerController : NetworkBehaviour {
         if (feedback)
         {
             plc.supportCounter++;
-            plc.CalculateScore();
+            plc.CalculateScore(0, 0, 1);
         }
     }
 
@@ -961,7 +961,7 @@ public class PlayerController : NetworkBehaviour {
         if (isLocalPlayer) {
             Debug.Log("Mission Complete Local");
             ui.SetActive(false);
-            int score = ScoreParameter.CalcuateScore(s1Counter, s2Counter, suCounter);
+            //int score = ScoreParameter.CalcuateScore(s1Counter, s2Counter, suCounter);
             int currentFullExp = ScoreParameter.CurrentFullExp(crank);
             
             int roleIndex = 0;
@@ -985,12 +985,13 @@ public class PlayerController : NetworkBehaviour {
         rank = newrank;
         exp = newexp;
     }
+
     #endregion
 
     [Server]
-    public void CalculateScore()
+    public void CalculateScore(int s1c, int s2c, int stc)
     {
-        score = ScoreParameter.CalcuateScore(skill1Counter, skill2Counter, supportCounter);
+        score += ScoreParameter.CalcuateScore(s1c, s2c, stc);
     }
 
     public void OnScoreChanged(int ns)
@@ -1009,4 +1010,6 @@ public class PlayerController : NetworkBehaviour {
         if (rankText != null)
             rankText.text = ""+score;
     }
+
+
 }

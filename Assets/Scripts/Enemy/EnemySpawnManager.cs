@@ -35,7 +35,7 @@ public class EnemySpawnManager : NetworkBehaviour {
             transform.position = new Vector3(0, 0, 0);
             waves = 0;
             countDown = 5.0f;
-
+            currentTime = 0;
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
             int input_rank = 0;

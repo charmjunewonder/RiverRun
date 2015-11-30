@@ -24,7 +24,7 @@ public class DataServerUtil : MonoBehaviour
 
     public void GetLeaderBoard()
     {
-        Debug.Log("OnLoginPressed ");
+        Debug.Log("GetLeaderBoard ");
         string domain = ServerUtils.domainName + ":80";
         string storedDomain = PlayerPrefs.GetString("DataIp");
         if (ServerUtils.CheckIpAddress(storedDomain))
@@ -34,6 +34,100 @@ public class DataServerUtil : MonoBehaviour
         string serverUrl = ServerUtils.urlHeader + domain + "/getLeaderBoard.php";
 
         StartCoroutine(LeaderBoardData(serverUrl));
+    }
+
+    public void GetPersonalRecordData()
+    {
+        Debug.Log("GetPersonalRecordData ");
+        string domain = ServerUtils.domainName + ":80";
+        string storedDomain = PlayerPrefs.GetString("DataIp");
+        if (ServerUtils.CheckIpAddress(storedDomain))
+        {
+            domain = storedDomain + ":80";
+        }
+        string serverUrl = ServerUtils.urlHeader + domain + "/getPersonalRecord.php";
+
+        StartCoroutine(PersonalRecordData(serverUrl));
+    }
+
+    IEnumerator PersonalRecordData(string serverUrl)
+    {
+        WWWForm form = new WWWForm();
+
+        DateTime thisDay = DateTime.Today.AddDays(-7);
+        string date = thisDay.Year + "-" + thisDay.Month + "-" + thisDay.Day;
+        form.AddField("date", date);
+
+        // Create a download object
+        WWW download = new WWW(serverUrl, form);
+        Debug.Log(serverUrl);
+        // Wait until the download is done
+        yield return download;
+
+        if (download.error != null)
+            Debug.Log("fail to request..." + download.error);
+        else
+        {
+            if (download.isDone)
+            {
+                Debug.Log("OK - - " + download.text);
+
+                string ex = @"<result>[\S\s\t]*?</result>";
+                Match m = Regex.Match(download.text, ex);
+                if (m.Success)
+                {
+                    string result = m.Value;
+                    result = result.Substring(result.IndexOf(">") + 1, result.LastIndexOf("<") - result.IndexOf(">") - 1).Trim();
+                    if (result == "success")
+                    {
+                        Debug.Log("get leader board data success");
+                        //<defender><n>Emily</n><s>100</s><r>3</r><e>100</e><defender>
+                        string[] rolename = { "striker", "defender", "engineer" };
+                        for (int i = 0; i < 3; i++)
+                        {
+                            ex = @"<" + rolename[i] + @">.+</" + rolename[i] + @">";
+                            m = Regex.Match(download.text, ex);
+                            string record = m.Value;
+                            if (record.Length == 0) continue;
+                            ex = @"<n>.+</n>";
+                            m = Regex.Match(record, ex);
+                            string uname = m.Value;
+                            uname = uname.Replace("<n>", "");
+                            uname = uname.Replace("</n>", "");
+
+                            ex = @"<s>.+</s>";
+                            m = Regex.Match(record, ex);
+                            string scores = m.Value;
+                            scores = scores.Replace("<s>", "");
+                            scores = scores.Replace("</s>", "");
+                            int score = int.Parse(scores);
+
+                            ex = @"<r>.+</r>";
+                            m = Regex.Match(record, ex);
+                            string ranks = m.Value;
+                            ranks = ranks.Replace("<r>", "");
+                            ranks = ranks.Replace("</r>", "");
+                            int rank = int.Parse(ranks);
+
+                            ex = @"<e>.+</e>";
+                            m = Regex.Match(record, ex);
+                            string exps = m.Value;
+                            exps = exps.Replace("<e>", "");
+                            exps = exps.Replace("</e>", "");
+                            int exp = int.Parse(exps);
+
+                            LeaderBoardPanel.Singleton.personalRecords[i].SetRecord(uname, score, rank, exp, ScoreParameter.CurrentFullExp(rank));
+                            Debug.Log(rolename[i] + " " + scores + " " + scores + " " + ranks + " " + exps);
+                        }
+                        LeaderBoardPanel.Singleton.ShowTeamPanel();
+                    }
+                    else if (result == "fail")
+                    {
+                        Debug.Log("get leader board data fail");
+                    }
+                }
+            }
+        }
     }
 
     IEnumerator LeaderBoardData(string serverUrl)

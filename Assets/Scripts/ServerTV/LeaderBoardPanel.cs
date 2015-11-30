@@ -36,9 +36,10 @@ public class LeaderBoardPanel : MonoBehaviour {
     {
         teamPanel.SetActive(false);
         personalPanel.SetActive(true);
-        personalRecords[0].SetRecord("Eric", 1350, 13, 50, 100);
-        personalRecords[1].SetRecord("Feiran", 2350, 15, 70, 100);
-        personalRecords[2].SetRecord("Zhen", 3350, 16, 30, 100);
+
+        //personalRecords[0].SetRecord("Eric", 1350, 13, 50, 100);
+        //personalRecords[1].SetRecord("Feiran", 2350, 15, 70, 100);
+        //personalRecords[2].SetRecord("Zhen", 3350, 16, 30, 100);
 
     }
 
