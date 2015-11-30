@@ -1018,7 +1018,7 @@ public class NetworkManagerCustom : NetworkManager {
         }
         
         //to do  put cizitenshipHealth into your server UI funcion
-
+        sGamePanel.SetCitizenShipHealth((int)cizitenshipHealth);
     }
 
     public void AttackPlayer(int index, float damage) {

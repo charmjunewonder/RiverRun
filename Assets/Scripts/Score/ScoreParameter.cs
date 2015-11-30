@@ -12,15 +12,15 @@ public class ScoreParameter
     public static int Defender_Skill1_Score = 1;
     public static int Defender_Util_Score = 15;
 
-    public static int Engineer_Skill1_Score = 1;
-    public static int Engineer_Skill2_Score = 4;
+    public static int Engineer_Skill1_Score = 3;
+    public static int Engineer_Skill2_Score = 5;
 
     public static int Support_Score = 3;
 
     public static int CurrentFullExp(int rank)
     {
         if (rank < 0) return 100;
-        return (rank - 1) * 30 + 100;
+        return rank * rank * 15 + 100 * rank;
     }
 
     public static int CalcuateScore(int skill1Counter, int skill2Counter, int supportCounter, int i)

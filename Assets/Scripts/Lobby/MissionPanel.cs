@@ -52,7 +52,7 @@ public class MissionPanel : MonoBehaviour {
         {
             case PlayerRole.Striker:
                 userPanel.sprite = userPanelSprite[0];
-                skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Enemy's Spaceships.";
+                skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Times.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
                 supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;

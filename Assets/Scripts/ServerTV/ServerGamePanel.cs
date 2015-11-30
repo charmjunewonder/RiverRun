@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class ServerGamePanel : MonoBehaviour {
     public ServerPlayerInfo[] playerInfos;
-
+    public ServerCitizenShip citizenShipHealth;
 	// Use this for initialization
 	void Start () {
 	
@@ -20,5 +20,10 @@ public class ServerGamePanel : MonoBehaviour {
                 spi.gameObject.SetActive(false);
             }
         }
+    }
+
+    public void SetCitizenShipHealth(int health)
+    {
+        citizenShipHealth.SetHealth(health);
     }
 }
