@@ -394,9 +394,14 @@ public class PlayerController : NetworkBehaviour {
         if (role == PlayerRole.Striker) {
             if (enemyIndex == -1)
             {
+                float d = playerInfo.getSkill(skillIndex).damage;
                 for (int i = 0; i < enemyUIManager.transform.childCount; i++)
                 {
-                    enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                    Transform enemy = enemyUIManager.transform.GetChild(i);
+                    if (enemy.tag == "Enemy")
+                        enemy.GetComponent<EnemyMotion>().DecreaseBlood(d);
+                    else
+                        enemy.GetComponent<BossController>().DecreaseBlood(d);
                 }
                 skill2Counter++;
                 score += ScoreParameter.Stricker_Util_Score;
@@ -423,6 +428,7 @@ public class PlayerController : NetworkBehaviour {
             }
         }
         else {
+            DoneUlti();
             RpcDefenderUlti(1);
             defenderUlti.GetComponent<defenderUltimate>().Succeed();
             float freezeTime = GetComponent<StrikerSkill2>().damage;
@@ -432,7 +438,7 @@ public class PlayerController : NetworkBehaviour {
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
             skill2Counter++;
             score += ScoreParameter.Defender_Util_Score;
-            DoneUlti();
+            
             AudioController.Singleton.PlayStrickerUtliExplosionSound();
 
         }
@@ -601,9 +607,6 @@ public class PlayerController : NetworkBehaviour {
                 defenderUlti.GetComponent<defenderUltimate>().TriggerUlti();
                 RpcDefenderUlti(-2);
             }
-                
-
-
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++) {
                 if (NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
                 {
@@ -661,8 +664,6 @@ public class PlayerController : NetworkBehaviour {
 
     public void DoneUlti() {
         if (isServer) {
-            AudioController.Singleton.StopStrickerUtliStartSound();
-
             UltiController.setUltiEnchanting(false);
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
             {
@@ -671,6 +672,8 @@ public class PlayerController : NetworkBehaviour {
                     ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcUnlockUlti();
                 }
             }
+
+            AudioController.Singleton.StopStrickerUtliStartSound();
         }
     }
 
@@ -910,6 +913,7 @@ public class PlayerController : NetworkBehaviour {
     protected void initializeData() {
         playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
         Debug.Log("playerParameter " + playerParameter.maxHp);
+        GetComponent<PlayerInfo>().max_health = playerParameter.maxHp;
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 
         GetComponent<StrikerSkill1>().coolDown = playerParameter.coolingDown_1;
