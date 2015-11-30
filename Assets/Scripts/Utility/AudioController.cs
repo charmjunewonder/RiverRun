@@ -52,7 +52,7 @@ public class AudioController : MonoBehaviour {
     public void PlayBossComing()
     {
         PlaySound(menuAus, bossComeSound);
-        Invoke("StopBossComing", 8);
+        Invoke("StopBossComing", 12);
     }
 
     public void StopBossComing()
