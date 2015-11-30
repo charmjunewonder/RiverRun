@@ -854,7 +854,7 @@ public class PlayerController : NetworkBehaviour {
     void OnLevelWasLoaded(int level)
     {
         Debug.Log("OnLevelWasLoaded");
-        if (level == 1)
+        if (level == 2)
         {
             initializeData();
 
@@ -863,7 +863,6 @@ public class PlayerController : NetworkBehaviour {
                 //if(level != 0)
                 //ClientScene.Ready(connectionToServer);
                 isInGame = true;
-                Debug.Log("Slot " + slot);
                 if (role == PlayerRole.Striker)
                     cam.cullingMask = (1 << (slot + 8)) | 1 | 1 << 13 | 1 << 12;
                 InitializeCrystal();
