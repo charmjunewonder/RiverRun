@@ -9,6 +9,11 @@ public class LobbyTutorialController : MonoBehaviour {
     public Image playRoleImage;
     public LobbyInfoPanel infoPanel;
     public GameObject lobbyPanel;
+
+    public GameObject strikerUI;
+    public GameObject defenderUI;
+    public GameObject engineerUI;
+    private GameObject selectedUI;
 	// Use this for initialization
 	void Start () {
         ownRole = PlayerRole.Unselected;
@@ -34,12 +39,14 @@ public class LobbyTutorialController : MonoBehaviour {
     {
         ownRole = PlayerRole.Striker;
         playRoleImage.sprite = roleSprites[0];
+        selectedUI = strikerUI;
     }
 
     public void OnChooseDefender()
     {
         ownRole = PlayerRole.Defender;
         playRoleImage.sprite = roleSprites[2];
+        selectedUI = defenderUI;
 
     }
 
@@ -47,6 +54,7 @@ public class LobbyTutorialController : MonoBehaviour {
     {
         ownRole = PlayerRole.Engineer;
         playRoleImage.sprite = roleSprites[1];
+        selectedUI = engineerUI;
 
     }
 
@@ -59,7 +67,8 @@ public class LobbyTutorialController : MonoBehaviour {
             return;
         }
         lobbyPanel.SetActive(false);
-        //TODO:
+        selectedUI.SetActive(true);
+
     }
 
     #endregion
