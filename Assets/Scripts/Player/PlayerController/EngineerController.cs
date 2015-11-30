@@ -116,7 +116,7 @@ public class EngineerController : PlayerController {
         {
             plc.RpcAcceptCrystalFromEngineer(crystal);
             skill2Counter++;
-            CalculateScore(0, 1, 0);
+            score += ScoreParameter.Engineer_Skill2_Score;
         }
     }
 
@@ -128,7 +128,7 @@ public class EngineerController : PlayerController {
         {
             plc.Damage(-GetComponent<EngineerSkill1>().heal);
             skill1Counter++;
-            CalculateScore(1, 0, 0);
+            score += ScoreParameter.Engineer_Skill1_Score;
         }
     }
 

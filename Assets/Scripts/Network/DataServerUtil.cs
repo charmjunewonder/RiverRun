@@ -19,7 +19,7 @@ public class DataServerUtil : MonoBehaviour
         //SendTeamRecord(names, 1000);
 
         //GetLeaderBoard();
-
+        //SendPersonalRecord("eric", 100, 4, "striker", 100);
     }
 
     public void GetLeaderBoard()
@@ -324,6 +324,64 @@ public class DataServerUtil : MonoBehaviour
                     else if (result == "fail")
                     {
                         Debug.Log("update data fail");
+                    }
+                }
+            }
+        }
+    }
+
+    public void SendPersonalRecord(string uname, int score, int rank, string role, int exp)
+    {
+        string domain = ServerUtils.domainName + ":80";
+        string storedDomain = PlayerPrefs.GetString("DataIp");
+        if (ServerUtils.CheckIpAddress(storedDomain))
+        {
+            domain = storedDomain + ":80";
+        }
+        string serverUrl = ServerUtils.urlHeader + domain + "/sendPersonalScore.php";
+
+        StartCoroutine(SendPersonalRecordData(uname, score, rank, role, exp, serverUrl));
+    }
+
+    IEnumerator SendPersonalRecordData(string uname, int score, int rank, string role, int exp, string serverUrl)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("name", uname);
+        form.AddField("score", score);
+        form.AddField("rank", rank);
+        form.AddField("role", role);
+        form.AddField("exp", exp);
+        DateTime thisDay = DateTime.Today;
+        string date = thisDay.Year + "-" + thisDay.Month + "-" + thisDay.Day;
+        form.AddField("date", date);
+
+        // Create a download object
+        WWW download = new WWW(serverUrl, form);
+        Debug.Log(serverUrl);
+        // Wait until the download is done
+        yield return download;
+
+        if (download.error != null)
+            Debug.Log("fail to request..." + download.error);
+        else
+        {
+            if (download.isDone)
+            {
+                Debug.Log("OK - - " + download.text);
+
+                string ex = @"<rank>[\S\s\t]*?</rank>";
+                Match m = Regex.Match(download.text, ex);
+                if (m.Success)
+                {
+                    string result = m.Value;
+                    result = result.Substring(result.IndexOf(">") + 1, result.LastIndexOf("<") - result.IndexOf(">") - 1).Trim();
+                    if (result == "success")
+                    {
+                        Debug.Log("send personal data success");
+                    }
+                    else if (result == "fail")
+                    {
+                        Debug.Log("send personal data fail");
                     }
                 }
             }

@@ -1087,6 +1087,7 @@ public class NetworkManagerCustom : NetworkManager {
                 gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter, crank, cexp);
                 totalScore += gpc.skill1Counter + gpc.skill2Counter;
                 names.Add(gpc.username);
+                DataServerUtil.Singleton.SendPersonalRecord(gpc.username, gpc.score, crank, gpc.role.ToString().ToLower(), cexp);
             }
         }
         totalScore += (600 - EnemySpawnManager.currentTime) * 10;

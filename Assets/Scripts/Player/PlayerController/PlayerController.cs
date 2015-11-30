@@ -403,7 +403,7 @@ public class PlayerController : NetworkBehaviour {
                     enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
                 }
                 skill2Counter++;
-                CalculateScore(0, 1, 0);
+                score += ScoreParameter.Stricker_Util_Score;
                 strikerUlti.GetComponent<strikerUltimate>().Succeed();
                 RpcStrikerUlti(1);
                 
@@ -421,7 +421,7 @@ public class PlayerController : NetworkBehaviour {
                 FireLightening(enemy.transform.position);
 
                 skill1Counter++;
-                CalculateScore(1, 0, 0);
+                score += ScoreParameter.Stricker_Skill1_Score;
             }
         }
         else {
@@ -433,7 +433,7 @@ public class PlayerController : NetworkBehaviour {
             enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
             skill2Counter++;
-            CalculateScore(0, 1, 0);
+            score += ScoreParameter.Defender_Util_Score;
             DoneUlti();
         }
         
@@ -509,7 +509,7 @@ public class PlayerController : NetworkBehaviour {
     {
         GameObject obj = NetworkServer.FindLocalObject(netID);
         skill1Counter++;
-        CalculateScore(1, 0, 0);
+        score += ScoreParameter.Defender_Skill1_Score;
         NetworkServer.Destroy(obj);
     }
 
@@ -759,7 +759,7 @@ public class PlayerController : NetworkBehaviour {
         if (feedback)
         {
             plc.supportCounter++;
-            plc.CalculateScore(0, 0, 1);
+            plc.score += ScoreParameter.Support_Score;
         }
     }
 
@@ -988,11 +988,11 @@ public class PlayerController : NetworkBehaviour {
 
     #endregion
 
-    [Server]
-    public void CalculateScore(int s1c, int s2c, int stc)
-    {
-        score += ScoreParameter.CalcuateScore(s1c, s2c, stc);
-    }
+    //[Server]
+    //public void CalculateScore(int s1c, int s2c, int stc)
+    //{
+    //    score += ScoreParameter.CalcuateScore(s1c, s2c, stc);
+    //}
 
     public void OnScoreChanged(int ns)
     {

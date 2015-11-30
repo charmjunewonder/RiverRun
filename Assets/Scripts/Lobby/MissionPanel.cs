@@ -85,4 +85,10 @@ public class MissionPanel : MonoBehaviour {
         }
     }
 
+    public void OnContinueClicked()
+    {
+        
+        NetworkManagerCustom.SingletonNM.StopClientClbk();
+        gameObject.SetActive(false);
+    }
 }

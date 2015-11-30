@@ -124,7 +124,11 @@ public class EnemyMotion : NetworkBehaviour {
         else {
             if (transform.parent == null)
             {
-                transform.parent = GameObject.Find("EnemyManager").transform;
+                GameObject gg = GameObject.Find("EnemyManager");
+                if (gg != null)
+                    transform.parent = gg.transform;
+                else
+                    NetworkServer.SpawnObjects();
             }
         }
 	}

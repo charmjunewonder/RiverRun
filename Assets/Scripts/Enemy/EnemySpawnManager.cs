@@ -61,7 +61,7 @@ public class EnemySpawnManager : NetworkBehaviour {
                     }
                         
                 }
-                input_rank /= count++;
+                input_rank /= count;
             }
             else {
                 int a = 0;
@@ -73,6 +73,7 @@ public class EnemySpawnManager : NetworkBehaviour {
                 input_rank = a;
             }
 
+            Debug.Log("input+rank " + input_rank);
 
             enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(input_rank);
 

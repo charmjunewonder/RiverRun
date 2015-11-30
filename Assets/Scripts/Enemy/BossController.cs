@@ -89,6 +89,16 @@ public class BossController : EnemyMotion{
             RpcCreateDieParticle();
 
             Debug.Log("CmdDecreaseBlood " + blood);
+
+            for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
+            {
+                if (NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
+                {
+                    PlayerController pc = (PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i];
+                    pc.score += ScoreParameter.Boss_Score;
+                }
+            }
+
             NetworkManagerCustom.SingletonNM.EndGame();
 
             NetworkServer.Destroy(gameObject);

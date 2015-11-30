@@ -30,7 +30,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
         if (countDown <= 0) {
             NetworkServer.Destroy(gameObject);
             playerController.skill1Counter += (maxCount-count);
-            playerController.CalculateScore(maxCount - count, 0, 0);
+            playerController.score += ScoreParameter.Defender_Skill1_Score * (maxCount - count);
             playerController.CloseShield();
         }
 
@@ -43,7 +43,7 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
             {
                 NetworkServer.Destroy(gameObject);
                 playerController.skill1Counter += maxCount;
-                playerController.CalculateScore(maxCount, 0, 0);
+                playerController.score += ScoreParameter.Defender_Skill1_Score * maxCount;
                 playerController.CloseShield();
             }
                 
