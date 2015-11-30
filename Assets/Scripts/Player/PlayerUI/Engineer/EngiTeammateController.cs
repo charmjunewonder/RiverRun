@@ -73,6 +73,7 @@ public class EngiTeammateController : MonoBehaviour {
                 transform.parent.GetComponent<TeammatePanelController>().DisableCrystalCoolDown();
 
                 cooldown = maxCooldown;
+                AudioController.Singleton.PlayGoodFeedBack();
             }
         }
     }
