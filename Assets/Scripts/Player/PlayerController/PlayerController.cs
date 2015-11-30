@@ -403,9 +403,10 @@ public class PlayerController : NetworkBehaviour {
                     enemyUIManager.transform.GetChild(i).GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
                 }
                 skill2Counter++;
+                CalculateScore();
                 strikerUlti.GetComponent<strikerUltimate>().Succeed();
                 RpcStrikerUlti(1);
-                CalculateScore();
+                
                 DoneUlti();
             }
             else
@@ -432,6 +433,7 @@ public class PlayerController : NetworkBehaviour {
             enemyUIManager.GetComponent<EnemyAttackFreezer>().Freeze();
             NetworkManagerCustom.SingletonNM.FreezeAI(freezeTime);
             skill2Counter++;
+            CalculateScore();
             DoneUlti();
         }
         
@@ -743,7 +745,7 @@ public class PlayerController : NetworkBehaviour {
 
     [Command]
     public void CmdUltiSupportFeedback(int slot, bool feedback) {
-
+        Debug.Log("CmdUltiSupportFeedback " + username);
         if (role == PlayerRole.Striker) {
             strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
             RpcStrikerUlti(0);
@@ -756,7 +758,8 @@ public class PlayerController : NetworkBehaviour {
         plc.RpcReceiveSupportFeedback(feedback);
         if (feedback)
         {
-            supportCounter++;
+            plc.supportCounter++;
+            plc.CalculateScore();
         }
     }
 

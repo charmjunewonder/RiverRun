@@ -21,9 +21,9 @@ public class ScoreParameter
     public static int CalcuateStar(int score)
     {
         if (score < 0) score = 0;
-        int stars = score / 50 + 1;
-        if (stars < 1) stars = 1;
-        if (stars > 5) stars = 5;
+        int stars = score / 50;
+        if (stars < 0) stars = 0;
+        if (stars > 4) stars = 4;
         return stars;
     }
 }

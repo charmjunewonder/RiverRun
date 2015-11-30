@@ -6,6 +6,7 @@ public class AudioController : MonoBehaviour {
     public AudioSource aus;
     public AudioClip goodFeedBack;
     public AudioClip badFeedBack;
+    public AudioClip bloodLowSound;
     void Start()
     {
         Singleton = this;
@@ -22,6 +23,13 @@ public class AudioController : MonoBehaviour {
     {
         aus.Stop();
         aus.clip = badFeedBack;
+        aus.Play();
+    }
+
+    public void PlayBloodLowSound()
+    {
+        aus.Stop();
+        aus.clip = bloodLowSound;
         aus.Play();
     }
 }

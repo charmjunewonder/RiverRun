@@ -22,8 +22,20 @@ public class MissionPanel : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         //SetMissonComplete(100, 3, "Eric", PlayerRole.Engineer, 10, 60, 100, 15, 10);
+        //StartCoroutine(starsss());
 	}
 
+    IEnumerator starsss()
+    {
+        while (true)
+        {
+            int ssss = (int)Random.Range(0, 300);
+            SetStar(ScoreParameter.CalcuateStar(ssss));
+            scoreText.text = "" + ssss;
+
+            yield return new WaitForSeconds(1);
+        }
+    }
 
     public void SetMissonComplete(int score, int star, string username, PlayerRole pr, int rank, int experience, int fullEx, int skill1, int ulti, int support)
     {
@@ -42,32 +54,32 @@ public class MissionPanel : MonoBehaviour {
                 userPanel.sprite = userPanelSprite[0];
                 skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Enemy's Spaceships.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
+                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;
             case PlayerRole.Engineer:
                 userPanel.sprite = userPanelSprite[1];
                 skill1Text.text = "Recovered Teammates <color=#B3F898FF>" + skill1 + "</color> Times.";
                 utilText.text = "Generated <color=#B3F898FF>" + ulti + "</color> Crystals.";
+                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;
             case PlayerRole.Defender:
                 userPanel.sprite = userPanelSprite[2];
                 skill1Text.text = "Defended <color=#B3F898FF>" + skill1 + "</color> Enemy's Attacks.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
-                break;
-            default:
                 supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
-                break;
+                break;                
         }
     }
 
     private void SetStar(int star)
     {
-        if (star < 1) star = 1;
-        if (star > 5) star = 5;
-        for (int i = 0; i < 4; i++)
+        if (star < 0) star = 0;
+        if (star > 4) star = 4;
+        for (int i = 0; i < 5; i++)
         {
             stars[i].UnshowStar();
         }
-        for (int i = 0; i <= star - 1; i++)
+        for (int i = 0; i <= star; i++)
         {
             stars[i].ShowStar();
         }

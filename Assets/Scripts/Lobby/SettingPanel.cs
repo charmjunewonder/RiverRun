@@ -28,9 +28,11 @@ public class SettingPanel : MonoBehaviour {
         {
             dataInput.text = dataIp;
         }
+        
 #if UNITY_IOS
         noPlayerImage.sprite = greySprite;
         noPlayerText.gameObject.SetActive(false);
+        bgmSlider.interactable = false;
 #endif
     }
 	
@@ -68,6 +70,15 @@ public class SettingPanel : MonoBehaviour {
         {
             dataText.text = "IP Invalid";
         }
+    }
+
+    public void OnEndEditPlayerNumber()
+    {
+        Debug.Log("OnEndEditPlayerNumber " + noPlayerText.text);
+        int num = int.Parse(noPlayerText.text);
+        if (num < 3) num = 3;
+        if (num > 4) num = 4;
+        NetworkManagerCustom.SingletonNM.minPlayers = num;
     }
 
     public void OnSoundEffectChanged()
