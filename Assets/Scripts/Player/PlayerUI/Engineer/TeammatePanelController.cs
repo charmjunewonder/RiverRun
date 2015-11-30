@@ -4,8 +4,10 @@ using System.Collections;
 
 public class TeammatePanelController : MonoBehaviour {
 
+    public GameObject citizenshipGlow;
+
     public void SetGlow() {
-        Debug.Log("Glow");
+
         for (int i = 0; i < 4; i++) {
             DisableCrystalCoolDown();
             Transform child = transform.GetChild(i);
@@ -14,6 +16,7 @@ public class TeammatePanelController : MonoBehaviour {
                 child.GetChild(4).GetComponent<Image>().color = new Color(1, 1, 1, 1);
             }
         }
+        citizenshipGlow.GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
 
     public void NoGlow() {
@@ -24,7 +27,8 @@ public class TeammatePanelController : MonoBehaviour {
             {
                 child.GetChild(4).GetComponent<Image>().color = new Color(1, 1, 1, 0);
             }
-        }    
+        }
+        citizenshipGlow.GetComponent<Image>().color = new Color(1, 1, 1, 0);
     }
 
     public void DisableCrystalCoolDown() {

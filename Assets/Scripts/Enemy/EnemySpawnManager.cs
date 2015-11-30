@@ -27,7 +27,7 @@ public class EnemySpawnManager : NetworkBehaviour {
     public float totalTime;
     public static int currentTime = 0;
     
-    
+    private int bossBlood;
 
     void Start() {
         if (isServer) {
@@ -76,6 +76,8 @@ public class EnemySpawnManager : NetworkBehaviour {
             Debug.Log("input+rank " + input_rank);
 
             enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(input_rank);
+
+            bossBlood = 100 + input_rank * 100;
 
             max_wave = enemyParameter.enemyWave;
             enemyNumbers = enemyParameter.enemyNumbers;
@@ -171,8 +173,8 @@ public class EnemySpawnManager : NetworkBehaviour {
         bc.setEnemySkills(enemySkills);
 
         bc.setAttackTime(5);
-        bc.setBlood(100);
-        bc.setMaxBlood(100);
+        bc.setBlood(bossBlood);
+        bc.setMaxBlood(bossBlood);
         bc.setDamage(2);
 
         NetworkServer.Spawn(boss);

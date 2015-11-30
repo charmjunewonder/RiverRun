@@ -328,9 +328,7 @@ public class PlayerController : NetworkBehaviour {
                     radius = radius <= Screen.width / 5 ? radius : Screen.width / 5;
                     Ray ray = cam.ScreenPointToRay(shieldCenter);
 
-                    Vector3 shieldPos = ray.direction.normalized * 10;
-
-                    CmdCreateShield(shieldPos, radius / 100);
+                    CmdCreateShield(ray, radius / 100);
 
                     return;
                 }
