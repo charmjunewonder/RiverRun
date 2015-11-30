@@ -223,9 +223,11 @@ public class EngineerController : PlayerController {
 
     void OnLevelWasLoaded(int level)
     {
-        if (level == 1)
+        if (level == 2)
         {
             initializeData();
+
+            Debug.Log("On Level was Loaded");
 
             if (isLocalPlayer)
             {
@@ -288,6 +290,8 @@ public class EngineerController : PlayerController {
     {
         playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
         Debug.Log("playerParameter " + playerParameter.maxHp);
+        Debug.Log("playerParameter " + playerParameter.coolingDown_1);
+        Debug.Log("playerParameter " + playerParameter.healPt);
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 
         GetComponent<EngineerSkill1>().coolDown = playerParameter.coolingDown_1;

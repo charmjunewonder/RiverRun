@@ -913,6 +913,7 @@ public class PlayerController : NetworkBehaviour {
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 
         GetComponent<StrikerSkill1>().coolDown = playerParameter.coolingDown_1;
+        GetComponent<StrikerSkill1>().damage =  playerParameter.attackPt;
         GetComponent<StrikerSkill2>().coolDown = playerParameter.coolingDown_2;
         GetComponent<StrikerSkill2>().damage = role == PlayerRole.Striker ? playerParameter.ultiPt : playerParameter.ultiTime;
         if (role == PlayerRole.Defender)
@@ -994,6 +995,16 @@ public class PlayerController : NetworkBehaviour {
     {
         rank = newrank;
         exp = newexp;
+    }
+
+    [ClientRpc]
+    public void RpcClosePortal() {
+        if (isLocalPlayer) {
+            GameObject portal = GameObject.Find("newPortal-blue");
+            for (int i = 1; i < portal.transform.childCount; i++) {
+                portal.transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
     }
 
     #endregion
