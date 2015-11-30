@@ -26,8 +26,12 @@ public class CrystalProductionController : MonoBehaviour {
 
     #region Animation
     public void TriggerAnimation() {
-        if(!isFinished())
+        if (!isFinished())
+        {
             StartCoroutine("StartArrow");
+            AudioController.Singleton.PlayEngineerCystalProductionSound();
+
+        }
     }
 
     public void Revoke() {

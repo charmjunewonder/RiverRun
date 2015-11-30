@@ -6,7 +6,7 @@ public class PlayerInfo :  NetworkBehaviour{
 
 	public PlayerRole role;
 	protected int level;
-
+    private float prevHealth;
     [SyncVar(hook = "OnChange")]
 	protected float health;
 
@@ -35,6 +35,7 @@ public class PlayerInfo :  NetworkBehaviour{
         }
         level = 1;
         health = 10;
+        prevHealth = health;
   	}
 	public Skill[] getSkills(){ return skills; }
 	public Skill getSkill(int index) { return skills[index]; }
@@ -76,8 +77,14 @@ public class PlayerInfo :  NetworkBehaviour{
         if (healthController == null) return;
 
         //Debug.Log("Health Hook " + f);
+        prevHealth = health;
 
         health = f;
+
+        if (health < prevHealth && health < 3)
+        {
+            AudioController.Singleton.PlayBloodLowSound();
+        }
 
         int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 

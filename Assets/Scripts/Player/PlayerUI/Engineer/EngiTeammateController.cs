@@ -54,7 +54,7 @@ public class EngiTeammateController : MonoBehaviour {
 
     public void AssignToTeammate(int num) {
         if (skill0Controller.IsSkillSelected()) {
-
+            AudioController.Singleton.PlayEngineerHealingSound();
             engineerController.CmdHealTeammate(num);
 
             skill0Controller.DeslectedSkill();

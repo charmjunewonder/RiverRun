@@ -87,7 +87,7 @@ public class BossController : EnemyMotion{
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             RpcCreateDieParticle();
-
+            AudioController.Singleton.PlayBossDieSound();
             Debug.Log("CmdDecreaseBlood " + blood);
 
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)

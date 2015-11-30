@@ -176,6 +176,8 @@ public class EnemySpawnManager : NetworkBehaviour {
         bc.setDamage(2);
 
         NetworkServer.Spawn(boss);
+
+        AudioController.Singleton.PlayBossComing();
     }
 
     public void Freeze(float t) {

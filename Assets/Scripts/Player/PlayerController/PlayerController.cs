@@ -409,6 +409,8 @@ public class PlayerController : NetworkBehaviour {
                 RpcStrikerUlti(1);
                 
                 DoneUlti();
+                AudioController.Singleton.PlayStrickerUtliExplosionSound();
+
             }
             else
             {
@@ -436,6 +438,8 @@ public class PlayerController : NetworkBehaviour {
             skill2Counter++;
             score += ScoreParameter.Defender_Util_Score;
             DoneUlti();
+            AudioController.Singleton.PlayStrickerUtliExplosionSound();
+
         }
         
 	}
@@ -591,6 +595,7 @@ public class PlayerController : NetworkBehaviour {
             
             RpcUltiActivationStatusUpdate(true);
 
+            AudioController.Singleton.PlayStrickerUtliStartSound();
 
             if (role == PlayerRole.Striker) {
                 strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
@@ -627,7 +632,6 @@ public class PlayerController : NetworkBehaviour {
                 ultiCrystalController.GenerateUltiCrystals();
                 int ulti_index = 1;
                 skillControllers[ulti_index].StartCoolDown();
-                
             }
             else {
                 reminderController.setReminder("Teammate is activating ultimate skill", 3.0f);
@@ -661,7 +665,8 @@ public class PlayerController : NetworkBehaviour {
 
     public void DoneUlti() {
         if (isServer) {
-            
+            AudioController.Singleton.StopStrickerUtliStartSound();
+
             UltiController.setUltiEnchanting(false);
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
             {
@@ -770,10 +775,12 @@ public class PlayerController : NetworkBehaviour {
             if (feedback)
             {
                 mainCrystalController.PortalShine();
+                AudioController.Singleton.PlayCystalSuccess();
             }
             else
             {
                 reminderController.setReminder("Support Wrong Crystals", 3.0f);
+                AudioController.Singleton.PlayCystalFail();
             }
         }
     }
