@@ -10,6 +10,11 @@ namespace UnityStandardAssets.Network
         public Button reconnectButton;
         public Button closeButton;
 
+        void Start()
+        {
+
+        }
+
         public void DisplayWarning(string info, UnityEngine.Events.UnityAction buttonClbk)
         {
             reconnectButton.gameObject.SetActive(false);
@@ -20,13 +25,17 @@ namespace UnityStandardAssets.Network
             UnityEngine.Events.UnityAction secondButtonClbk)
         {
             reconnectButton.onClick.RemoveAllListeners();
+            reconnectButton.onClick.AddListener(() => {
+                //reconnectButton.gameObject.SetActive(false);
+                //infoText.text = "Connecting...";
+                gameObject.SetActive(false);
+            });
 
             if (secondButtonClbk != null)
             {
                 reconnectButton.gameObject.SetActive(true);
                 reconnectButton.onClick.AddListener(secondButtonClbk);
             }
-            reconnectButton.onClick.AddListener(() => { gameObject.SetActive(false); });
 
             Display(info, firstButtonClbk);
         }
@@ -36,7 +45,7 @@ namespace UnityStandardAssets.Network
             infoText.text = info;
 
             closeButton.onClick.RemoveAllListeners();
-
+            closeButton.gameObject.SetActive(true);
             if (buttonClbk != null)
             {
                 closeButton.onClick.AddListener(buttonClbk);

@@ -14,7 +14,7 @@ public class SettingPanel : MonoBehaviour {
     private GameObject sfxAudio;
     public Sprite greySprite;
     public Image noPlayerImage;
-    public Text noPlayerText;
+    public InputField noPlayerText;
 	// Use this for initialization
 	void Start () {
         string gameIp = PlayerPrefs.GetString("GameIp");
@@ -78,6 +78,7 @@ public class SettingPanel : MonoBehaviour {
         int num = int.Parse(noPlayerText.text);
         if (num < 3) num = 3;
         if (num > 4) num = 4;
+        noPlayerText.text = ""+num;
         NetworkManagerCustom.SingletonNM.minPlayers = num;
     }
 

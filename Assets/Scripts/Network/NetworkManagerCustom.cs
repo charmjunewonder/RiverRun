@@ -34,6 +34,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     public LobbyConnectPanel topPanel;
 
+    public RectTransform gameConnectPanel;
     public RectTransform connectPanel;
     public RectTransform levelPanel;
     public RectTransform lobbyPanel;
@@ -82,8 +83,8 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
         lobbySystemStartSetting();
-
         //StartCoroutine(startLatency());
+        //infoPanel.DisplayDisconnectError("Cient error : ", StopClientClbk, ReconnectClinetClbk);
     }
 
     IEnumerator startLatency()
@@ -462,6 +463,8 @@ public class NetworkManagerCustom : NetworkManager {
         currentMode = NetworkMode.Level;
         StartCoroutine("CheckLevelSelect");
         // change first, if it is a host, it will change back to level.
+        gameConnectPanel.gameObject.SetActive(false);
+
         ChangeTo(lobbyPanel);
     }
 
