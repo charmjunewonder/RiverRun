@@ -173,7 +173,6 @@ public class PlayerController : NetworkBehaviour {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
-            initializeData();
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
 
         }
