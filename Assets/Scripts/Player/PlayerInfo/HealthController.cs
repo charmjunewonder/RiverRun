@@ -6,6 +6,8 @@ public class HealthController : MonoBehaviour {
 
     public Sprite[] sprites;
 
+    public Text text;
+
     private bool shinning;
 
     private float timer;
@@ -52,5 +54,9 @@ public class HealthController : MonoBehaviour {
                 transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 1);
             }
         }
+    }
+
+    public void setHealthPerc(float perc) {
+        text.text = ((int)(perc * 100)).ToString() + "%";
     }
 }

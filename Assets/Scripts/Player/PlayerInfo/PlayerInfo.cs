@@ -53,6 +53,8 @@ public class PlayerInfo :  NetworkBehaviour{
         if (isLocalPlayer) {
             int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
+            healthController.setHealthPerc(health / max_health);
+
             Debug.Log("perc " + health / max_health * 10);
 
             healthController.setHealth(perc);
@@ -88,6 +90,7 @@ public class PlayerInfo :  NetworkBehaviour{
 
         int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
+        healthController.setHealthPerc(health / max_health);
          healthController.setHealth(perc);
     }
 }

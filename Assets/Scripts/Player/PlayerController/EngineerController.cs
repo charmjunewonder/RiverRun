@@ -58,8 +58,7 @@ public class EngineerController : PlayerController {
             //{
                 //mainCrystalController.SetCrystal(ci.key, ci.value);
             //}
-            rankText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
-            scoreText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
+            scoreText = ui.transform.GetChild(7).GetChild(0).GetComponent<Text>();
             switch (role)
             {
                 case PlayerRole.Striker:
@@ -76,7 +75,6 @@ public class EngineerController : PlayerController {
                     break;
             }
             CmdChangeRank(rank, exp);
-            rankText.text = "" + rank;
 
         }
 	}
@@ -217,7 +215,6 @@ public class EngineerController : PlayerController {
         info.slot = slot;
         info.role = role;
         info.un = un;
-        Debug.Log(slot + " " + role + " " + un);
         teammatesInfo.Add(info);
     }
 
@@ -248,8 +245,7 @@ public class EngineerController : PlayerController {
 
     private void setEngineerController(GameObject ui)
     {
-        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
-        ui.transform.GetChild(0).GetChild(10).GetComponent<Text>().text = rank.ToString();
+        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetChild(0).GetComponent<HealthController>());
 
         Transform skillPanel = ui.transform.GetChild(1);
 
@@ -267,9 +263,8 @@ public class EngineerController : PlayerController {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
-        progressBarController = ui.transform.GetChild(7).GetComponent<ProgressBarController>();
-        ui.transform.GetChild(7).GetComponent<EngiCitizenshipController>().engineerController = this;
-        citizenshipHealthController = ui.transform.GetChild(7).GetChild(2).GetComponent<HealthController>();
+        //ui.transform.GetChild(7).GetComponent<EngiCitizenshipController>().engineerController = this;
+        citizenshipHealthController = ui.transform.GetChild(0).GetChild(1).GetComponent<HealthController>();
 
         Transform teammatePanel = ui.transform.GetChild(5);
         for (int i = 0; i < 4; i++)

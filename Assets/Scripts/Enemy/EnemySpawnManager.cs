@@ -89,6 +89,9 @@ public class EnemySpawnManager : NetworkBehaviour {
                 maxEnemyNum += enemyNumbers[i];
             }
 
+            
+            NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(0);
+
             StartCoroutine("PlayingTimeCountDown");
         }
     }
@@ -112,6 +115,8 @@ public class EnemySpawnManager : NetworkBehaviour {
                         StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
                         countDown = 40.0f;
                         waves++;
+                        NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
+                        NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves);
                     }
                 }
             }
@@ -185,8 +190,6 @@ public class EnemySpawnManager : NetworkBehaviour {
     public void Freeze(float t) {
         countDown += t;
 
-        
-
         for (int i = 0; i < transform.childCount; i++){
             Transform tran = transform.GetChild(i);
 
@@ -235,7 +238,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             num -= n;
 
-            yield return new WaitForSeconds(3.0f);
+            yield return new WaitForSeconds(10.0f);
         }
     }
 

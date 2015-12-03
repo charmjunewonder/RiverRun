@@ -56,7 +56,6 @@ public class PlayerController : NetworkBehaviour {
     protected HealthController citizenshipHealthController;
     protected GameObject ui;
     protected Text scoreText;
-    protected Text rankText;
 
     public GameObject enemyUIManager;
     public GameObject defenderEnemyManager;
@@ -132,8 +131,7 @@ public class PlayerController : NetworkBehaviour {
             shieldPoint1 = Vector3.zero;
             shieldExist = false;
             isDraggingCrystal = false;
-            rankText = ui.transform.GetChild(0).GetChild(10).GetComponent<Text>();
-            scoreText = ui.transform.GetChild(0).GetChild(11).GetComponent<Text>();
+            scoreText = ui.transform.GetChild(5).GetChild(0).GetComponent<Text>();
             switch (role)
             {
                 case PlayerRole.Striker:
@@ -150,7 +148,6 @@ public class PlayerController : NetworkBehaviour {
                     break;
             }
             CmdChangeRank(rank, exp);
-            rankText.text = ""+rank;
 		}
 	}
 
@@ -820,8 +817,7 @@ public class PlayerController : NetworkBehaviour {
     {
         Debug.Log(role);
 
-        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetComponent<HealthController>());
-        ui.transform.GetChild(0).GetChild(10).GetComponent<Text>().text = rank.ToString();
+        GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetChild(0).GetComponent<HealthController>());
 
         skillPanel = ui.transform.GetChild(1);
         skillPanel.GetChild(0).GetComponent<SkillController>().setPlayerController(this);
@@ -839,8 +835,7 @@ public class PlayerController : NetworkBehaviour {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
-        progressBarController = ui.transform.GetChild(5).GetComponent<ProgressBarController>();
-        citizenshipHealthController = ui.transform.GetChild(5).GetChild(2).GetComponent<HealthController>();
+        citizenshipHealthController = ui.transform.GetChild(0).GetChild(1).GetComponent<HealthController>();
 
         enemyUITarget = ui.transform.GetChild(6);
 
@@ -961,8 +956,11 @@ public class PlayerController : NetworkBehaviour {
 
     [ClientRpc]
     public void RpcSetCitizenshipHealth(float f) {
-        if(isLocalPlayer)
+        if (isLocalPlayer) {
             citizenshipHealthController.setHealth((int)f);
+            citizenshipHealthController.setHealthPerc(f / 10);
+        }
+            
     }
 
     public void InitializeDisconnectCrystals(int crystal) {
@@ -1011,6 +1009,23 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+
+    [ClientRpc]
+    public void RpcSetTotalWave(int num) {
+        if (isLocalPlayer) {
+            ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = num.ToString();
+        }
+    }
+
+    [ClientRpc]
+    public void RpcSetCurrentWave(int num)
+    {
+        if (isLocalPlayer)
+        {
+            ui.transform.GetChild(0).GetChild(3).GetComponent<Text>().text = num.ToString();
+        }
+    }
+
     #endregion
 
     //[Server]
@@ -1032,8 +1047,6 @@ public class PlayerController : NetworkBehaviour {
     {
         if (!isLocalPlayer) return;
         rank = nr;
-        if (rankText != null)
-            rankText.text = ""+score;
     }
 
 

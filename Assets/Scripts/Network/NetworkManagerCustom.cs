@@ -1004,6 +1004,28 @@ public class NetworkManagerCustom : NetworkManager {
 
     #region Feiran's Functions
 
+    public void SetTotalEnemyWave(int num) {
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null)
+            {
+                PlayerController pc = (PlayerController)gameplayerControllers[k];
+                pc.RpcSetTotalWave(num);
+            }
+        }
+    }
+
+    public void SetCurrentEnemyWave(int num) {
+        for (int k = 0; k < maxPlayers; k++)
+        {
+            if (gameplayerControllers[k] != null)
+            {
+                PlayerController pc = (PlayerController)gameplayerControllers[k];
+                pc.RpcSetCurrentWave(num);
+            }
+        }
+    }
+
     public void ClosePortal() {
         GameObject portal = GameObject.Find("newPortal-blue");
         for (int i = 1; i < portal.transform.childCount; i++)
