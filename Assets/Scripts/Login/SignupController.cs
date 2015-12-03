@@ -11,7 +11,7 @@ public class SignupController : MonoBehaviour {
     public Image signupImage;
     public Text displayMessage;
     private bool isProcessing = false;
-
+    public LoginController loginCon;
     public void OnSignupShowUp()
     {
         if (isProcessing) return;
@@ -109,6 +109,9 @@ public class SignupController : MonoBehaviour {
 					if (result == "success")
 					{
 						displayMessage.text = "Register Success";
+                        OnSignupShowUp();
+                        loginCon.OnLoginShowUp();
+                        loginCon.uName.text = name;
 					}
 					else if (result == "fail")
 					{

@@ -81,7 +81,7 @@ public class PlayerInfo :  NetworkBehaviour{
 
         health = f;
 
-        if (health < prevHealth && health < 3)
+        if (health < prevHealth && health < 4)
         {
             AudioController.Singleton.PlayBloodLowSound();
         }
