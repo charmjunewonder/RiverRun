@@ -1099,17 +1099,6 @@ public class NetworkManagerCustom : NetworkManager {
             yield return new WaitForSeconds(1);
         }
     }
-    
-    public void AddProgress(float perc) {
-        pbController.SetProgress(perc);
-        for (int k = 0; k < maxPlayers; k++)
-        {
-            if (gameplayerControllers[k] != null)
-            {
-                ((PlayerController)gameplayerControllers[k]).RpcAddProgress(perc);
-            }
-        }
-    }
 
     public void EndGame() {
         Debug.Log("EndGame");

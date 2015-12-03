@@ -94,8 +94,6 @@ public class BossController : EnemyMotion{
         
         if (blood <= 0)
         {
-            transform.parent.GetComponent<EnemySpawnManager>().AddProgress(2);
-
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             NetworkManagerCustom.SingletonNM.ClosePortal();

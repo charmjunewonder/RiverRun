@@ -211,16 +211,6 @@ public class EnemySpawnManager : NetworkBehaviour {
         NetworkManagerCustom.SingletonNM.EndGame();
     }
 
-    public void AddProgress(int num) {
-        if (num == 1) {
-            curEnemyNum++;
-            NetworkManagerCustom.SingletonNM.AddProgress(((float)curEnemyNum) / maxEnemyNum * 0.8f);
-        }
-        else {
-            NetworkManagerCustom.SingletonNM.AddProgress(1.0f);
-        }
-    }
-
     IEnumerator GenerateEnemyInGroup(int num) {
 
         int start = 0;
