@@ -28,7 +28,7 @@ public struct EnemyData //enemy data is associated with difficulty factor
 
 public class EnemyParameter : MonoBehaviour {
     private int difficultyFactor = 1;//need to be calculated
-    private int enemyBasicHp = 40;
+    private int enemyBasicHp = 25;
     private int enemyBasicAp = 2;
     private float enemyBasicAttackTime = 10;
     public int enemyWave = 2; //from difficulty factor
@@ -45,10 +45,10 @@ public class EnemyParameter : MonoBehaviour {
     private void updateBasicData(int diffFactor)
     {
         difficultyFactor = diffFactor;
-        enemyBasicHp = 40 + 5 * difficultyFactor;
+        enemyBasicHp = 25 + 3 * difficultyFactor;
         enemyBasicAp = 2 + (difficultyFactor / 5);//temp
         enemyBasicAttackTime = 10.0f - difficultyFactor * 0.25f;
-        maxNumberPerWave = 20 + 2 * difficultyFactor; // maximum 50 
+        maxNumberPerWave = 20 + 3 * difficultyFactor; // maximum 50 
         enemyWave = 3 + ((difficultyFactor+2) / 4); //every 4 rank add a wave
     }
 
