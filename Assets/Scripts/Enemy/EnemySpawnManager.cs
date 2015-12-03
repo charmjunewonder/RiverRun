@@ -125,6 +125,19 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     public GameObject GetSpaceShip() { return spaceship; }
 
+    public void AddProgress(int num)
+    {
+        if (num == 1)
+        {
+            curEnemyNum++;
+            NetworkManagerCustom.SingletonNM.AddProgress(((float)curEnemyNum) / maxEnemyNum * 0.8f);
+        }
+        else
+        {
+            NetworkManagerCustom.SingletonNM.AddProgress(1.0f);
+        }
+    }
+
     private void GenerateEnemies(int enemiesNum, int start){
 
         if(spaceship == null)
@@ -217,7 +230,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
         while (num > 0) {
             
-            int n = Random.Range(3, 6);
+            int n = Random.Range(5, 8);
 
             if(n > num)
                 n = num;
@@ -228,7 +241,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             num -= n;
 
-            yield return new WaitForSeconds(10.0f);
+            yield return new WaitForSeconds(5.0f);
         }
     }
 

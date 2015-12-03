@@ -7,6 +7,7 @@ public class EnemyMotion : NetworkBehaviour {
     public GameObject bulletPref;
     public GameObject dieParticlePref;
     public GameObject frozenEffect;
+    public GameObject explosionPrefab;
 
     [SyncVar]
     public int index;
@@ -61,6 +62,8 @@ public class EnemyMotion : NetworkBehaviour {
         Debug.Log("CmdDecreaseBlood " + blood);
         if (blood <= 0)
         {
+            transform.parent.GetComponent<EnemySpawnManager>().AddProgress(1);
+
             GameObject particle = Instantiate(dieParticlePref, gameObject.transform.position, Quaternion.identity) as GameObject;
 
             RpcCreateDieParticle();
@@ -151,6 +154,10 @@ public class EnemyMotion : NetworkBehaviour {
                 int damageCitizenship = Random.Range(0, 100);
                 if (damageCitizenship < 20) {
                     NetworkManagerCustom.SingletonNM.AttackCitizenship(1);
+
+                    Vector3 expPos = new Vector3(Random.Range(-1.8f, 3.2f), Random.Range(-1, -1.2f), Random.Range(-26f, -32f));
+
+                    Instantiate(explosionPrefab, expPos, Quaternion.identity);
                 }
             }
         } 

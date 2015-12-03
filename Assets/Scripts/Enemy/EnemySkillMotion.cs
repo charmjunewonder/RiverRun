@@ -4,6 +4,7 @@ using System.Collections;
 
 public class EnemySkillMotion : NetworkBehaviour {
 
+    public GameObject explosionPrefab;
 
     [SyncVar]
     private int target;
@@ -24,12 +25,17 @@ public class EnemySkillMotion : NetworkBehaviour {
 	void Update () {
         if (isServer)
         {
-            if ( transform.position.z > 5)
+            if ( transform.position.z > 0)
             {
                 transform.position += velocity * Time.deltaTime;
             }
             else
             {
+                Vector3 pos = transform.position;
+                Vector3 expPos = new Vector3(Random.Range(-3f, 3f), Random.Range(0, 1.5f), Random.Range(-14f, 0f)) + pos;
+
+                Instantiate(explosionPrefab, expPos, Quaternion.identity);
+
                 NetworkManagerCustom.SingletonNM.AttackPlayer(target, damage);
                 NetworkServer.Destroy(gameObject);
             }

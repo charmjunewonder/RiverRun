@@ -92,6 +92,7 @@ public class EngineerController : PlayerController {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+            initializeData();
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
         }
 

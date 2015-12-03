@@ -1004,6 +1004,11 @@ public class NetworkManagerCustom : NetworkManager {
 
     #region Feiran's Functions
 
+    public void AddProgress(float perc)
+    {
+        pbController.SetProgress(perc);
+    }
+
     public void SetTotalEnemyWave(int num) {
         for (int k = 0; k < maxPlayers; k++)
         {
@@ -1055,8 +1060,7 @@ public class NetworkManagerCustom : NetworkManager {
             }
         }
         
-        //to do  put cizitenshipHealth into your server UI funcion
-        sGamePanel.SetCitizenShipHealth((int)cizitenshipHealth);
+        sGamePanel.SetCitizenShipHealth(cizitenshipHealth / 10);
     }
 
     public void AttackPlayer(int index, float damage) {

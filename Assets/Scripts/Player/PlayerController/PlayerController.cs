@@ -173,7 +173,7 @@ public class PlayerController : NetworkBehaviour {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
-
+            initializeData();
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
 
         }
@@ -937,7 +937,7 @@ public class PlayerController : NetworkBehaviour {
 
         perc = perc > 10 ? 10 : perc;
 
-        NetworkManagerCustom.SingletonNM.sGamePanel.GetComponent<ServerGamePanel>().playerInfos[slot].SetHealth(perc);
+        NetworkManagerCustom.SingletonNM.sGamePanel.GetComponent<ServerGamePanel>().playerInfos[slot].SetHealth(health / GetComponent<PlayerInfo>().getMaxHealth());
     }
 
     [ClientRpc]

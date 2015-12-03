@@ -8,7 +8,7 @@ public class ServerCitizenShip : MonoBehaviour {
         SetHealth(10);
 	}
 
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
         hc.setHealth(health);
     }

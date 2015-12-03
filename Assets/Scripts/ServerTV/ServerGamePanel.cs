@@ -22,7 +22,7 @@ public class ServerGamePanel : MonoBehaviour {
         }
     }
 
-    public void SetCitizenShipHealth(int health)
+    public void SetCitizenShipHealth(float health)
     {
         citizenShipHealth.SetHealth(health);
     }

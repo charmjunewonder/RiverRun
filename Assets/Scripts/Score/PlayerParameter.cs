@@ -96,7 +96,7 @@ public class PlayerParameter:MonoBehaviour{
 
     private void updateHp()
     {
-        maxHp = 80 + rank * 5;
+        maxHp = 20 + rank * 5;
     }
 
 

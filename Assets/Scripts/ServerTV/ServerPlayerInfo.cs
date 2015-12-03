@@ -30,7 +30,7 @@ public class ServerPlayerInfo : MonoBehaviour {
         }
     }
 
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
         hc.setHealth(health);
     }

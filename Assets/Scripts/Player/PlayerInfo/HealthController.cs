@@ -12,8 +12,8 @@ public class HealthController : MonoBehaviour {
 
     private float timer;
 
-    private Color red = new Color(176, 46, 69, 1);
-    private Color blue = new Color(124, 195, 255, 1);
+    private Color red = new Color(0.69f, 0.18f, 0.27f, 1);
+    private Color blue = new Color(0.48f, 0.76f, 1, 1);
 
     void Start() {
         shinning = false;
