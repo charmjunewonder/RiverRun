@@ -132,7 +132,7 @@ public class EngineerController : PlayerController {
 
     [Command]
     public void CmdHealCitizenship() {
-        NetworkManagerCustom.SingletonNM.AttackCitizenship(-GetComponent<EngineerSkill1>().heal);
+        NetworkManagerCustom.SingletonNM.AttackCitizenship(-(2 + rank / 2));
         skill1Counter++;
         score += ScoreParameter.Engineer_Skill1_Score;
     }
@@ -246,7 +246,8 @@ public class EngineerController : PlayerController {
     private void setEngineerController(GameObject ui)
     {
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetChild(0).GetComponent<HealthController>());
-
+        ui.transform.GetChild(0).GetChild(1).GetComponent<EngiCitizenshipController>().engineerController = this;
+        
         Transform skillPanel = ui.transform.GetChild(1);
 
         skillPanel.GetChild(0).GetComponent<EngiSkill0Controller>().setPlayerController(this);
@@ -263,7 +264,7 @@ public class EngineerController : PlayerController {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
-        //ui.transform.GetChild(7).GetComponent<EngiCitizenshipController>().engineerController = this;
+        
         citizenshipHealthController = ui.transform.GetChild(0).GetChild(1).GetComponent<HealthController>();
 
         Transform teammatePanel = ui.transform.GetChild(5);
@@ -287,6 +288,7 @@ public class EngineerController : PlayerController {
         Debug.Log("playerParameter " + playerParameter.maxHp);
         Debug.Log("playerParameter " + playerParameter.coolingDown_1);
         Debug.Log("playerParameter " + playerParameter.healPt);
+        GetComponent<PlayerInfo>().max_health = playerParameter.maxHp;
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 
         GetComponent<EngineerSkill1>().coolDown = playerParameter.coolingDown_1;

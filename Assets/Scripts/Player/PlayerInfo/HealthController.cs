@@ -12,9 +12,13 @@ public class HealthController : MonoBehaviour {
 
     private float timer;
 
+    private Color red = new Color(176, 46, 69, 1);
+    private Color blue = new Color(124, 195, 255, 1);
+
     void Start() {
         shinning = false;
         timer = 0.5f;
+        text.color = blue;
     }
 
     void Update(){
@@ -58,5 +62,9 @@ public class HealthController : MonoBehaviour {
 
     public void setHealthPerc(float perc) {
         text.text = ((int)(perc * 100)).ToString() + "%";
+        if (perc <= 0.5f)
+            text.color = red;
+        else
+            text.color = blue;
     }
 }
