@@ -10,7 +10,7 @@ public class StoryController : MonoBehaviour {
         startPanel.SetActive(true);
         storyPanel.SetActive(false);
 //#if UNITY_IOS
-        Invoke("GoToLobbyScene", 2);
+        Invoke("GoToLobbyScene", 1.5f);
 //#endif
 //#if UNITY_STANDALONE_WIN
 //        Invoke("ShowStoryPanel", 2);
@@ -26,6 +26,6 @@ public class StoryController : MonoBehaviour {
 
     public void GoToLobbyScene()
     {
-        Application.LoadLevel("Lobby");
+        Application.LoadLevel("Opening");
     }
 }

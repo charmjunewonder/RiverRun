@@ -864,7 +864,7 @@ public class PlayerController : NetworkBehaviour {
     void OnLevelWasLoaded(int level)
     {
         Debug.Log("OnLevelWasLoaded");
-        if (level == 2)
+        if (level == 3)
         {
             initializeData();
 

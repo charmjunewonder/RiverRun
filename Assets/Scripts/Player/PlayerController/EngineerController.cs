@@ -223,7 +223,7 @@ public class EngineerController : PlayerController {
 
     void OnLevelWasLoaded(int level)
     {
-        if (level == 2)
+        if (level == 3)
         {
             initializeData();
 
