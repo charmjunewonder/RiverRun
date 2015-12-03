@@ -1145,7 +1145,10 @@ public class NetworkManagerCustom : NetworkManager {
         }
         totalScore += (600 - EnemySpawnManager.currentTime) * 10;
         serverMissionPanel.gameObject.SetActive(true);
-        serverMissionPanel.SetServerMissionCompletePanel(totalScore, EnemySpawnManager.currentTime, "Good");
+        string condistionString = "Perfect";
+        if (cizitenshipHealth < 3) condistionString = "Low";
+        else if (cizitenshipHealth < 6) condistionString = "Good";
+        serverMissionPanel.SetServerMissionCompletePanel(totalScore, EnemySpawnManager.currentTime, condistionString);
         //send team record to data server
         DataServerUtil.Singleton.SendTeamRecord(names, totalScore);
         Debug.Log("MissinComplete Time: " + EnemySpawnManager.currentTime);
