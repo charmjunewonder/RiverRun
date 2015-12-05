@@ -37,6 +37,15 @@ public class TextChange:MonoBehaviour{
         {
             text.color = new Color(1, 1, 1, 20 * (text_ID - (int)text_ID));
         }
+        if (text_ID >= all_content.Length)
+        {
+            JumpToLobbyScene();
+        }
 	
 	}
+
+    public void JumpToLobbyScene()
+    {
+        Application.LoadLevel("Lobby");
+    }
 }

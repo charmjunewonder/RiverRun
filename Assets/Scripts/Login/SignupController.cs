@@ -115,7 +115,7 @@ public class SignupController : MonoBehaviour {
 					}
 					else if (result == "fail")
 					{
-						displayMessage.text = "Fail to Register";
+						displayMessage.text = "Please sign up with another username.";
 					}
 					else if (result == "dbError")
 					{
