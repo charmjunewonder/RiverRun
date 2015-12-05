@@ -28,6 +28,7 @@ public class EnemySpawnManager : NetworkBehaviour {
     public static int currentTime = 0;
     
     private int bossBlood;
+    private bool isReadyForNewWave;
 
     void Start() {
         if (isServer) {
@@ -35,7 +36,6 @@ public class EnemySpawnManager : NetworkBehaviour {
             transform.rotation = Quaternion.identity;
             transform.position = new Vector3(0, 0, 0);
             waves = 0;
-            countDown = 5.0f;
             currentTime = 0;
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
@@ -94,6 +94,9 @@ public class EnemySpawnManager : NetworkBehaviour {
             NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(0);
 
             StartCoroutine("PlayingTimeCountDown");
+
+            isReadyForNewWave = false;
+            StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
         }
     }
 
@@ -101,20 +104,18 @@ public class EnemySpawnManager : NetworkBehaviour {
         if (isServer) {
             if (waves > max_wave) return;
             
-            countDown -= Time.deltaTime;
-
-            if (countDown <= 0)
+            if (isReadyForNewWave)
             {
                 if (waves == max_wave)
                 {
+                    isReadyForNewWave = false;
                     GenerateBoss();
-                    countDown = 40.0f;
                     waves++;
                 }
                 else {
                     if (transform.childCount <= 2) {
+                        isReadyForNewWave = false;
                         StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
-                        countDown = 40.0f;
                         waves++;
                         NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
                         NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves);
@@ -227,6 +228,8 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     IEnumerator GenerateEnemyInGroup(int num) {
 
+        yield return new WaitForSeconds(5.0f);
+
         int start = 0;
 
         while (num > 0) {
@@ -244,6 +247,8 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             yield return new WaitForSeconds(5.0f);
         }
+
+        isReadyForNewWave = true;
     }
 
 }
