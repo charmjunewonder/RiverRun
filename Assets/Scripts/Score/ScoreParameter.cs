@@ -7,15 +7,15 @@ public class ScoreParameter
     public static int Boss_Score = 120;
 
     public static int Stricker_Skill1_Score = 1;
-    public static int Stricker_Util_Score = 15;
+    public static int Stricker_Util_Score = 40;
 
     public static int Defender_Skill1_Score = 1;
-    public static int Defender_Util_Score = 15;
+    public static int Defender_Util_Score = 40;
 
     public static int Engineer_Skill1_Score = 3;
     public static int Engineer_Skill2_Score = 5;
 
-    public static int Support_Score = 3;
+    public static int Support_Score = 5;
 
     public static int CurrentFullExp(int rank)
     {

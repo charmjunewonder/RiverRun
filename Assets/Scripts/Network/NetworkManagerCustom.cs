@@ -54,7 +54,7 @@ public class NetworkManagerCustom : NetworkManager {
     private bool hasCreatePlayer = false;
 
     private float cizitenshipHealth = 10;
-
+    private int citizenshipZeroTime = 0;
     void Start()
     {
 
@@ -83,6 +83,7 @@ public class NetworkManagerCustom : NetworkManager {
         }
 
         lobbySystemStartSetting();
+        citizenshipZeroTime = 0;
         //StartCoroutine(startLatency());
         //infoPanel.DisplayDisconnectError("Cient error : ", StopClientClbk, ReconnectClinetClbk);
     }
@@ -1103,6 +1104,10 @@ public class NetworkManagerCustom : NetworkManager {
 
                 //}
             }
+            if (cizitenshipHealth <= 0)
+            {
+                citizenshipZeroTime++;
+            }
             yield return new WaitForSeconds(1);
         }
     }
@@ -1144,6 +1149,9 @@ public class NetworkManagerCustom : NetworkManager {
             }
         }
         totalScore += (600 - EnemySpawnManager.currentTime) * 10;
+        cizitenshipHealth = Mathf.Clamp(citizenshipZeroTime, 0, 40);
+        int citizenPenalty = (int)(totalScore * citizenshipZeroTime * 0.01f);
+        cizitenshipHealth -= citizenPenalty;
         serverMissionPanel.gameObject.SetActive(true);
         string condistionString = "Perfect";
         if (cizitenshipHealth < 3) condistionString = "Low";
