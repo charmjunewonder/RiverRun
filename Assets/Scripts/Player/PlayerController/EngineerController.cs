@@ -92,6 +92,7 @@ public class EngineerController : PlayerController {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+            initializeData();
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
         }
 
@@ -282,9 +283,12 @@ public class EngineerController : PlayerController {
         //GameObject.DontDestroyOnLoad(e);
     }
 
-    protected void initializeData()
+    public void initializeData()
     {
-        playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
+        if (playerParameter == null) {
+            playerParameter = NetworkManagerCustom.SingletonNM.playerData.GetComponent<PlayerParameter>();
+        }
+        playerParameter = playerParameter.getPlayer(role, rank);
         Debug.Log("playerParameter " + playerParameter.maxHp);
         Debug.Log("playerParameter " + playerParameter.coolingDown_1);
         Debug.Log("playerParameter " + playerParameter.healPt);

@@ -31,6 +31,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
     void Start() {
         if (isServer) {
+            scoreObject = GameObject.FindGameObjectWithTag("DataSource");
             transform.rotation = Quaternion.identity;
             transform.position = new Vector3(0, 0, 0);
             waves = 0;
@@ -77,7 +78,7 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             enemyParameter = scoreObject.GetComponent<EnemyParameter>().getEnemys(input_rank);
 
-            bossBlood = 100 + input_rank * 100;
+            bossBlood = (input_rank + 5) * 120;
 
             max_wave = enemyParameter.enemyWave;
             enemyNumbers = enemyParameter.enemyNumbers;

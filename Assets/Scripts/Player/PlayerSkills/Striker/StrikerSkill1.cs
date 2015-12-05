@@ -5,10 +5,11 @@ public class StrikerSkill1 : Skill {
 
     void Start()
     {
-        skillName = "hit";
-        int level = gameObject.GetComponent<PlayerInfo>().getLevel();
-        damage = 5;
-        heal = 0;
-        coolDown = 0.5f;
+        //skillName = "hit";
+        //int level = gameObject.GetComponent<PlayerInfo>().getLevel();
+        //damage = 5;
+        //heal = 0;
+        //coolDown = 0.5f;
+        //Debug.Log("Skill 1 Start");
     }
 }

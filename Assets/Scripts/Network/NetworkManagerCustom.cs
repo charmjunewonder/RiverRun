@@ -18,6 +18,7 @@ public class NetworkManagerCustom : NetworkManager {
     public ServerMissionCompletePanel serverMissionPanel;
     public ServerGamePanel sGamePanel;
     public ProgressBarController pbController;
+    public GameObject playerData;
 
     public ArrayList gameplayerControllers { get; set; }
     public ArrayList lobbyPlayerArray { get; set; }
@@ -345,8 +346,6 @@ public class NetworkManagerCustom : NetworkManager {
 
                     GameObject newPlayer = (GameObject)Instantiate(EngineerPrefab, Vector3.zero, Quaternion.identity);
 
-                    Debug.Log("@@@@@@@@");
-
                     newPlayer.GetComponent<EngineerController>().slot = lp.slot;
                     gameplayerControllers[i] = newPlayer.GetComponent<EngineerController>();
                     ////NetworkServer.Spawn(newPlayer);
@@ -355,6 +354,7 @@ public class NetworkManagerCustom : NetworkManager {
                     newPlayer.GetComponent<EngineerController>().role = lp.ownRole;
                     newPlayer.GetComponent<EngineerController>().username = lp.userName;
                     newPlayer.GetComponent<PlayerController>().cam.cullingMask = (1 << (i + 8)) | 1;
+                    newPlayer.GetComponent<PlayerController>().playerParameter = playerData.GetComponent<PlayerParameter>();
                     NetworkServer.Destroy(lp.gameObject);
 
                     ////Destroy(lp.gameObject);
@@ -371,6 +371,7 @@ public class NetworkManagerCustom : NetworkManager {
                     //Debug.Log("playercontrollerid: " + id);
                     newPlayer.GetComponent<PlayerController>().role = lp.ownRole;
                     newPlayer.GetComponent<PlayerController>().username = lp.userName;
+                    newPlayer.GetComponent<PlayerController>().playerParameter = playerData.GetComponent<PlayerParameter>();
 
                     if (lp.ownRole == PlayerRole.Striker)
                         newPlayer.GetComponent<PlayerController>().cam.cullingMask = (1 << (8 + i)) | 1;
@@ -567,6 +568,7 @@ public class NetworkManagerCustom : NetworkManager {
                             dpc.skill1Counter = pc.skill1Counter;
                             dpc.skill2Counter = pc.skill2Counter;
                             dpc.supportCounter = pc.supportCounter;
+
                             if (UltiController.checkUltiEnchanting()) {
                                 if (UltiController.getUltiPlayerNumber() == i){
                                     UltiController.setUltiEnchanting(false);
@@ -679,12 +681,22 @@ public class NetworkManagerCustom : NetworkManager {
                             pc.setInGame();
                             pc.disconnectCrystal = dpc.crystals;
                             pc.InitializeDisconnectCrystals(dpc.crystals);
-                            gamePlayer.GetComponent<PlayerInfo>().setHealth(dpc.health);
 
-                            if (gamePlayer.GetComponent<PlayerController>().role == PlayerRole.Engineer)
+
+                            if (dpc.currentRole == PlayerRole.Engineer)
                             {
                                 SetUpEngineerTeammateInfo(gamePlayer.GetComponent<EngineerController>());
+                                pc.GetComponent<EngineerController>().initializeData();
                             }
+                            else
+                            {
+                                pc.GetComponent<PlayerController>().initializeData();
+                            }
+
+                            Debug.Log("Network Manager InitializeData");
+
+                            gamePlayer.GetComponent<PlayerInfo>().setHealth(dpc.health);
+
                             NetworkServer.AddPlayerForConnection(conn, gamePlayer, playerControllerId);
                             Destroy(dpc.gameObject);
                         }

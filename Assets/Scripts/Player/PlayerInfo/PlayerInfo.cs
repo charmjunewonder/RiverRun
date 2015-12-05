@@ -8,7 +8,7 @@ public class PlayerInfo :  NetworkBehaviour{
 	protected int level;
     private float prevHealth;
     [SyncVar(hook = "OnChange")]
-	protected float health;
+	public float health;
 
     public float max_health = 10.0f;
 	protected Skill[] skills;
@@ -78,7 +78,7 @@ public class PlayerInfo :  NetworkBehaviour{
     private void OnChange(float f) {
         if (healthController == null) return;
 
-        //Debug.Log("Health Hook " + f);
+        Debug.Log("Health Hook " + f);
         prevHealth = health;
 
         health = f;

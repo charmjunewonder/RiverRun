@@ -73,7 +73,7 @@ public class PlayerController : NetworkBehaviour {
     private float shieldTime;
     private int shieldNumber;
 
-    protected PlayerParameter playerParameter;
+    public PlayerParameter playerParameter;
 
 
     #region StartUpdate
@@ -173,6 +173,8 @@ public class PlayerController : NetworkBehaviour {
                 a >>= 8;
             }
             disconnectedCrystalInitialized = true;
+            initializeData();
+
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
 
         }
@@ -397,7 +399,7 @@ public class PlayerController : NetworkBehaviour {
                     if (enemy.tag == "Enemy")
                         enemy.GetComponent<EnemyMotion>().DecreaseBlood(d);
                     else
-                        enemy.GetComponent<BossController>().DecreaseBlood(d);
+                        enemy.GetComponent<BossController>().DecreaseBlood(d * 10);
                 }
                 skill2Counter++;
                 score += ScoreParameter.Stricker_Util_Score;
@@ -608,9 +610,7 @@ public class PlayerController : NetworkBehaviour {
                 {
                     if (i != slot)
                         ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcLockUlti(username);
-                    
                 }
-               
             }
         }
         else {
@@ -904,8 +904,13 @@ public class PlayerController : NetworkBehaviour {
     }
 
 
-    protected void initializeData() {
-        playerParameter = GameObject.FindGameObjectWithTag("DataSource").GetComponent<PlayerParameter>().getPlayer(role, rank);
+    public void initializeData() {
+
+        if (playerParameter == null){
+            playerParameter = NetworkManagerCustom.SingletonNM.playerData.GetComponent<PlayerParameter>();
+        }
+
+        playerParameter = playerParameter.getPlayer(role, rank);
         Debug.Log("playerParameter " + playerParameter.maxHp);
         GetComponent<PlayerInfo>().max_health = playerParameter.maxHp;
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
