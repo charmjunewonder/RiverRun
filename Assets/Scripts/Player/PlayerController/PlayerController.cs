@@ -256,6 +256,7 @@ public class PlayerController : NetworkBehaviour {
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
                             CmdDoFire(skillIndex, i);
+                            break;
                         }
                     }
                 }
@@ -288,6 +289,7 @@ public class PlayerController : NetworkBehaviour {
                             if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                             {
                                 CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
+                                break;
                             }
                         }
                     }
@@ -351,9 +353,10 @@ public class PlayerController : NetworkBehaviour {
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 100)
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 75)
                         {
                             CmdDoFire(skillIndex, i);
+                            break;
                         }
                     }
                 }
@@ -365,9 +368,10 @@ public class PlayerController : NetworkBehaviour {
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 100)
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 75)
                         {
                             CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
+                            break;
                         }   
                     }
                 }
