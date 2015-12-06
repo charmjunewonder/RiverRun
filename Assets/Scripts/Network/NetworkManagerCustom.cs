@@ -1160,7 +1160,7 @@ public class NetworkManagerCustom : NetworkManager {
                 DataServerUtil.Singleton.SendPersonalRecord(gpc.username, gpc.score, crank, gpc.role.ToString().ToLower(), cexp);
             }
         }
-        totalScore += (600 - EnemySpawnManager.currentTime) * 3;
+        totalScore += (600 - EnemySpawnManager.currentTime) * 2;
         citizenshipZeroTime = Mathf.Clamp(citizenshipZeroTime, 0, 40);
         int citizenPenalty = (int)(totalScore * citizenshipZeroTime * 0.01f);
         totalScore -= citizenPenalty;
