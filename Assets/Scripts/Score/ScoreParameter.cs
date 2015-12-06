@@ -4,7 +4,7 @@ public class ScoreParameter
 {
     public static float Personal_Health_Penalty_Persent = 0.01f;
     public static float Citizen_Health_Penalty_Persent = 0.02f;
-    public static int Boss_Score = 120;
+    public static int Boss_Score = 200;
 
     public static int Stricker_Skill1_Score = 1;
     public static int Stricker_Util_Score = 100;
@@ -12,8 +12,8 @@ public class ScoreParameter
     public static int Defender_Skill1_Score = 1;
     public static int Defender_Util_Score = 100;
 
-    public static int Engineer_Skill1_Score = 3;
-    public static int Engineer_Skill2_Score = 5;
+    public static int Engineer_Skill1_Score = 5;
+    public static int Engineer_Skill2_Score = 8;
 
     public static int Support_Score = 20;
 
