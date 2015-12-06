@@ -54,19 +54,19 @@ public class MissionPanel : MonoBehaviour {
                 userPanel.sprite = userPanelSprite[0];
                 skill1Text.text = "Attacked <color=#B3F898FF>" + skill1 + "</color> Times.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
-                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
+                supportText.text = "Supported Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;
             case PlayerRole.Engineer:
                 userPanel.sprite = userPanelSprite[1];
                 skill1Text.text = "Recovered Teammates <color=#B3F898FF>" + skill1 + "</color> Times.";
                 utilText.text = "Generated <color=#B3F898FF>" + ulti + "</color> Crystals.";
-                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
+                supportText.text = "Supported Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;
             case PlayerRole.Defender:
                 userPanel.sprite = userPanelSprite[2];
                 skill1Text.text = "Defended <color=#B3F898FF>" + skill1 + "</color> Enemy's Attacks.";
                 utilText.text = "Activated <color=#B3F898FF>" + ulti + "</color> Times Ultimate Skills.";
-                supportText.text = "Support Teammates <color=#B3F898FF>" + support + "</color> Times.";
+                supportText.text = "Supported Teammates <color=#B3F898FF>" + support + "</color> Times.";
                 break;                
         }
     }

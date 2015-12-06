@@ -56,7 +56,7 @@ public class BossController : EnemyMotion{
     private void GenerateAttack() {
         for (int i = 0; i < 12; i++) {
 
-            Vector3 pos = transform.position + 20 * (new Vector3(Mathf.Sin(i * Mathf.PI / 6), Mathf.Cos(i * Mathf.PI / 6), 0));
+            Vector3 pos = transform.position + 40 * (new Vector3(Mathf.Sin(i * Mathf.PI / 6), Mathf.Cos(i * Mathf.PI / 6), 0));
 
             GameObject attack = GameObject.Instantiate(bulletPref, pos, Quaternion.identity) as GameObject;
 
@@ -77,7 +77,31 @@ public class BossController : EnemyMotion{
             attack.GetComponent<AutoMove>().velocity = vel;
 
             NetworkServer.Spawn(attack);
-        
+        }
+        for (int i = 0; i < 12; i++)
+        {
+
+            Vector3 pos = transform.position + 60 * (new Vector3(Mathf.Sin(i * Mathf.PI / 6), Mathf.Cos(i * Mathf.PI / 6), 0));
+
+            GameObject attack = GameObject.Instantiate(bulletPref, pos, Quaternion.identity) as GameObject;
+
+            attack.transform.parent = enemySkillManager.transform;
+
+            EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
+            esm.setDamage(damage);
+
+            Vector3 ran = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+
+            Vector3 vel = Vector3.Normalize(ran - pos) * Random.Range(80f, 100f);
+            esm.setVelocity(vel);
+
+            int target = Random.Range(0, 4);
+            esm.setIndex(target);
+
+            attack.GetComponent<AutoMove>().startPos = pos;
+            attack.GetComponent<AutoMove>().velocity = vel;
+
+            NetworkServer.Spawn(attack);
         }
     }
 
@@ -127,6 +151,7 @@ public class BossController : EnemyMotion{
 
     IEnumerator CloseEffect(float t) {
         yield return new WaitForSeconds(t);
+        frozenEffect.SetActive(false);
         RpcSetFrozenEffect(false);
     }
 }

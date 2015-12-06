@@ -1126,7 +1126,7 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void EndGame() {
         Debug.Log("EndGame");
-        Invoke("GameEnded", 5.0f);
+        Invoke("GameEnded", 3.0f);
     }
 
     private void GameEnded() {
@@ -1155,15 +1155,15 @@ public class NetworkManagerCustom : NetworkManager {
                 gpc.rank = crank;
                 gpc.exp = cexp;
                 gpc.RpcMissionComplete(gpc.skill1Counter, gpc.skill2Counter, gpc.supportCounter, crank, cexp);
-                totalScore += gpc.skill1Counter + gpc.skill2Counter;
+                totalScore += gpc.score;
                 names.Add(gpc.username);
                 DataServerUtil.Singleton.SendPersonalRecord(gpc.username, gpc.score, crank, gpc.role.ToString().ToLower(), cexp);
             }
         }
-        totalScore += (600 - EnemySpawnManager.currentTime) * 10;
-        cizitenshipHealth = Mathf.Clamp(citizenshipZeroTime, 0, 40);
+        totalScore += (600 - EnemySpawnManager.currentTime) * 3;
+        citizenshipZeroTime = Mathf.Clamp(citizenshipZeroTime, 0, 40);
         int citizenPenalty = (int)(totalScore * citizenshipZeroTime * 0.01f);
-        cizitenshipHealth -= citizenPenalty;
+        totalScore -= citizenPenalty;
         serverMissionPanel.gameObject.SetActive(true);
         string condistionString = "Perfect";
         if (cizitenshipHealth < 3) condistionString = "Low";

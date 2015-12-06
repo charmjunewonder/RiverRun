@@ -95,8 +95,11 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             StartCoroutine("PlayingTimeCountDown");
 
-            isReadyForNewWave = false;
-            StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
+            isReadyForNewWave = true;
+            //StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
+            NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
+            NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(1);
+
         }
     }
 
@@ -106,20 +109,23 @@ public class EnemySpawnManager : NetworkBehaviour {
             
             if (isReadyForNewWave)
             {
-                if (waves == max_wave)
+                Debug.Log("yyyykuyuihgkjhgb " + max_wave + " " + enemyData.Length + " " + waves);
+
+                if (waves >= max_wave)
                 {
+                    Debug.Log("f1s2d1f23s13212312313545646 " + max_wave + " " + enemyData.Length + " " + waves);
                     isReadyForNewWave = false;
                     GenerateBoss();
                     waves++;
                 }
                 else {
-                    if (transform.childCount <= 2) {
+                    if (transform.childCount <= 2)
+                    {
                         isReadyForNewWave = false;
+                        Debug.Log("ewruiqeuroiqw3uriouweqio " + max_wave + " " + enemyData.Length + " " + waves);
+
                         StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
-                        waves++;
-                        NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
-                        NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves);
-                    }
+                    }       
                 }
             }
         }
@@ -164,13 +170,15 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();
             em.setEnemySkills(enemySkills);
+            Debug.Log("fdsfsdfds " + max_wave +" "+ enemyData.Length + " " + waves);
+            int awaves = Mathf.Clamp(waves, 0, max_wave - 1);
+            int max_index = start + i < enemyData[awaves].Length ? start + i : enemyData[awaves].Length - 1;
 
-
-            em.setBlood(enemyData[waves][start + i].maxHp);
-            em.setMaxBlood(enemyData[waves][start + i].maxHp);
+            em.setBlood(enemyData[awaves][max_index].maxHp);
+            em.setMaxBlood(enemyData[awaves][max_index].maxHp);
             em.setIndex(start + i);
-            em.setDamage(enemyData[waves][start + i].attackPt);
-            em.setAttackTime(enemyData[waves][start + i].attackTime);
+            em.setDamage(enemyData[awaves][max_index].attackPt);
+            em.setAttackTime(enemyData[awaves][max_index].attackTime);
 
             NetworkServer.Spawn(enemy);
             
@@ -191,11 +199,12 @@ public class EnemySpawnManager : NetworkBehaviour {
 
         BossController bc = boss.GetComponent<BossController>();
         bc.setEnemySkills(enemySkills);
-
-        bc.setAttackTime(5);
+        float attacktime = 5 - (int)NetworkManagerCustom.SingletonNM.selectedDifficulty + 1;
+        bc.setAttackTime(attacktime);
         bc.setBlood(bossBlood);
         bc.setMaxBlood(bossBlood);
-        bc.setDamage(2);
+        int bossDamage = 1 + (int)NetworkManagerCustom.SingletonNM.selectedDifficulty;
+        bc.setDamage(bossDamage);
 
         NetworkServer.Spawn(boss);
 
@@ -229,11 +238,11 @@ public class EnemySpawnManager : NetworkBehaviour {
     IEnumerator GenerateEnemyInGroup(int num) {
 
         yield return new WaitForSeconds(5.0f);
-
         int start = 0;
 
         while (num > 0) {
-            
+            Debug.Log("waves of numbner coroutine " + waves + " " + num);
+
             int n = Random.Range(5, 8);
 
             if(n > num)
@@ -249,6 +258,12 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
 
         isReadyForNewWave = true;
+        Debug.Log("waves of numbner coroutine end " + waves + " " + num);
+        waves++;
+        NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
+        NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves+1);
+                    
+
     }
 
 }
