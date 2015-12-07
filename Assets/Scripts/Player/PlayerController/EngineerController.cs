@@ -277,10 +277,11 @@ public class EngineerController : PlayerController {
         Transform crystalProductionPanel = ui.transform.GetChild(6);
         crystalProductionPanel.GetComponent<CrystalProductionController>().setEngineerConrtroller(this);
 
+        msfController = ui.transform.GetChild(7).GetComponent<MainScoreFlowController>();
+
         warningController = ui.transform.GetChild(8).GetComponent<WarningController>();
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-        //GameObject.DontDestroyOnLoad(e);
     }
 
     public void initializeData()

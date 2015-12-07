@@ -54,6 +54,7 @@ public class PlayerController : NetworkBehaviour {
     protected WarningController warningController;
     protected ProgressBarController progressBarController;
     protected HealthController citizenshipHealthController;
+    protected MainScoreFlowController msfController;
     protected GameObject ui;
     protected Text scoreText;
 
@@ -256,13 +257,13 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
-                            CmdDoFire(skillIndex, i);
+                            CmdAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             break;
                         }
                     }
                 }
                 else {
-                    if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 30)
+                    if (Vector3.Distance(Input.mousePosition, shieldPoint1) > 60)
                     {
                         if (GetComponent<PlayerInfo>().getHealth() == 0)
                         {
@@ -356,7 +357,7 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 75)
                         {
-                            CmdDoFire(skillIndex, i);
+                            CmdAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             break;
                         }
                     }
@@ -391,44 +392,27 @@ public class PlayerController : NetworkBehaviour {
 
     #region Operation
     [Command]
-	void CmdDoFire(int skillIndex, int enemyIndex)
+	void CmdDoFire()
 	{
-        Debug.Log("CmdDoFire " + skillIndex + enemyIndex);
+
         if (role == PlayerRole.Striker) {
-            if (enemyIndex == -1)
+            float d = playerInfo.getSkill(skillIndex).damage;
+            for (int i = 0; i < enemyUIManager.transform.childCount; i++)
             {
-                float d = playerInfo.getSkill(skillIndex).damage;
-                for (int i = 0; i < enemyUIManager.transform.childCount; i++)
-                {
-                    Transform enemy = enemyUIManager.transform.GetChild(i);
-                    if (enemy.tag == "Enemy")
-                        enemy.GetComponent<EnemyMotion>().DecreaseBlood(d);
-                    else
-                        enemy.GetComponent<BossController>().DecreaseBlood(d * 10);
-                }
-                skill2Counter++;
-                score += ScoreParameter.Stricker_Util_Score;
-                strikerUlti.GetComponent<strikerUltimate>().Succeed();
-                RpcStrikerUlti(1);
-                
-                DoneUlti();
-                AudioController.Singleton.PlayStrickerUtliExplosionSound();
-
-            }
-            else
-            {
-                Transform enemy = enemyUIManager.transform.GetChild(enemyIndex);
-
-                if(enemy.tag == "Enemy")
-                    enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+                Transform enemy = enemyUIManager.transform.GetChild(i);
+                if (enemy.tag == "Enemy")
+                    enemy.GetComponent<EnemyMotion>().DecreaseBlood(d);
                 else
-                    enemy.GetComponent<BossController>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
-
-                FireLightening(enemy.transform.position);
-
-                skill1Counter++;
-                score += ScoreParameter.Stricker_Skill1_Score;
+                    enemy.GetComponent<BossController>().DecreaseBlood(d * 10);
             }
+            skill2Counter++;
+            score += ScoreParameter.Stricker_Util_Score;
+            strikerUlti.GetComponent<strikerUltimate>().Succeed();
+            RpcStrikerUlti(1);
+                
+            DoneUlti();
+            AudioController.Singleton.PlayStrickerUtliExplosionSound();
+
         }
         else {
             DoneUlti();
@@ -511,6 +495,23 @@ public class PlayerController : NetworkBehaviour {
         {
             defenderUlti.GetComponent<defenderUltimate>().Succeed();
         }
+    }
+
+    [Command]
+    protected void CmdAttack(NetworkInstanceId netID) {
+        GameObject obj = NetworkServer.FindLocalObject(netID);
+
+        Transform enemy = obj.transform;
+
+        if (enemy.tag == "Enemy")
+            enemy.GetComponent<EnemyMotion>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+        else
+            enemy.GetComponent<BossController>().DecreaseBlood(playerInfo.getSkill(skillIndex).damage);
+
+        FireLightening(enemy.transform.position);
+
+        skill1Counter++;
+        score += ScoreParameter.Stricker_Skill1_Score;
     }
 
     [Command]
@@ -715,9 +716,7 @@ public class PlayerController : NetworkBehaviour {
     }
 
     public void ActivateUlti() {
-        Debug.Log("Player Controller: Activate Ulti Success");
-        int ulti_index = 1;
-        CmdDoFire(ulti_index, -1);
+        CmdDoFire();
         mainCrystalController.CloseCrystalPortal();
         ultiCrystalController.Clear();
         
@@ -860,6 +859,8 @@ public class PlayerController : NetworkBehaviour {
 
         reminderController = ui.transform.GetChild(4).GetComponent<ReminderController>();
 
+        msfController = ui.transform.GetChild(5).GetComponent<MainScoreFlowController>();
+
         citizenshipHealthController = ui.transform.GetChild(0).GetChild(1).GetComponent<HealthController>();
 
         enemyUITarget = ui.transform.GetChild(6);
@@ -876,9 +877,6 @@ public class PlayerController : NetworkBehaviour {
 
         e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
-
-
-        //GameObject.DontDestroyOnLoad(e);
     }
 
     void OnLevelWasLoaded(int level)
@@ -904,7 +902,11 @@ public class PlayerController : NetworkBehaviour {
 
     private void LoadEnemyObject()
     {
-        GameObject t1 = GameObject.Find("EnemyManager");
+        GameObject t1;
+        if (isServer)
+            t1 = GameObject.Find("EnemySpawnManager");
+        else
+            t1 = GameObject.Find("EnemyManager");
         GameObject t2 = GameObject.Find("EnemySkills");
         if (role == PlayerRole.Striker)
         {
@@ -1061,6 +1063,26 @@ public class PlayerController : NetworkBehaviour {
     {
         if (!isLocalPlayer) return;
         Debug.Log("OnScoreChanged " + ns);
+
+        int tempnum = ns - score;
+
+        if (tempnum == ScoreParameter.Stricker_Util_Score || tempnum == ScoreParameter.Defender_Util_Score)
+        {
+            msfController.Flow(0, "Ultimate Skill ", tempnum);
+        }
+        else if (tempnum == ScoreParameter.Support_Score)
+        {
+            msfController.Flow(1, "Support ", tempnum);
+        }
+        else if (tempnum == ScoreParameter.Engineer_Skill1_Score)
+        {
+            msfController.Flow(0, "Heal ", tempnum);
+        }
+        else if (tempnum == ScoreParameter.Engineer_Skill2_Score)
+        {
+            msfController.Flow(2, "Production ", tempnum);
+        }
+
         score = ns;
         //update score
         if (scoreText != null)
