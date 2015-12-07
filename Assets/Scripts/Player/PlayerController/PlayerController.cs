@@ -273,7 +273,7 @@ public class PlayerController : NetworkBehaviour {
 
                         Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
                         float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
-                        radius = radius <= 100 ? radius : 100;
+                        radius = radius <= 150 ? radius : 150;
 
                         Ray ray = cam.ScreenPointToRay(shieldCenter);
 
@@ -288,10 +288,9 @@ public class PlayerController : NetworkBehaviour {
                             Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                             Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                            if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
+                            if (Vector2.Distance(enemyPos2d, mousePos2d) < 50)
                             {
                                 CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
-                                break;
                             }
                         }
                     }
@@ -327,7 +326,7 @@ public class PlayerController : NetworkBehaviour {
 
                     Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
                     float radius = Vector3.Distance(shieldPoint2, shieldCenter);
-                    radius = radius <= Screen.width / 5 ? radius : Screen.width / 5;
+                    radius = radius <= Screen.width / 4.5f ? radius : Screen.width / 4.5f;
                     Ray ray = cam.ScreenPointToRay(shieldCenter);
 
                     CmdCreateShield(ray, radius / 100);
@@ -370,10 +369,9 @@ public class PlayerController : NetworkBehaviour {
                         Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                         Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 75)
+                        if (Vector2.Distance(enemyPos2d, mousePos2d) < 85)
                         {
                             CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
-                            break;
                         }   
                     }
                 }
@@ -1030,6 +1028,7 @@ public class PlayerController : NetworkBehaviour {
     {
         rank = newrank;
         exp = newexp;
+        initializeData();
     }
 
     [ClientRpc]
