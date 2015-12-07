@@ -86,7 +86,7 @@ public class NetworkManagerCustom : NetworkManager {
         lobbySystemStartSetting();
         citizenshipZeroTime = 0;
         //StartCoroutine(startLatency());
-        //infoPanel.DisplayDisconnectError("Cient error : ", StopClientClbk, ReconnectClinetClbk);
+        //infoPanel.DisplayDisconnectError("Client error : ", StopClientClbk, ReconnectClinetClbk);
     }
 
     IEnumerator startLatency()
@@ -747,7 +747,7 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnClientError " + conn.connectionId);
 
         ChangeTo(connectPanel);
-        infoPanel.DisplayDisconnectError("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()),
+        infoPanel.DisplayDisconnectError("Client error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()),
             StopClientClbk, ReconnectClinetClbk);
         DisableGameUI();
         currentMode = NetworkMode.Level;
