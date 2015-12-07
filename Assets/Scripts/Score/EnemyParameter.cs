@@ -30,7 +30,7 @@ public class EnemyParameter : MonoBehaviour {
     private int difficultyFactor = 1;//need to be calculated
     private int enemyBasicHp = 25;
     private int enemyBasicAp = 2;
-    private float enemyBasicAttackTime = 10;
+    private float enemyBasicAttackTime = 8;
     public int enemyWave = 2; //from difficulty factor
     private int maxNumberPerWave = 20;
     public int[] enemyNumbers = new int[2];//enemy numbers ineach wave
@@ -47,7 +47,7 @@ public class EnemyParameter : MonoBehaviour {
         difficultyFactor = diffFactor;
         enemyBasicHp = 25 + 4 * difficultyFactor;
         enemyBasicAp = 2 + (difficultyFactor / 5);//temp
-        enemyBasicAttackTime = 10.0f - difficultyFactor * 0.25f;
+        enemyBasicAttackTime = Mathf.Clamp(8.0f - difficultyFactor * 0.4f, 0.5f, 8.0f);//change the enemy attack frenquency
         maxNumberPerWave = 20 + 3 * difficultyFactor; // maximum 50 
         enemyWave = 3 + ((difficultyFactor+2) / 4); //every 4 rank add a wave
     }
