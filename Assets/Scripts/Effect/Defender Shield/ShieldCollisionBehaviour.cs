@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-public class ShieldCollisionBehaviour : NetworkBehaviour
+public class ShieldCollisionBehaviour : MonoBehaviour
 {
     public PlayerController playerController;
     public GameObject effect, explosion;
@@ -23,30 +22,31 @@ public class ShieldCollisionBehaviour : NetworkBehaviour
 	
     // Update is called once per frame
     void Update () {
-        if(!isServer) return;
 	    if(!countDownFlag) return;
+        if(!playerController.CheckServer()) return;
 
         countDown -= Time.deltaTime;
         if (countDown <= 0) {
-            NetworkServer.Destroy(gameObject);
+            
             playerController.skill1Counter += (maxCount-count);
             playerController.score += ScoreParameter.Defender_Skill1_Score * (maxCount - count);
-            playerController.CloseShield();
+            playerController.HideShield();
+            countDownFlag = false;
         }
 
     }
     void OnTriggerEnter(Collider collider)
     {
-        if (isServer) {
+        if (playerController.CheckServer())
+        {
             count--;
             if(count <= 0)
             {
-                NetworkServer.Destroy(gameObject);
+                Debug.Log("What's going on");
                 playerController.skill1Counter += maxCount;
                 playerController.score += ScoreParameter.Defender_Skill1_Score * maxCount;
-                playerController.CloseShield();
+                playerController.HideShield();
             }
-                
         }
         pos = transform.position;
         Vector3 hitPoint = Vector3.zero;

@@ -207,7 +207,7 @@ public class EnemyMotion : NetworkBehaviour {
             EnemySkillMotion esm = attack.GetComponent<EnemySkillMotion>();
             esm.setDamage(damage);
 
-            Vector3 ran = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1));
+            Vector3 ran = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
 
             Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(80f, 100f);
             esm.setVelocity(vel);

@@ -97,8 +97,6 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             isReadyForNewWave = true;
             //StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
-            NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
-            NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(1);
 
         }
     }
@@ -109,11 +107,8 @@ public class EnemySpawnManager : NetworkBehaviour {
             
             if (isReadyForNewWave)
             {
-                Debug.Log("yyyykuyuihgkjhgb " + max_wave + " " + enemyData.Length + " " + waves);
-
                 if (waves >= max_wave)
                 {
-                    Debug.Log("f1s2d1f23s13212312313545646 " + max_wave + " " + enemyData.Length + " " + waves);
                     isReadyForNewWave = false;
                     GenerateBoss();
                     waves++;
@@ -122,7 +117,6 @@ public class EnemySpawnManager : NetworkBehaviour {
                     if (transform.childCount <= 2)
                     {
                         isReadyForNewWave = false;
-                        Debug.Log("ewruiqeuroiqw3uriouweqio " + max_wave + " " + enemyData.Length + " " + waves);
 
                         StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
                     }       
@@ -170,7 +164,6 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             EnemyMotion em = enemy.GetComponent<EnemyMotion>();
             em.setEnemySkills(enemySkills);
-            Debug.Log("fdsfsdfds " + max_wave +" "+ enemyData.Length + " " + waves);
             int awaves = Mathf.Clamp(waves, 0, max_wave - 1);
             int max_index = start + i < enemyData[awaves].Length ? start + i : enemyData[awaves].Length - 1;
 
@@ -238,6 +231,10 @@ public class EnemySpawnManager : NetworkBehaviour {
     IEnumerator GenerateEnemyInGroup(int num) {
 
         yield return new WaitForSeconds(5.0f);
+
+        NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
+        NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves+1);
+
         int start = 0;
 
         while (num > 0) {
@@ -260,8 +257,7 @@ public class EnemySpawnManager : NetworkBehaviour {
         isReadyForNewWave = true;
         Debug.Log("waves of numbner coroutine end " + waves + " " + num);
         waves++;
-        NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
-        NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves+1);
+        
                     
 
     }

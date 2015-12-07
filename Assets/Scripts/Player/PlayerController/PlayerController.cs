@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class PlayerController : NetworkBehaviour {
 
 	public GameObject uiPrefab;
-    public GameObject shieldPrefab;
     public GameObject strikerUlti;
     public GameObject defenderUlti;
+    public GameObject shieldObj;
 
     [SyncVar]
     public int slot;
@@ -174,6 +174,7 @@ public class PlayerController : NetworkBehaviour {
             }
             disconnectedCrystalInitialized = true;
             initializeData();
+            scoreText.text = score + "";
 
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
 
@@ -531,30 +532,54 @@ public class PlayerController : NetworkBehaviour {
 
         Vector3 shieldPos = ray.direction.normalized * 8;
 
-        GameObject shield = Instantiate(shieldPrefab, shieldPos, Quaternion.identity) as GameObject;
+        shieldObj.transform.position = shieldPos;
 
-        shield.transform.localScale *= scale;
+        shieldObj.transform.localScale *= scale;
 
-        shield.transform.LookAt(-ray.direction * 20);
+        shieldObj.transform.LookAt(-ray.direction * 20);
 
-        shield.GetComponent<SyncTransform>().setTransform(shield.transform);
+        shieldObj.GetComponent<ShieldCollisionBehaviour>().setMaximumDefendNumber(shieldNumber);
 
-        shield.GetComponent<ShieldCollisionBehaviour>().setMaximumDefendNumber(shieldNumber);
-
-        shield.GetComponent<ShieldCollisionBehaviour>().playerController = this;
-        shield.GetComponent<ShieldCollisionBehaviour>().setCountDown(shieldTime);
-
-        NetworkServer.Spawn(shield);
+        shieldObj.GetComponent<ShieldCollisionBehaviour>().setCountDown(shieldTime);
 
         shieldExist = true;
 
+        RpcPutSheild(ray, scale);
+    }
+
+    [ClientRpc]
+    public void RpcPutSheild(Ray ray, float scale)
+    {
+        Vector3 shieldPos = ray.direction.normalized * 8;
+
+        shieldObj.transform.position = shieldPos;
+
+        shieldObj.transform.localScale *= scale;
+
+        shieldObj.transform.LookAt(-ray.direction * 20);
+        
+    }
+
+    public void HideShield() {
+        if (isServer) {
+            shieldObj.transform.position = new Vector3(0, 0, -100);
+            shieldObj.transform.localScale = new Vector3(1, 1, 1);
+            shieldExist = false;
+            RpcHideShield();
+        }
+    }
+
+    [ClientRpc]
+    public void RpcHideShield() {
+        shieldObj.transform.position = new Vector3(0, 0, -100);
+        shieldObj.transform.localScale = new Vector3(1, 1, 1);
     }
 
     [ClientRpc]
     protected void RpcDeclineShieldCreation()
     {
         if (isLocalPlayer) {
-            reminderController.setReminder("Shield alreayd exists.", 1.0f);
+            reminderController.setReminder("Shield already exists.", 1.0f);
         }
     }
 
@@ -571,9 +596,6 @@ public class PlayerController : NetworkBehaviour {
         NetworkManagerCustom.SingletonNM.FreezeAI(t);
     }
 
-    public void CloseShield() {
-        shieldExist = false;
-    }
     #endregion
 
     #region UltiActivation
@@ -888,12 +910,15 @@ public class PlayerController : NetworkBehaviour {
         {
             enemyUIManager = t1;
             defenderEnemyManager = t2;
+
         }
         else
         {
             defenderEnemyManager = t1;
             enemyUIManager = t2;
         }
+        ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().max_wave + "";
+        ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().waves + "";
     }
 
     private void InitializeCrystal() {
@@ -1030,17 +1055,9 @@ public class PlayerController : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            ui.transform.GetChild(0).GetChild(3).GetComponent<Text>().text = num.ToString();
+            ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = num.ToString();
         }
     }
-
-    #endregion
-
-    //[Server]
-    //public void CalculateScore(int s1c, int s2c, int stc)
-    //{
-    //    score += ScoreParameter.CalcuateScore(s1c, s2c, stc);
-    //}
 
     public void OnScoreChanged(int ns)
     {
@@ -1048,14 +1065,23 @@ public class PlayerController : NetworkBehaviour {
         Debug.Log("OnScoreChanged " + ns);
         score = ns;
         //update score
-        if(scoreText != null)
-            scoreText.text = ""+score;
+        if (scoreText != null)
+            scoreText.text = "" + score;
     }
     public void OnRankChanged(int nr)
     {
         if (!isLocalPlayer) return;
         rank = nr;
     }
+
+    public bool CheckServer() {
+        return isServer;
+    }
+
+    #endregion
+
+
+
 
 
 }
