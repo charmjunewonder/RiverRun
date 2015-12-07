@@ -917,8 +917,11 @@ public class PlayerController : NetworkBehaviour {
             defenderEnemyManager = t1;
             enemyUIManager = t2;
         }
-        ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().max_wave + "";
-        ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().waves + "";
+        if (isLocalPlayer) {
+            ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().max_wave + "";
+            ui.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = t1.GetComponent<EnemySpawnManager>().waves + "";
+        }
+
     }
 
     private void InitializeCrystal() {
