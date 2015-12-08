@@ -1159,7 +1159,7 @@ public class NetworkManagerCustom : NetworkManager {
                 {
                     PlayerController pc = (PlayerController)gameplayerControllers[k];
                     float hp = pc.GetComponent<PlayerInfo>().getHealth();
-                    playTotalHP += hp;
+                    playTotalHP += (hp / pc.GetComponent<PlayerInfo>().max_health)*10;
                     if (hp == 0)
                     {
                         int pernalty = (int)(pc.score * ScoreParameter.Personal_Health_Penalty_Persent);
@@ -1171,12 +1171,14 @@ public class NetworkManagerCustom : NetworkManager {
 
                 //}
             }
+            Debug.Log("playTotalHP "+playTotalHP);
             if (cizitenshipHealth <= 0)
             {
                 citizenshipZeroTime++;
             }
             if (spaceshipCon != null)
             {
+
                 spaceshipCon.SetCitizenShipDamage(cizitenshipHealth);
                 spaceshipCon.SetPlayerSpaceshipDamage(playTotalHP);
             }
