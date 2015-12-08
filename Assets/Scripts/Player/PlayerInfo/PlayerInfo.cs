@@ -10,7 +10,7 @@ public class PlayerInfo :  NetworkBehaviour{
     [SyncVar(hook = "OnChange")]
 	public float health;
 
-    public float max_health = 10.0f;
+    public float max_health;
 	protected Skill[] skills;
 
     public HealthController healthController;

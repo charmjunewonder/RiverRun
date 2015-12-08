@@ -18,6 +18,7 @@ public class ShieldCollisionBehaviour : MonoBehaviour
     // Use this for initialization
     void Start () {
         countDownFlag |= false;
+        FixInctancePosition = new Vector3(0, 0, 0.1f);
     }
 	
     // Update is called once per frame
@@ -66,7 +67,9 @@ public class ShieldCollisionBehaviour : MonoBehaviour
             else {
                 effect.transform.localScale = transform.lossyScale;
             }
-            var inst1 = Instantiate(effect) as GameObject;
+            
+            var inst1 = Instantiate(effect, transform.position, transform.rotation) as GameObject;
+            
             Debug.Log("inst1 " + inst1);
             inst1.transform.parent = gameObject.transform;
             inst1.transform.localPosition = new Vector3(0, 0, 0) + FixInctancePosition;

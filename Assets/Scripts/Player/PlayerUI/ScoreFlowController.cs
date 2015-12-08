@@ -12,12 +12,8 @@ public class ScoreFlowController : MonoBehaviour {
 	
     public void StartFlow(string s, int score) {
 
-        Debug.Log("ScoreFlowController StartFlow");
-
         if (transform.GetChild(0).GetComponent<Text>().color.a > 0)
             return;
-
-        Debug.Log("ScoreFlowController StartFlow 11111");
 
         transform.GetChild(0).GetComponent<Text>().text = s;
         transform.GetChild(1).GetComponent<Text>().text = "+" + score;
@@ -36,8 +32,8 @@ public class ScoreFlowController : MonoBehaviour {
 #if UNITY_IOS
             transform.localPosition += new Vector3(0, 7, 0);
 #endif
-            transform.GetChild(0).GetComponent<Text>().color = new Color(1, 1, 1, alpha);
-            transform.GetChild(1).GetComponent<Text>().color = new Color(1, 1, 1, alpha);
+            transform.GetChild(0).GetComponent<Text>().color = new Color(0.482f, 1, 0.44f, alpha);
+            transform.GetChild(1).GetComponent<Text>().color = new Color(0.482f, 1, 0.44f, alpha);
             yield return new WaitForSeconds(0.04f);
         }
         transform.localPosition = originPos;
