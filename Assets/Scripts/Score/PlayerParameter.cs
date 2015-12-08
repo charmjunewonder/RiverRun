@@ -76,7 +76,7 @@ public class PlayerParameter:MonoBehaviour{
                     coolingDown_2 = Mathf.Clamp(60.0f - rank * 2.0f, 10.0f, 60.0f);//coolingDown 2
                     ultiTime = 10.0f + rank * 1.2f; // defender froze enemy time
                     sheildTime = 5.0f + rank * 0.2f;//defender shield time
-                    sheildHp = 5 + (rank / 4) * 1;//defender shield defend attack number
+                    sheildHp = 5 + rank;//defender shield defend attack number
                     break;
                 }
             case PlayerRole.Engineer:

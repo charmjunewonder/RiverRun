@@ -8,8 +8,8 @@ public class ShieldCollisionBehaviour : MonoBehaviour
     public Vector3 FixInctancePosition, FixInctanceAngle;
     public float FixInctanceScalePercent = 100;
     public bool IsDefaultCollisionPoint;
-    private int maxCount;
-    private int count;
+    public int maxCount;
+    public int count;
     public float countDown;
     public bool countDownFlag;
    

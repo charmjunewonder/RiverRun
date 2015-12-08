@@ -289,7 +289,7 @@ public class PlayerController : NetworkBehaviour {
 
                         Vector3 shieldCenter = (shieldPoint1 + Input.mousePosition) / 2;
                         float radius = Vector3.Distance(Input.mousePosition, shieldCenter);
-                        radius = radius <= 150 ? radius : 150;
+                        radius = radius <= 100 + rank * 8 ? radius : 100 + rank * 8;
 
                         Ray ray = cam.ScreenPointToRay(shieldCenter);
 
@@ -344,7 +344,7 @@ public class PlayerController : NetworkBehaviour {
 
                     Vector3 shieldCenter = (shieldPoint1 + shieldPoint2) / 2;
                     float radius = Vector3.Distance(shieldPoint2, shieldCenter);
-                    radius = radius <= Screen.width / 4.5f ? radius : Screen.width / 4.5f;
+                    radius = radius <= Screen.width / 5f + rank * 20 ? radius : Screen.width / 5f + rank * 20;
                     Ray ray = cam.ScreenPointToRay(shieldCenter);
 
                     CmdCreateShield(ray, radius / 100);
