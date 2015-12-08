@@ -58,6 +58,7 @@ public class NetworkManagerCustom : NetworkManager {
     private int citizenshipZeroTime = 0;
 
     public bool isPause = false;
+    private PlayerSpaceshipController spaceshipCon;
     void Start()
     {
 
@@ -1023,6 +1024,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void PauseTheGame()
     {
         Debug.Log("PauseTheGame");
+        PauseAllEnemy();
         for (int i = 0; i < maxPlayers; i++)
         {
             PlayerController lp = (PlayerController)gameplayerControllers[i];
@@ -1045,7 +1047,7 @@ public class NetworkManagerCustom : NetworkManager {
     public void UnpauseTheGame()
     {
         Debug.Log("UnpauseTheGame");
-        Debug.Log("PauseTheGame");
+        UnpauseAllEnemy();
         for (int i = 0; i < maxPlayers; i++)
         {
             PlayerController lp = (PlayerController)gameplayerControllers[i];
@@ -1063,6 +1065,16 @@ public class NetworkManagerCustom : NetworkManager {
                 }
             }
         }
+    }
+
+    public void PauseAllEnemy()
+    {
+
+    }
+
+    public void UnpauseAllEnemy()
+    {
+
     }
 
     #region Feiran's Functions
@@ -1138,12 +1150,15 @@ public class NetworkManagerCustom : NetworkManager {
     {
         while (true)
         {
+            float playTotalHP = 0;
             for (int k = 0; k < maxPlayers; k++)
             {
                 if (gameplayerControllers[k] != null)
                 {
                     PlayerController pc = (PlayerController)gameplayerControllers[k];
-                    if (pc.GetComponent<PlayerInfo>().getHealth() == 0)
+                    float hp = pc.GetComponent<PlayerInfo>().getHealth();
+                    playTotalHP += hp;
+                    if (hp == 0)
                     {
                         int pernalty = (int)(pc.score * ScoreParameter.Personal_Health_Penalty_Persent);
                         pc.score -= pernalty;
@@ -1157,6 +1172,17 @@ public class NetworkManagerCustom : NetworkManager {
             if (cizitenshipHealth <= 0)
             {
                 citizenshipZeroTime++;
+            }
+            if (spaceshipCon != null)
+            {
+                spaceshipCon.SetCitizenShipDamage(cizitenshipHealth);
+                spaceshipCon.SetPlayerSpaceshipDamage(playTotalHP);
+            }
+            else
+            {
+                GameObject goo = GameObject.Find("playerSpaceshipWithEffect(Clone)");
+                if(goo != null)
+                    spaceshipCon = goo.GetComponent<PlayerSpaceshipController>();
             }
             yield return new WaitForSeconds(1);
         }
