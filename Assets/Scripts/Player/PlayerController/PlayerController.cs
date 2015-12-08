@@ -97,9 +97,19 @@ public class PlayerController : NetworkBehaviour {
                 transform.GetChild(1).GetChild(1).GetChild(0).position = new Vector3(5.06f, 1.19f, 13.7f);
                 transform.GetChild(1).GetChild(1).GetChild(1).position = new Vector3(5.06f, 1.19f, 13.7f);
 
-                strikerUlti.transform.position = new Vector3(0, 3.16f, 4.773f);
-                
-                strikerUlti.transform.localScale = new Vector3(1.82f, 1, 1);
+                strikerUlti.transform.position = new Vector3(0, 3.6f, 4.3f);
+                strikerUlti.transform.GetChild(0).localPosition = new Vector3(0, -0.18f, 8.46f);
+                strikerUlti.transform.GetChild(2).GetChild(0).localPosition = new Vector3(-4.18f, -1.74f, 8.66f);
+                strikerUlti.transform.GetChild(2).GetChild(1).localPosition = new Vector3(-4.18f, -1.74f, 8.66f);
+
+                strikerUlti.transform.GetChild(3).GetChild(0).localPosition = new Vector3(4.18f, -1.74f, 8.66f);
+                strikerUlti.transform.GetChild(3).GetChild(1).localPosition = new Vector3(4.18f, -1.74f, 8.66f);
+
+                strikerUlti.transform.GetChild(0).GetChild(1).GetComponent<ParticleSystem>().emissionRate = 5;
+                strikerUlti.transform.GetChild(0).GetChild(1).GetComponent<ParticleSystem>().startSize = 3;
+                strikerUlti.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>().emissionRate = 100;
+                strikerUlti.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>().startSize = 0.7f;
+                strikerUlti.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>().gameObject.transform.localScale = new Vector3(1, 1, 1);
                 
             }
             else {
@@ -379,7 +389,7 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 85)
                         {
-                    AudioController.Singleton.PlaySkill1Success();
+                            AudioController.Singleton.PlaySkill1Success();
 
                             CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
                         }   
@@ -416,7 +426,7 @@ public class PlayerController : NetworkBehaviour {
             }
             skill2Counter++;
             score += ScoreParameter.Stricker_Util_Score;
-            strikerUlti.GetComponent<strikerUltimate>().Succeed();
+            strikerUlti.GetComponent<strikerUltimate>().Succeed(isServer);
             RpcStrikerUlti(1);
                 
             DoneUlti();
@@ -465,16 +475,16 @@ public class PlayerController : NetworkBehaviour {
     public void RpcStrikerUlti(int status) {
         
         if (status == -2) {
-             strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
+            strikerUlti.GetComponent<strikerUltimate>().TriggerUlti();
         }
         else if (status == -1) {
-            strikerUlti.GetComponent<strikerUltimate>().Fail();
+            strikerUlti.GetComponent<strikerUltimate>().Fail(isServer);
         }
         else if (status == 0){
-            strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
+            strikerUlti.GetComponent<strikerUltimate>().AddCrystal(isServer);
         }
         else if (status == 1){
-            strikerUlti.GetComponent<strikerUltimate>().Succeed();
+            strikerUlti.GetComponent<strikerUltimate>().Succeed(isServer);
         }
     }
 
@@ -663,7 +673,7 @@ public class PlayerController : NetworkBehaviour {
     protected void CmdFailUlti()
     {
         if (role == PlayerRole.Striker) {
-            strikerUlti.GetComponent<strikerUltimate>().Fail();
+            strikerUlti.GetComponent<strikerUltimate>().Fail(isServer);
             RpcStrikerUlti(-1);
         }
         else {
@@ -762,7 +772,7 @@ public class PlayerController : NetworkBehaviour {
     public void CmdUltiSupportFeedback(int slot, bool feedback) {
         Debug.Log("CmdUltiSupportFeedback " + username);
         if (role == PlayerRole.Striker) {
-            strikerUlti.GetComponent<strikerUltimate>().AddCrystal();
+            strikerUlti.GetComponent<strikerUltimate>().AddCrystal(isServer);
             RpcStrikerUlti(0);
         }
         else {
