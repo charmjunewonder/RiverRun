@@ -1133,15 +1133,6 @@ public class NetworkManagerCustom : NetworkManager {
 
     }
 
-    public void FreezeAI(float t) {
-        for (int k = 0; k < maxPlayers; k++)
-        {
-            if (gameplayerControllers[k] != null)
-            {
-                ((PlayerController)gameplayerControllers[k]).RpcFreezeAI(t);
-            }
-        }
-    }
 
     IEnumerator HealthPenalty()
     {

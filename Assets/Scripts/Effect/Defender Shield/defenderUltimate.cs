@@ -37,17 +37,19 @@ public class defenderUltimate : MonoBehaviour
         rightLightening.SetActive(true);
     }
 
-    public void AddCrystal()
+    public void AddCrystal(bool isServer)
     {
         if (triggerUltimate)
         {
             crystalNumber++;
-
-            ball.GetComponent<ParticleSystem>().startSize = 1 + crystalNumber * 0.3f;
+            if(isServer)
+                ball.GetComponent<ParticleSystem>().startSize = 3 + crystalNumber * 0.9f;
+            else
+                ball.GetComponent<ParticleSystem>().startSize = 1 + crystalNumber * 0.3f;
         }
     }
 
-    public void Succeed()
+    public void Succeed(bool isServer)
     {
         if (triggerUltimate)
         {
@@ -57,7 +59,7 @@ public class defenderUltimate : MonoBehaviour
 
             StartCoroutine("WaitAndTurnOffWave");
             triggerUltimate = false;
-            ball.GetComponent<ParticleSystem>().startSize = 1;
+            ball.GetComponent<ParticleSystem>().startSize = isServer ? 3 : 1;
             ball.gameObject.SetActive(false);
             crystalNumber = 0;
             leftLightening.SetActive(false);
@@ -66,13 +68,13 @@ public class defenderUltimate : MonoBehaviour
         }
     }
 
-    public void Fail()
+    public void Fail(bool isServer)
     {
         if (triggerUltimate)
         {
             Debug.Log("Ulti Fail");
             triggerUltimate = false;
-            ball.GetComponent<ParticleSystem>().startSize = 1;
+            ball.GetComponent<ParticleSystem>().startSize = isServer ? 3 : 1;
             ball.gameObject.SetActive(false);
             crystalNumber = 0;
             leftLightening.SetActive(false);
