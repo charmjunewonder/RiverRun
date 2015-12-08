@@ -16,7 +16,7 @@ public class SkillController : MonoBehaviour {
 	public PlayerController playerController;
 
 	public void selectSkill(int index){
-        Debug.Log("coolDownStarted" + coolDownStarted + " " + index);
+        //Debug.Log("coolDownStarted" + coolDownStarted + " " + index);
 
 		if (coolDownStarted) return;
 

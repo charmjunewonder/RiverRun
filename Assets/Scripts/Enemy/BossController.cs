@@ -126,7 +126,7 @@ public class BossController : EnemyMotion{
 
             RpcCreateDieParticle();
             AudioController.Singleton.PlayBossDieSound();
-            Debug.Log("CmdDecreaseBlood " + blood);
+            //Debug.Log("CmdDecreaseBlood " + blood);
 
             for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
             {

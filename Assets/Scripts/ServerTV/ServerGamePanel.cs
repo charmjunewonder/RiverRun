@@ -31,7 +31,7 @@ public class ServerGamePanel : MonoBehaviour {
 
     public void OnPauseClicked()
     {
-        Debug.Log("OnPauseClicked");
+        //Debug.Log("OnPauseClicked");
         if (NetworkManagerCustom.SingletonNM.isPause)
         {
             pauseButton.sprite = pauseSprite[0];

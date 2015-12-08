@@ -43,7 +43,6 @@ public class ShieldCollisionBehaviour : MonoBehaviour
             count--;
             if(count <= 0)
             {
-                Debug.Log("What's going on");
                 playerController.skill1Counter += maxCount;
                 playerController.score += ScoreParameter.Defender_Skill1_Score * maxCount;
                 playerController.HideShield();
@@ -70,7 +69,6 @@ public class ShieldCollisionBehaviour : MonoBehaviour
             
             var inst1 = Instantiate(effect, transform.position, transform.rotation) as GameObject;
             
-            Debug.Log("inst1 " + inst1);
             inst1.transform.parent = gameObject.transform;
             inst1.transform.localPosition = new Vector3(0, 0, 0) + FixInctancePosition;
             if (IsDefaultCollisionPoint) inst1.transform.localRotation = Quaternion.identity;

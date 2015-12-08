@@ -41,7 +41,7 @@ public class TutorialEngineerController : MonoBehaviour {
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log(stage);
+                //Debug.Log(stage);
                 SetStage(stage);
             }
         }
@@ -63,7 +63,7 @@ public class TutorialEngineerController : MonoBehaviour {
 
     public void SetStage(int index) {
 
-        Debug.Log(stage + " " + index);
+        //Debug.Log(stage + " " + index);
 
         if (stage < 0 && index == stage)
         {

@@ -24,7 +24,7 @@ public class DataServerUtil : MonoBehaviour
 
     public void GetLeaderBoard()
     {
-        Debug.Log("GetLeaderBoard ");
+        //Debug.Log("GetLeaderBoard ");
         string domain = ServerUtils.domainName + ":80";
         string storedDomain = PlayerPrefs.GetString("DataIp");
         if (ServerUtils.CheckIpAddress(storedDomain))
@@ -38,7 +38,7 @@ public class DataServerUtil : MonoBehaviour
 
     public void GetPersonalRecordData()
     {
-        Debug.Log("GetPersonalRecordData ");
+        //Debug.Log("GetPersonalRecordData ");
         string domain = ServerUtils.domainName + ":80";
         string storedDomain = PlayerPrefs.GetString("DataIp");
         if (ServerUtils.CheckIpAddress(storedDomain))

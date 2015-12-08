@@ -23,14 +23,14 @@ public class LighteningScript : MonoBehaviour
 	private Vector2[] offsets;
 
     void Awake() {
-        Debug.Log("Awake");
+        //Debug.Log("Awake");
         Initialize();
         StartCoroutine(updateTiling());
     }
 
 	void Start()
 	{
-        Debug.Log("Start");
+        //Debug.Log("Start");
 		//Initialize();
 		//StartCoroutine(updateTiling());
 	}

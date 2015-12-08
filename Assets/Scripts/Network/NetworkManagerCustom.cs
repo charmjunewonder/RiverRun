@@ -248,7 +248,7 @@ public class NetworkManagerCustom : NetworkManager {
         while (true)
         {
             //Debug.Log("CheckLevelSelect");
-            string debuglog = "CheckLevelSelect ";
+            //string debuglog = "CheckLevelSelect ";
             //TODO: bug
             LevelEnum firstLevel = LevelEnum.Easy;
             bool isAllSame = false;
@@ -261,7 +261,7 @@ public class NetworkManagerCustom : NetworkManager {
                 {
                     LevelEnum curr = (LevelEnum)levels[i];
                     userCount++;
-                    debuglog += curr + " ";
+                    //debuglog += curr + " ";
                     if (isFirst) {
                         isAllSame = true;
                         isAllSelected = true;
@@ -279,10 +279,10 @@ public class NetworkManagerCustom : NetworkManager {
                 }
                 else
                 {
-                    debuglog += " null  ";
+                    //debuglog += " null  ";
                 }
             }
-            debuglog += " allSame " + isAllSame + " allselected " + isAllSelected;
+            //debuglog += " allSame " + isAllSame + " allselected " + isAllSelected;
             //Debug.Log(debuglog);
 
             if (userCount < minPlayers)
@@ -452,7 +452,7 @@ public class NetworkManagerCustom : NetworkManager {
 
         if (newSlot >=0 && newSlot < maxPlayers)
         {
-            Debug.Log("Set Level " + le.ToString() + " " + newSlot);
+            //Debug.Log("Set Level " + le.ToString() + " " + newSlot);
             levels[newSlot] = le;
         }
     }
@@ -874,7 +874,7 @@ public class NetworkManagerCustom : NetworkManager {
         Debug.Log("OnErrorShow");
 
         ErrorMessage em = msg.ReadMessage<ErrorMessage>();
-        Debug.Log(em);
+        //Debug.Log(em);
         infoPanel.DisplayWarning(em.errorMessage, StopClientClbk);
     }
 #endregion

@@ -72,7 +72,7 @@ public class TutorialDefenderController : MonoBehaviour {
                 Vector2 enemyPos2d = new Vector2(camPos.x, camPos.y);
                 Vector2 mousePos2d = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
-                Debug.Log("distance " + Vector2.Distance(enemyPos2d, mousePos2d));
+                //Debug.Log("distance " + Vector2.Distance(enemyPos2d, mousePos2d));
 
                 if (Vector2.Distance(enemyPos2d, mousePos2d) < 30)
                 {
@@ -194,7 +194,7 @@ public class TutorialDefenderController : MonoBehaviour {
     public void SetStage(int index)
     {
 
-        Debug.Log(stage + " " + index);
+        //Debug.Log(stage + " " + index);
 
         if (stage < 3)
         {

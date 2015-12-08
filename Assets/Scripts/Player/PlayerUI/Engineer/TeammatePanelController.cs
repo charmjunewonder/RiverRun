@@ -20,7 +20,7 @@ public class TeammatePanelController : MonoBehaviour {
     }
 
     public void NoGlow() {
-        Debug.Log("No Glow");
+        //Debug.Log("No Glow");
         for (int i = 0; i < 4; i++){
             Transform child = transform.GetChild(i);
             if(child.GetComponent<Image>().color.a != 0)

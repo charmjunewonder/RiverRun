@@ -59,7 +59,7 @@ public class EnemyMotion : NetworkBehaviour {
 
     public void DecreaseBlood(float damage) {
         blood -= damage;
-        Debug.Log("CmdDecreaseBlood " + blood + " " + damage);
+        //Debug.Log("CmdDecreaseBlood " + blood + " " + damage);
         if (blood <= 0)
         {
             transform.parent.GetComponent<EnemySpawnManager>().AddProgress(1);

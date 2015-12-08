@@ -112,7 +112,7 @@ public class PlayerParameter:MonoBehaviour{
             //Debug.Log(fieldInfo.Name+":"+fieldInfo.GetValue(this));
         }
         
-        Debug.Log(info);
+        //Debug.Log(info);
     }
 	
 }

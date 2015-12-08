@@ -838,7 +838,7 @@ public class PlayerController : NetworkBehaviour {
 
     private void setStrikerDefenderControllers(GameObject ui)
     {
-        Debug.Log(role);
+        //Debug.Log(role);
 
         GetComponent<PlayerInfo>().setHealthController(ui.transform.GetChild(0).GetChild(0).GetComponent<HealthController>());
 
@@ -940,7 +940,7 @@ public class PlayerController : NetworkBehaviour {
         }
 
         playerParameter = playerParameter.getPlayer(role, rank);
-        Debug.Log("playerParameter " + playerParameter.maxHp);
+        //Debug.Log("playerParameter " + playerParameter.maxHp);
         GetComponent<PlayerInfo>().max_health = playerParameter.maxHp;
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 
@@ -1063,7 +1063,7 @@ public class PlayerController : NetworkBehaviour {
     public void OnScoreChanged(int ns)
     {
         if (!isLocalPlayer) return;
-        Debug.Log("OnScoreChanged " + ns);
+        //Debug.Log("OnScoreChanged " + ns);
 
         int tempnum = ns - score;
 
@@ -1118,7 +1118,7 @@ public class PlayerController : NetworkBehaviour {
 
         isPause = value;
 
-        Debug.Log("OnPauseChanged " + value);
+        //Debug.Log("OnPauseChanged " + value);
         if (e == null)
             e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         e.enabled = !value;

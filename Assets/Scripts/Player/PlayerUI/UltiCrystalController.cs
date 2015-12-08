@@ -45,7 +45,7 @@ public class UltiCrystalController : MonoBehaviour {
         {
             if (crystals[i] == index)
             {
-                Debug.Log("Accept Crystal " + index);
+                //Debug.Log("Accept Crystal " + index);
                 crystalImages[i].sprite = highlightedCrystalSprites[index];
                 crystalImages[i].material = highlightedMaterial;
                 crystals[i] = -i - 1;

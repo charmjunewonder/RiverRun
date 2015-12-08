@@ -13,11 +13,11 @@ public class ServerPlayerHealth : MonoBehaviour {
         if (health <= 0.4f)
         {
             num = 2;
-            healthPercent.text = "<color=#B02E45FF>" + ((int)(health * 100)).ToString() + "%</color>";
+            healthPercent.text = "<color=#B02E45FF>" + ((int)(health * 10)).ToString() + "%</color>";
         }
         else
         {
-            healthPercent.text = ((int)(health * 100)).ToString() + "%";
+            healthPercent.text = ((int)(health * 10)).ToString() + "%";
         }
 
         for (int i = 0; i < 10; i++)

@@ -139,7 +139,7 @@ public class TutorialStrikerController : MonoBehaviour {
 
     public void SetStage(int index) {
         
-        Debug.Log(stage + " " + index);
+        //Debug.Log(stage + " " + index);
 
         if (stage < 3) {
             

@@ -144,7 +144,7 @@ public class LobbyPlayer : NetworkBehaviour {
 
     public void OnMyRole(PlayerRole newRole)
     {
-        Debug.Log("OnMyRole " + userName + " " + newRole);
+        //Debug.Log("OnMyRole " + userName + " " + newRole);
         ownRole = newRole;
         ChooseRole(ownRole);
     }
@@ -207,7 +207,7 @@ public class LobbyPlayer : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            Debug.Log("RpcNameExist " + userName);
+            //Debug.Log("RpcNameExist " + userName);
             NetworkManagerCustom.SingletonNM.StopClient();
             NetworkManagerCustom.SingletonNM.ChangeToConnectPanel();
             NetworkManagerCustom.SingletonNM.ShowWarning("This Account Has Already Connected to Server.");

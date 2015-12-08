@@ -46,7 +46,7 @@ public class SettingPanel : MonoBehaviour {
         Debug.Log("OnEndEditGameIp " + gameInput.text);
         if (ServerUtils.CheckIpAddress(gameInput.text))
         {
-            Debug.Log("OnEndEditGameIp Success" + gameInput.text);
+            //Debug.Log("OnEndEditGameIp Success" + gameInput.text);
             PlayerPrefs.SetString("GameIp", gameInput.text);
             gameText.text = "";
 
@@ -62,7 +62,7 @@ public class SettingPanel : MonoBehaviour {
         Debug.Log("OnEndEditDataIp " + dataInput.text);
         if (ServerUtils.CheckIpAddress(dataInput.text))
         {
-            Debug.Log("OnEndEditDataIp Success" + dataInput.text);
+            //Debug.Log("OnEndEditDataIp Success" + dataInput.text);
             PlayerPrefs.SetString("DataIp", dataInput.text);
             dataText.text = "";
         }
@@ -74,7 +74,7 @@ public class SettingPanel : MonoBehaviour {
 
     public void OnEndEditPlayerNumber()
     {
-        Debug.Log("OnEndEditPlayerNumber " + noPlayerText.text);
+        //Debug.Log("OnEndEditPlayerNumber " + noPlayerText.text);
         int num = int.Parse(noPlayerText.text);
         if (num < 3) num = 3;
         if (num > 4) num = 4;

@@ -44,7 +44,7 @@ public class EngineerController : PlayerController {
 
             skillIndex = 0;
 
-            Debug.Log("Start " + teammatesInfo.Count);
+            //Debug.Log("Start " + teammatesInfo.Count);
             if (teammatesInfo.Count == 0)
             {
                 teammateInitialized = false;
@@ -290,9 +290,9 @@ public class EngineerController : PlayerController {
             playerParameter = NetworkManagerCustom.SingletonNM.playerData.GetComponent<PlayerParameter>();
         }
         playerParameter = playerParameter.getPlayer(role, rank);
-        Debug.Log("playerParameter " + playerParameter.maxHp);
-        Debug.Log("playerParameter " + playerParameter.coolingDown_1);
-        Debug.Log("playerParameter " + playerParameter.healPt);
+        //Debug.Log("playerParameter " + playerParameter.maxHp);
+        //Debug.Log("playerParameter " + playerParameter.coolingDown_1);
+        //Debug.Log("playerParameter " + playerParameter.healPt);
         GetComponent<PlayerInfo>().max_health = playerParameter.maxHp;
         GetComponent<PlayerInfo>().setHealth(playerParameter.maxHp);
 

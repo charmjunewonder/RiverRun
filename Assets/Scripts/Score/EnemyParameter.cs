@@ -102,9 +102,9 @@ public class EnemyParameter : MonoBehaviour {
         {
             for (int j = 0; j < enemyNumbers[i]; j++)
             {
-                Debug.Log("Hp"+enemyDatas[i][j].maxHp+
-                    "Ap"+enemyDatas[i][j].attackPt+
-                    "At"+enemyDatas[i][j].attackTime);
+                //Debug.Log("Hp"+enemyDatas[i][j].maxHp+
+                //    "Ap"+enemyDatas[i][j].attackPt+
+                //    "At"+enemyDatas[i][j].attackTime);
                 sumEnemy++; 
             }
         }

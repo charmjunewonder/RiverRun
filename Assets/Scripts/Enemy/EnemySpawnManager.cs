@@ -293,7 +293,7 @@ public class EnemySpawnManager : NetworkBehaviour {
         }
 
         isReadyForNewWave = true;
-        Debug.Log("waves of numbner coroutine end " + waves + " " + num);
+        //Debug.Log("waves of numbner coroutine end " + waves + " " + num);
         waves++;
 
     }

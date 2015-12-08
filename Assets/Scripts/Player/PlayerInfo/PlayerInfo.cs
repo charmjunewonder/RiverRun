@@ -55,7 +55,7 @@ public class PlayerInfo :  NetworkBehaviour{
 
             healthController.setHealthPerc(health / max_health);
 
-            Debug.Log("perc " + health / max_health * 10);
+            //Debug.Log("perc " + health / max_health * 10);
 
             healthController.setHealth(perc);
         }
@@ -78,7 +78,7 @@ public class PlayerInfo :  NetworkBehaviour{
     private void OnChange(float f) {
         if (healthController == null) return;
 
-        Debug.Log("Health Hook " + f);
+        //Debug.Log("Health Hook " + f);
         prevHealth = health;
 
         health = f;

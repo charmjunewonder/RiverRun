@@ -59,7 +59,7 @@ public class CrystalProductionController : MonoBehaviour {
     #region Coroutines
     IEnumerator StartArrow()
     {
-        Debug.Log("Coroutine");
+        //Debug.Log("Coroutine");
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
             arrows.GetComponent<Image>().fillAmount += 0.08f;

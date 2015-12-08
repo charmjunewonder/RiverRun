@@ -34,7 +34,7 @@ public class strikerUltimate : MonoBehaviour
         ball.gameObject.SetActive(true);
         leftLightening.transform.GetChild(0).position = ball.transform.position;
         rightLightening.transform.GetChild(0).position = ball.transform.position;
-        Debug.Log("Left lightening position " + leftLightening.transform.GetChild(0).position + " " + ball.transform.position);
+        //Debug.Log("Left lightening position " + leftLightening.transform.GetChild(0).position + " " + ball.transform.position);
         
     }
 
