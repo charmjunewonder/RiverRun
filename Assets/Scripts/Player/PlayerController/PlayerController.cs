@@ -76,6 +76,8 @@ public class PlayerController : NetworkBehaviour {
 
     public PlayerParameter playerParameter;
 
+    [SyncVar(hook="OnPauseChanged")]
+    public bool isPause;
 
     #region StartUpdate
     void Awake() {
@@ -180,8 +182,9 @@ public class PlayerController : NetworkBehaviour {
             GetComponent<PlayerInfo>().setHealth(GetComponent<PlayerInfo>().getHealth());
 
         }
-
-        if (isInGame) {
+        if (isPause) return;
+        if (isInGame)
+        {
             if (enemyUIManager == null) LoadEnemyObject();
             else {
                 int enemy_count = 0;
@@ -232,10 +235,7 @@ public class PlayerController : NetworkBehaviour {
                 shieldPoint1 = Input.mousePosition;
             }
         }
-        if (Input.GetMouseButton(0))
-        {
 
-        }
         if(Input.GetMouseButtonUp(0)){
             if (isDraggingCrystal) {
                 isDraggingCrystal = false;
@@ -257,6 +257,8 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
+                            AudioController.Singleton.PlaySkill1Success();
+
                             CmdAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             break;
                         }
@@ -290,6 +292,8 @@ public class PlayerController : NetworkBehaviour {
 
                             if (Vector2.Distance(enemyPos2d, mousePos2d) < 50)
                             {
+                                AudioController.Singleton.PlaySkill1Success();
+
                                 CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             }
                         }
@@ -371,6 +375,8 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 85)
                         {
+                    AudioController.Singleton.PlaySkill1Success();
+
                             CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
                         }   
                     }
@@ -394,6 +400,7 @@ public class PlayerController : NetworkBehaviour {
 	{
 
         if (role == PlayerRole.Striker) {
+            
             float d = playerInfo.getSkill(skillIndex).damage;
             for (int i = 0; i < enemyUIManager.transform.childCount; i++)
             {
@@ -437,23 +444,18 @@ public class PlayerController : NetworkBehaviour {
         transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
         transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
 
-        for (int i = 0; i < NetworkManagerCustom.SingletonNM.gameplayerControllers.Count; i++)
-        {
-            if (NetworkManagerCustom.SingletonNM.gameplayerControllers[i] != null)
-            {
-                ((PlayerController)NetworkManagerCustom.SingletonNM.gameplayerControllers[i]).RpcFireLightening(targetPos);
-            }
-        }
+        RpcFireLightening(targetPos);
+          
     }
 
     [ClientRpc]
     public void RpcFireLightening(Vector3 targetPos) {
-        if (isLocalPlayer) {
-            transform.GetChild(1).GetChild(0).GetChild(0).position = targetPos;
-            transform.GetChild(1).GetChild(1).GetChild(0).position = targetPos;
-            transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
-            transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
-        }
+
+        transform.GetChild(1).GetChild(0).GetChild(0).position = targetPos;
+        transform.GetChild(1).GetChild(1).GetChild(0).position = targetPos;
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+        transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<LighteningAutoBack>().ResetPos(0.1f);
+        
     }
 
     [ClientRpc]
@@ -873,7 +875,8 @@ public class PlayerController : NetworkBehaviour {
 
         warningController = ui.transform.GetChild(7).GetComponent<WarningController>();
 
-        e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+        if (GameObject.Find("EventSystem") != null)
+            e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
     }
 
@@ -1099,8 +1102,27 @@ public class PlayerController : NetworkBehaviour {
 
     #endregion
 
+    //[ClientRpc]
+    //public void RpcPauseGame(bool value)
+    //{
+    //    if (isLocalPlayer)
+    //    {
+    //        if (e == null)
+    //            e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+    //        e.gameObject.SetActive(!value);
+    //    }
+    //}
 
+    public void OnPauseChanged(bool value)
+    {
+        if (!isLocalPlayer) return;
 
+        isPause = value;
 
+        Debug.Log("OnPauseChanged " + value);
+        if (e == null)
+            e = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+        e.enabled = !value;
+    }
 
 }

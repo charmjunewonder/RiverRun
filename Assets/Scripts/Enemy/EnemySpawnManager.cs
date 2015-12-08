@@ -109,6 +109,8 @@ public class EnemySpawnManager : NetworkBehaviour {
             {
                 if (waves >= max_wave)
                 {
+                    AudioController.Singleton.PlayBossCommingVoiceOverSound();
+
                     isReadyForNewWave = false;
                     GenerateBoss();
                     waves++;
@@ -229,9 +231,9 @@ public class EnemySpawnManager : NetworkBehaviour {
     }
 
     IEnumerator GenerateEnemyInGroup(int num) {
+        AudioController.Singleton.PlayNewWaveOfEnemySound();
 
         yield return new WaitForSeconds(5.0f);
-
         NetworkManagerCustom.SingletonNM.SetTotalEnemyWave(max_wave);
         NetworkManagerCustom.SingletonNM.SetCurrentEnemyWave(waves+1);
 

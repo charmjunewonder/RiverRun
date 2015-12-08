@@ -19,4 +19,5 @@ public class DisconnectedPlayerController : NetworkBehaviour {
     public int skill1Counter = 0;
     public int skill2Counter = 0;
     public int supportCounter = 0;
+    public bool isPause;
 }

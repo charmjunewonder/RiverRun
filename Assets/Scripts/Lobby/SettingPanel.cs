@@ -87,9 +87,9 @@ public class SettingPanel : MonoBehaviour {
         //Debug.Log("OnSoundEffectChanged " + sfxSlider.value);
 
         if (sfxAudio == null)
-            sfxAudio = GameObject.Find("BGMAudio");
+            sfxAudio = GameObject.Find("AudioController");
         if (sfxAudio != null)
-            sfxAudio.GetComponent<AudioSource>().volume = sfxSlider.value;
+            sfxAudio.GetComponent<AudioController>().ChangeVolume(sfxSlider.value);
     }
 
     public void OnBGMChanged()

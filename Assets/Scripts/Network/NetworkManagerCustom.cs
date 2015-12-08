@@ -56,6 +56,8 @@ public class NetworkManagerCustom : NetworkManager {
 
     private float cizitenshipHealth = 10;
     private int citizenshipZeroTime = 0;
+
+    public bool isPause = false;
     void Start()
     {
 
@@ -65,7 +67,7 @@ public class NetworkManagerCustom : NetworkManager {
         //logLevel = LogFilter.FilterLevel.Debug;
         GameObject es = GameObject.Find("EventSystem");
         GameObject.DontDestroyOnLoad(es);
-
+        isPause = false;
         SingletonNM = this;
         currentMode = NetworkMode.Level;
         selectedDifficulty = selectedDifficulty = LevelEnum.Unselected;
@@ -392,7 +394,7 @@ public class NetworkManagerCustom : NetworkManager {
         ResetLobbyPlayerArray();
         ServerChangeScene(selectedLevel);
         SetServerGamePanel();
-        StartCoroutine(HealthPenalty());
+        StartCoroutine("HealthPenalty");
 
     }
 
@@ -568,7 +570,7 @@ public class NetworkManagerCustom : NetworkManager {
                             dpc.skill1Counter = pc.skill1Counter;
                             dpc.skill2Counter = pc.skill2Counter;
                             dpc.supportCounter = pc.supportCounter;
-
+                            dpc.isPause = pc.isPause;
                             if (UltiController.checkUltiEnchanting()) {
                                 if (UltiController.getUltiPlayerNumber() == i){
                                     UltiController.setUltiEnchanting(false);
@@ -681,7 +683,7 @@ public class NetworkManagerCustom : NetworkManager {
                             pc.setInGame();
                             pc.disconnectCrystal = dpc.crystals;
                             pc.InitializeDisconnectCrystals(dpc.crystals);
-
+                            pc.isPause = dpc.isPause;
 
                             if (dpc.currentRole == PlayerRole.Engineer)
                             {
@@ -1018,6 +1020,51 @@ public class NetworkManagerCustom : NetworkManager {
         StartServer();
     }
 
+    public void PauseTheGame()
+    {
+        Debug.Log("PauseTheGame");
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            PlayerController lp = (PlayerController)gameplayerControllers[i];
+            if (lp != null)
+            {
+                //lp.RpcPauseGame(true);
+                lp.isPause = true;
+            }
+            else
+            {
+                DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[i];
+                if (dpc != null)
+                {
+                    dpc.isPause = true;
+                }
+            }
+        }
+    }
+
+    public void UnpauseTheGame()
+    {
+        Debug.Log("UnpauseTheGame");
+        Debug.Log("PauseTheGame");
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            PlayerController lp = (PlayerController)gameplayerControllers[i];
+            if (lp != null)
+            {
+                //lp.RpcPauseGame(false);
+                lp.isPause = false;
+            }
+            else
+            {
+                DisconnectedPlayerController dpc = (DisconnectedPlayerController)disconnectedPlayerControllers[i];
+                if (dpc != null)
+                {
+                    dpc.isPause = false;
+                }
+            }
+        }
+    }
+
     #region Feiran's Functions
 
     public void AddProgress(float perc)
@@ -1134,7 +1181,7 @@ public class NetworkManagerCustom : NetworkManager {
         sGamePanel.Reset();
         sGamePanel.gameObject.SetActive(false);
         int totalScore = 0;
-        StopCoroutine(HealthPenalty());
+        StopCoroutine("HealthPenalty");
 
         ArrayList names = new ArrayList();
         for (int k = 0; k < maxPlayers; k++)
@@ -1160,7 +1207,7 @@ public class NetworkManagerCustom : NetworkManager {
                 DataServerUtil.Singleton.SendPersonalRecord(gpc.username, gpc.score, crank, gpc.role.ToString().ToLower(), cexp);
             }
         }
-        totalScore += (600 - EnemySpawnManager.currentTime) * 2;
+        totalScore += (int)((600 - EnemySpawnManager.currentTime) * 1.5f);
         citizenshipZeroTime = Mathf.Clamp(citizenshipZeroTime, 0, 40);
         int citizenPenalty = (int)(totalScore * citizenshipZeroTime * 0.01f);
         totalScore -= citizenPenalty;
