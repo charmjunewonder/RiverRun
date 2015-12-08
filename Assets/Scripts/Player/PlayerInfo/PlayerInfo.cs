@@ -91,6 +91,6 @@ public class PlayerInfo :  NetworkBehaviour{
         int perc = health == 0 ? 0 : (int)(health / max_health * 10) + 1;
 
         healthController.setHealthPerc(health / max_health);
-         healthController.setHealth(perc);
+        healthController.setHealth(perc);
     }
 }

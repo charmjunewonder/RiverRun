@@ -512,7 +512,7 @@ public class PlayerController : NetworkBehaviour {
     [Command]
     protected void CmdAttack(NetworkInstanceId netID) {
         GameObject obj = NetworkServer.FindLocalObject(netID);
-
+        if (obj == null) return;
         Transform enemy = obj.transform;
 
         if (enemy.tag == "Enemy")
@@ -751,7 +751,7 @@ public class PlayerController : NetworkBehaviour {
     }
 
     public void UltiFailureHandling() {
-
+        mainCrystalController.CloseCrystalPortal();
         CmdUltiFailureHandling();
         CmdFailUlti();
 

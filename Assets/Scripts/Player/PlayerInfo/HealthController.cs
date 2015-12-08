@@ -45,7 +45,7 @@ public class HealthController : MonoBehaviour {
     public void setHealth(int health) {
 
         for (int i = 0; i < 10; i++){
-            int index = health > 5 ? 0 : 2;
+            int index = health >= 5 ? 0 : 2;
             transform.GetChild(i).GetComponent<Image>().sprite = i < health ? sprites[index] : sprites[index + 1];
         }
 

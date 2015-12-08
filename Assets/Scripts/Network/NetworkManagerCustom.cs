@@ -1171,7 +1171,7 @@ public class NetworkManagerCustom : NetworkManager {
 
                 //}
             }
-            Debug.Log("playTotalHP "+playTotalHP);
+            //Debug.Log("playTotalHP "+playTotalHP);
             if (cizitenshipHealth <= 0)
             {
                 citizenshipZeroTime++;
