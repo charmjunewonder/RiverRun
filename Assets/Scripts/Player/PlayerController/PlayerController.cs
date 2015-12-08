@@ -415,7 +415,7 @@ public class PlayerController : NetworkBehaviour {
 
         if (role == PlayerRole.Striker) {
             
-            float d = playerInfo.getSkill(skillIndex).damage;
+            float d = playerInfo.getSkill(1).damage;
             for (int i = 0; i < enemyUIManager.transform.childCount; i++)
             {
                 Transform enemy = enemyUIManager.transform.GetChild(i);

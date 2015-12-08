@@ -1069,12 +1069,14 @@ public class NetworkManagerCustom : NetworkManager {
 
     public void PauseAllEnemy()
     {
-
+        GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemySpawnManager>().Pause();
+        GameObject.FindGameObjectWithTag("EnemySkillController").GetComponent<EnemyAttackFreezer>().Pause();
     }
 
     public void UnpauseAllEnemy()
     {
-
+        GameObject.FindGameObjectWithTag("EnemyManager").GetComponent<EnemySpawnManager>().UnPause();
+        GameObject.FindGameObjectWithTag("EnemySkillController").GetComponent<EnemyAttackFreezer>().UnPause();
     }
 
     #region Feiran's Functions

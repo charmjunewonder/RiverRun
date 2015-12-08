@@ -96,6 +96,8 @@ public class EnemySpawnManager : NetworkBehaviour {
             StartCoroutine("PlayingTimeCountDown");
 
             isReadyForNewWave = true;
+
+            countDown = -1;
             //StartCoroutine(GenerateEnemyInGroup(enemyNumbers[waves]));
 
         }
@@ -104,7 +106,12 @@ public class EnemySpawnManager : NetworkBehaviour {
     void Update() {
         if (isServer) {
             if (waves > max_wave) return;
-            
+
+            if (countDown > 0) {
+                countDown -= Time.deltaTime;
+                return;
+            }
+
             if (isReadyForNewWave)
             {
                 if (waves >= max_wave)
@@ -216,7 +223,36 @@ public class EnemySpawnManager : NetworkBehaviour {
                 tran.GetComponent<EnemyMotion>().Freeze(t);
             else
                 tran.GetComponent<BossController>().Freeze(t);
+        }
+    }
 
+    public void Pause() {
+
+        countDown = int.MaxValue;
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform tran = transform.GetChild(i);
+
+            if (tran.tag == "Enemy")
+                tran.GetComponent<EnemyMotion>().Pause();
+            else
+                tran.GetComponent<BossController>().Pause();
+        }
+    }
+
+    public void UnPause() {
+
+        countDown = -1;
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform tran = transform.GetChild(i);
+
+            if (tran.tag == "Enemy")
+                tran.GetComponent<EnemyMotion>().UnPause();
+            else
+                tran.GetComponent<BossController>().UnPause();
         }
     }
 
@@ -240,27 +276,25 @@ public class EnemySpawnManager : NetworkBehaviour {
         int start = 0;
 
         while (num > 0) {
-            Debug.Log("waves of numbner coroutine " + waves + " " + num);
 
             int n = Random.Range(5, 8);
 
             if(n > num)
                 n = num;
 
-            GenerateEnemies(n, start);
+            if(countDown < 0){
+                GenerateEnemies(n, start);
 
-            start += n;
+                start += n;
 
-            num -= n;
-
+                num -= n;
+            }
             yield return new WaitForSeconds(5.0f);
         }
 
         isReadyForNewWave = true;
         Debug.Log("waves of numbner coroutine end " + waves + " " + num);
         waves++;
-        
-                    
 
     }
 

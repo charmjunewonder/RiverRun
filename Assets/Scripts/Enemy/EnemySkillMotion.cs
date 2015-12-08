@@ -10,6 +10,7 @@ public class EnemySkillMotion : NetworkBehaviour {
     private int target;
     public Vector3 velocity;
     private float damage;
+    private Vector3 prevVelocity;
 
     public void setIndex(int ind) { target = ind; }
     public void setVelocity(Vector3 v) { velocity = v; }
@@ -53,6 +54,24 @@ public class EnemySkillMotion : NetworkBehaviour {
     public void Defended() {
         NetworkServer.Destroy(gameObject);
     }
+
+    public void Pause() {
+        prevVelocity = velocity;
+        velocity = Vector3.zero;
+        GetComponent<AutoMove>().velocity = Vector3.zero;
+    }
+
+    public void UnPause() {
+        velocity = prevVelocity;
+        prevVelocity = Vector3.zero;
+        RpcUnPause(velocity);
+    }
+
+    [ClientRpc]
+    private void RpcUnPause(Vector3 vec) {
+        GetComponent<AutoMove>().velocity = vec;
+    }
+
 
     void OnTriggerEnter(Collider collider) {
         if (isServer) { 

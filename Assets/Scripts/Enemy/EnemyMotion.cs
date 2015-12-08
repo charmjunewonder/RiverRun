@@ -59,7 +59,7 @@ public class EnemyMotion : NetworkBehaviour {
 
     public void DecreaseBlood(float damage) {
         blood -= damage;
-        Debug.Log("CmdDecreaseBlood " + blood);
+        Debug.Log("CmdDecreaseBlood " + blood + " " + damage);
         if (blood <= 0)
         {
             transform.parent.GetComponent<EnemySpawnManager>().AddProgress(1);
@@ -209,7 +209,7 @@ public class EnemyMotion : NetworkBehaviour {
 
             Vector3 ran = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f));
 
-            Vector3 vel = Vector3.Normalize(spaceship.transform.position + ran - transform.position) * Random.Range(80f, 100f);
+            Vector3 vel = Vector3.Normalize(ran - transform.position) * Random.Range(80f, 100f);
             esm.setVelocity(vel);
 
             int target = Random.Range(0, 4);
@@ -230,6 +230,16 @@ public class EnemyMotion : NetworkBehaviour {
         freezeTimer = t;
         prevVelocity = GetComponent<Rigidbody>().velocity;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+
+    public void Pause() {
+        freezeTimer = int.MaxValue;
+        prevVelocity = GetComponent<Rigidbody>().velocity;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+
+    public void UnPause() {
+        freezeTimer = -1;
     }
 
     IEnumerator Rotate() {
