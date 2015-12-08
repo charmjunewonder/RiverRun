@@ -41,37 +41,37 @@ public class EnemySpawnManager : NetworkBehaviour {
 
             int input_rank = 0;
 
-            if (NetworkManagerCustom.SingletonNM.selectedDifficulty == LevelEnum.Easy)
+
+            int min = 1000, max = 0, ave = 0, count = 0;
+            foreach (GameObject player in players)
             {
-                int a = 1000;
-                foreach (GameObject player in players)
-                {
-                    if(player != null)
-                        a = Mathf.Min(player.GetComponent<PlayerController>().rank, a); 
-                }
-                input_rank = a;
+                if (player != null) {
+                    min = Mathf.Min(player.GetComponent<PlayerController>().rank, min);
+                    max = Mathf.Max(player.GetComponent<PlayerController>().rank, max);
+                    count++;
+                    ave += player.GetComponent<PlayerController>().rank;
+                }     
+            }
+            ave /= count;
+
+
+            if (NetworkManagerCustom.SingletonNM.selectedDifficulty == LevelEnum.Easy){
+                if (ave <= min + 3) 
+                    input_rank = Mathf.Max(1, min - 2);
+                else
+                    input_rank = min;
             }
             else if (NetworkManagerCustom.SingletonNM.selectedDifficulty == LevelEnum.Medium) {
-                int count = 0;
-                foreach (GameObject player in players)
-                {
-                    if (player != null)
-                    {
-                        input_rank += player.GetComponent<PlayerController>().rank;
-                        count++;
-                    }
-                        
-                }
-                input_rank /= count;
+                if(ave == min)
+                    input_rank = ave + 1;
+                else
+                    input_rank = ave;
             }
             else {
-                int a = 0;
-                foreach (GameObject player in players)
-                {
-                    if(player != null)
-                        a = Mathf.Max(player.GetComponent<PlayerController>().rank, a);
-                }
-                input_rank = a;
+                if (ave >= max - 3)
+                    input_rank = max + 2;
+                else
+                    input_rank = max;
             }
 
             Debug.Log("input+rank " + input_rank);
