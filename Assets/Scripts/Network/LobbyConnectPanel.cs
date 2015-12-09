@@ -95,6 +95,11 @@ public class LobbyConnectPanel : MonoBehaviour {
         NetworkManagerCustom.SingletonNM.ChangeToSettingPanel();
     }
 
+    public void OnClickServerSetting()
+    {
+        NetworkManagerCustom.SingletonNM.ChangeToServerSettingPanel();
+    }
+
     void onEndEditIP(string text)
     {
         if (Input.GetKeyDown(KeyCode.Return))

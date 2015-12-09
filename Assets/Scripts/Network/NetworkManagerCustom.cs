@@ -64,6 +64,8 @@ public class NetworkManagerCustom : NetworkManager {
 
 #if UNITY_IOS
         serverConnect.SetActive(false);
+        gameConnectPanel.gameObject.SetActive(false);
+        connectPanel.gameObject.SetActive(true);
 #endif
         //logLevel = LogFilter.FilterLevel.Debug;
         GameObject es = GameObject.Find("EventSystem");
@@ -211,6 +213,14 @@ public class NetworkManagerCustom : NetworkManager {
     {
         Debug.Log("ChangeToSettingPanel");
 
+        ChangeTo(settingPanel);
+        //backDelegate = SimpleBackClbk;
+    }
+
+    public void ChangeToServerSettingPanel()
+    {
+        Debug.Log("ChangeToSettingPanel");
+        currentPanel = gameConnectPanel;
         ChangeTo(settingPanel);
         //backDelegate = SimpleBackClbk;
     }

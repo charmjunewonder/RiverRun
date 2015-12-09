@@ -34,7 +34,7 @@ public class ScoreParameter
     public static int CalcuateStar(int score)
     {
         if (score < 0) score = 0;
-        int stars = score / 70;
+        int stars = score / 100;
         if (stars < 0) stars = 0;
         if (stars > 4) stars = 4;
         return stars;
