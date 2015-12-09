@@ -76,12 +76,12 @@ public class LobbyLevelPanel : MonoBehaviour {
             if (isRed)
             {
                 infoText.text = @"Please Talk to Your Teammates and Select the <color=#5CB4E1FF><b>Same Difficulty</b></color> as a Team.
-<color=#D21D1DFF><b>Wait</b></color> Other Teamates To Select.";
+<color=#D21D1DFF><b>Wait</b></color> Other Teammates To Select.";
             }
             else
             {
                 infoText.text = @"Please Talk to Your Teammates and Select the <color=#5CB4E1FF><b>Same Difficulty</b></color> as a Team.
-<color=#FFFFFFFF><b>Wait</b></color> Other Teamates To Select.";
+<color=#FFFFFFFF><b>Wait</b></color> Other Teammates To Select.";
             }
             isRed = !isRed;
             yield return new WaitForSeconds(0.4f);
@@ -92,6 +92,6 @@ public class LobbyLevelPanel : MonoBehaviour {
     {
         StopCoroutine("flashingWait");
         infoText.text = @"Please Talk to Your Teammates and Select the <color=#5CB4E1FF><b>Same Difficulty</b></color> as a Team.
-<color=#D21D1DFF><b>Wait</b></color> Other Teamates To Select.";
+<color=#D21D1DFF><b>Wait</b></color> Other Teammates To Select.";
     }
 }
