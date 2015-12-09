@@ -5,7 +5,7 @@ public class ServerCitizenShip : MonoBehaviour {
     public ServerPlayerHealth hc;
 	// Use this for initialization
 	void Start () {
-        SetHealth(10);
+        SetHealth(1);
 	}
 
     public void SetHealth(float health)

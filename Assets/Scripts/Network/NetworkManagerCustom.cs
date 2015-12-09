@@ -994,7 +994,7 @@ public class NetworkManagerCustom : NetworkManager {
             {
                 Debug.Log("SetServerMissionCompletePanel");
                 sGamePanel.playerInfos[i].gameObject.SetActive(true);
-                sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 10);
+                sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 1);
             }
             else
             {
@@ -1002,7 +1002,7 @@ public class NetworkManagerCustom : NetworkManager {
                 if (dpc != null)
                 {
                     sGamePanel.playerInfos[i].gameObject.SetActive(true);
-                    sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 10);
+                    sGamePanel.playerInfos[i].SetUserInfo(lp.username, lp.role, 1);
                 }
             }
         }

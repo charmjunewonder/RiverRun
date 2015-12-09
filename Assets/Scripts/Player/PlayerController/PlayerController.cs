@@ -990,7 +990,6 @@ public class PlayerController : NetworkBehaviour {
     [ClientRpc]
     public void RpcSetCitizenshipHealth(float f) {
         if (isLocalPlayer) {
-            citizenshipHealthController.setHealth((int)f);
             citizenshipHealthController.setHealthPerc(f / 10);
         }
             

@@ -42,29 +42,28 @@ public class HealthController : MonoBehaviour {
         }
     }
 
-    public void setHealth(int health) {
-
-        for (int i = 0; i < 10; i++){
-            int index = health >= 5 ? 0 : 2;
-            transform.GetChild(i).GetComponent<Image>().sprite = i < health ? sprites[index] : sprites[index + 1];
-        }
-
-        shinning = health <= 3;
-
-        if (!shinning){
-            timer = 0.5f;
-            for (int i = 0; i < 10; i++)
-            {
-                transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 1);
-            }
-        }
-    }
-
     public void setHealthPerc(float perc) {
         text.text = ((int)(perc * 100)).ToString() + "%";
         if (perc <= 0.5f)
             text.color = red;
         else
             text.color = blue;
+
+        for (int i = 0; i < 10; i++)
+        {
+            int index = perc > 0.5f ? 0 : 2;
+            transform.GetChild(i).GetComponent<Image>().sprite = i < perc * 10 ? sprites[index] : sprites[index + 1];
+        }
+
+        shinning = perc <= 0.3f;
+
+        if (!shinning)
+        {
+            timer = 0.5f;
+            for (int i = 0; i < 10; i++)
+            {
+                transform.GetChild(i).GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            }
+        }
     }
 }
