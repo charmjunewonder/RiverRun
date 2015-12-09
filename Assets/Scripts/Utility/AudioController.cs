@@ -29,7 +29,9 @@ public class AudioController : MonoBehaviour {
     public AudioClip newWaveOfEnemySound;
     public AudioClip bossComingVoiceOverSound;
 
-    public AudioClip skill1SuccessSound;
+    public AudioClip strikerSkill1SuccessSound;
+    public AudioClip defenderSkill1SuccessSound;
+
     void Start()
     {
         Singleton = this;
@@ -54,9 +56,14 @@ public class AudioController : MonoBehaviour {
         PlaySound(menuAus, cystalFail);
     }
 
-    public void PlaySkill1Success()
+    public void PlayStrikerSkill1Success()
     {
-        PlaySound(menuAus, skill1SuccessSound);
+        PlaySound(menuAus, strikerSkill1SuccessSound);
+    }
+
+    public void PlayDefenderSkill1Success()
+    {
+        PlaySound(menuAus, defenderSkill1SuccessSound);
     }
 
     public void PlayCystalSuccess()

@@ -271,7 +271,7 @@ public class PlayerController : NetworkBehaviour {
 
                         if (Vector2.Distance(enemyPos2d, mousePos2d) < 40)
                         {
-                            AudioController.Singleton.PlaySkill1Success();
+                            AudioController.Singleton.PlayStrikerSkill1Success();
 
                             CmdAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             break;
@@ -306,7 +306,7 @@ public class PlayerController : NetworkBehaviour {
 
                             if (Vector2.Distance(enemyPos2d, mousePos2d) < 50)
                             {
-                                AudioController.Singleton.PlaySkill1Success();
+                                AudioController.Singleton.PlayDefenderSkill1Success();
 
                                 CmdDefendAttack(enemy.GetComponent<NetworkIdentity>().netId);
                             }
