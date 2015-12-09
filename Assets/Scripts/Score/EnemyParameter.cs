@@ -49,7 +49,7 @@ public class EnemyParameter : MonoBehaviour {
         enemyBasicAp = 2 + (difficultyFactor / 5);//temp
         enemyBasicAttackTime = Mathf.Clamp(8.0f - difficultyFactor * 0.4f, 0.5f, 8.0f);//change the enemy attack frenquency
         maxNumberPerWave = (int)(20 + 2.5 * difficultyFactor); // maximum 55 
-        enemyWave = 3 + ((difficultyFactor+2) / 4); //every 4 rank add a wave
+        enemyWave = Mathf.Clamp(3 + ((difficultyFactor+2) / 4),3,6); //clamp the maxium wave to 6
     }
 
     private void generateEnemyData()
