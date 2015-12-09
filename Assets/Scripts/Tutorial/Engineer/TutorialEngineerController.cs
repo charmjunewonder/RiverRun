@@ -115,7 +115,7 @@ public class TutorialEngineerController : MonoBehaviour {
         if (stage == 3 && index == 3) {
             textObjects[textNum].SetActive(false);
             clickObjects[5].SetActive(false);
-            cpController.TriggerAnimation();
+            cpController.TriggerAnimation(false);
 
             Invoke("InvokeFunction1", 0.8f);
 
@@ -146,7 +146,7 @@ public class TutorialEngineerController : MonoBehaviour {
             clickObjects[5].SetActive(false);
 
 
-            cpController.TriggerAnimation();
+            cpController.TriggerAnimation(false);
 
             stage++;
             return;

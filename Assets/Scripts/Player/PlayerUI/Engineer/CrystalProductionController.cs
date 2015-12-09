@@ -25,10 +25,10 @@ public class CrystalProductionController : MonoBehaviour {
     public int GetCrystal() { return crystalSelected; }
 
     #region Animation
-    public void TriggerAnimation() {
+    public void TriggerAnimation(bool isInGame) {
         if (!isFinished())
         {
-            StartCoroutine("StartArrow");
+            StartCoroutine(StartArrow(isInGame));
             AudioController.Singleton.PlayEngineerCystalProductionSound();
         }
     }
@@ -57,22 +57,28 @@ public class CrystalProductionController : MonoBehaviour {
     #endregion
 
     #region Coroutines
-    IEnumerator StartArrow()
+    IEnumerator StartArrow(bool isInGame)
     {
         //Debug.Log("Coroutine");
         while (arrows.GetComponent<Image>().fillAmount < 1)
         {
-            arrows.GetComponent<Image>().fillAmount += 0.08f;
+            if(isInGame)
+                arrows.GetComponent<Image>().fillAmount += (0.08f + engineerController.rank * 0.05f);
+            else
+                arrows.GetComponent<Image>().fillAmount += 0.08f;
             yield return new WaitForSeconds(0.01f);
         }
-        StartCoroutine("StartBar");
+        StartCoroutine(StartBar(isInGame));
     }
 
-    IEnumerator StartBar()
+    IEnumerator StartBar(bool isInGame)
     {
         while (GetComponent<Image>().fillAmount < 1)
         {
-            GetComponent<Image>().fillAmount += 0.04f;
+            if (isInGame)
+                GetComponent<Image>().fillAmount += (0.04f + engineerController.rank * 0.1f);
+            else
+                GetComponent<Image>().fillAmount += 0.04f;
             yield return new WaitForSeconds(0.01f);
         }
 
