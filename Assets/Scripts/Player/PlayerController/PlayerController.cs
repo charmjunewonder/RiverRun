@@ -432,7 +432,7 @@ public class PlayerController : NetworkBehaviour {
                 
             DoneUlti();
             AudioController.Singleton.PlayStrickerUtliExplosionSound();
-
+            AudioController.Singleton.PlayUltiSuccessSound();
         }
         else {
             DoneUlti();
@@ -446,7 +446,7 @@ public class PlayerController : NetworkBehaviour {
             score += ScoreParameter.Defender_Util_Score;
             
             AudioController.Singleton.PlayStrickerUtliExplosionSound();
-
+            AudioController.Singleton.PlayUltiSuccessSound();
         }
         
 	}
@@ -681,7 +681,7 @@ public class PlayerController : NetworkBehaviour {
             defenderUlti.GetComponent<defenderUltimate>().Fail(isServer);
             RpcDefenderUlti(-1);
         }
-
+        AudioController.Singleton.PlayUltiFailSound();
         DoneUlti();
     }
 

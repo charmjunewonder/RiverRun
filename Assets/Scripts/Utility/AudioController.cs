@@ -32,6 +32,8 @@ public class AudioController : MonoBehaviour {
     public AudioClip strikerSkill1SuccessSound;
     public AudioClip defenderSkill1SuccessSound;
 
+    public AudioClip ultiSuccessSound;
+    public AudioClip ultiFailSound;
     void Start()
     {
         Singleton = this;
@@ -121,6 +123,16 @@ public class AudioController : MonoBehaviour {
     public void PlayDefenderUltiExplosionSound()
     {
         PlaySound(gameAus, defenderUltiExplosionSound);
+    }
+
+    public void PlayUltiSuccessSound()
+    {
+        PlaySound(menuAus, ultiSuccessSound);
+    }
+
+    public void PlayUltiFailSound()
+    {
+        PlaySound(menuAus, ultiFailSound);
     }
 
     #endregion
